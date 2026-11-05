@@ -1,6 +1,6 @@
 # Estudio: integración del NI cDAQ-9178 (NI 9213 + NI 9201) en Panel_laboratorio
 
-Fase 1: solo estudio. No se ha escrito código de integración ni se ha modificado nada del repo. Este fichero es lo único creado; también se creó la carpeta `docs\`, que no existía.
+Fase 1: estudio (2026-11-05). Fase 2A: implementación sin hardware, en la rama `feature/cdaq` (2026-11-05). Ver la §0.
 Fecha: 2026-11-05.
 
 **Claves de fuente** usadas en todo el documento:
@@ -14,11 +14,68 @@ Fecha: 2026-11-05.
 | [L-UM] | *NI cDAQ-9171/9174/9178 User Manual* 372838E-01 (jul 2016) | Local. Es idéntico (mismo MD5) a farnell.com/datasheets/3216357.pdf |
 | [L-HLP] | Ayuda instalada de NI-DAQmx 26.8: `mxdevconsid.chm`, `mxcncpts.chm`, `daqhelp.chm` | `C:\Program Files (x86)\National Instruments\NI-DAQ\docs\` (CHM fechados 2026-01/04) |
 | [L-H] | Cabecera `NIDAQmx.h` del driver 26.8 y textos de error de `nicaiu.dll` 26.8.0 | Local, instalados |
-| [W-9178] | *NI cDAQ-9178 Specifications* 374046A-01 (mayo 2013) | Web: download.ni.com/support/manuals/374046a.pdf |
+| [W-9178] | *NI cDAQ-9178 Specifications* 374046A-01 (mayo 2013) | Web: download.ni.com/support/manuals/374046a.pdf. Desde la fase 2A también en local: `Documentos Driver NI-DAQmx\cdaq-9178_specifications_374046a-01.pdf` |
 | [W-PY] | Paquete `nidaqmx`: PyPI, GitHub ni/nidaqmx-python (README, `examples/`, `generated/nidaqmx/*.py`) y readthedocs | Web |
 | [W-SHOP] | Fichas de producto de ni.com (model-ni-9201, model-ni-9213) | Web |
 
 Las páginas `ni.com/docs/...` (especificaciones del 9178, 9213 y 9201, *Getting Started* del 9213 y la referencia C de `DAQmxCreateAIThrmcplChan`) **no se pudieron leer**: la herramienta solo recibió el menú de navegación, sin contenido. Las he sustituido por el PDF 374046A, por la cabecera C instalada y por los PDF locales.
+
+---
+
+## 0. Actualización tras la fase 2A (2026-11-05)
+
+### 0.1 Decisiones de Kevin
+
+- El cDAQ-9178 se conecta por USB a **este** PC. **El servidor es el único dueño de los dos módulos.** El VI de LabVIEW del compañero no puede usarlos a la vez.
+- La lectura por defecto es **bajo demanda (software)**. El reloj de hardware queda documentado (§4), pero no se implementa.
+- Lo pendiente de contestar (qué mide cada canal del 9201, la frecuencia de registro y el tipo de termopar) queda configurable en `config.json` → `cdaq`, con valores por defecto marcados **TODO_CONFIRMAR**: lista `cdaq.TODO_CONFIRMAR`, `"mide": "TODO_CONFIRMAR"` en cada canal del 9201, tipo `"K"` y `periodo_s` 1 s.
+
+### 0.2 Correcciones de la fase 1 aceptadas (decisión 4)
+
+1. **Máximo 3 tareas AI simultáneas por chasis** (`ai`, `te0`, `te1`). Las «7 tareas» del 9178 son flujos de datos de cualquier tipo.
+2. **Bloqueo por módulo:** un módulo solo puede estar en una tarea, y se bloquea **entero** aunque se use un solo canal.
+3. **Velocidad del 9213 con 16 canales: SIN RESOLVER hasta medirla.** La especificación (75 S/s) y la fórmula de la ayuda del driver (unos 85 S/s) no cuadran (D3). La medida está en `docs/PLAN_PRUEBAS_LABORATORIO.md`.
+4. **NI 9201:**
+   - No es simultáneo: un solo ADC multiplexado.
+   - **800 kS/s** con un canal y **500 kS/s** escaneando (columna «All Other Chassis»).
+   - **Límite de trabajo: ±60 V DC** canal-COM. Los ±100 V son **solo protección**. El rango de medida es ±10 V.
+5. **Tipos C y A del 9213: por verificar con el driver** y el módulo real. `cdaq.py` los acepta en la configuración, marcados «POR VERIFICAR».
+6. **La datasheet 373783A del 9201 se contradice** sobre la simultaneidad. **Mandan la especificación actual y la ayuda de NI.**
+
+### 0.3 Qué se ha implementado (todo **NO PROBADO CON HARDWARE**)
+
+| Fichero | Qué es |
+|---|---|
+| `cdaq.py` | Instrumento `CDAQ` con el patrón de `tc08.py`. Un único hilo es dueño de DAQmx; una tarea por módulo; lectura bajo demanda; termopar abierto; estados ocupado, no disponible y desconectado con reintento; modo simulado marcado; registro CSV |
+| `herramientas/cdaq_descubrir.py` | Inventario de solo lectura (sin tareas) en `docs/cdaq_descubrimiento_*.json` y `.md`. Esas salidas están en `.gitignore` porque llevan números de serie |
+| `servidor.py`, `config.json` | Registro mínimo: instancia, clave `cdaq` en `/api/estado`, rutas `/api/cdaq/...`, cierre de tareas al cerrar el panel. Nueva sección `cdaq` **desactivada** (`habilitado: false`) |
+| `pruebas/prueba_cdaq_sin_hardware.py`, `pruebas/prueba_cdaq_servidor.py` | Pruebas sin chasis, registradas en `pruebas/pendientes.json` |
+| `requirements.txt` | Dependencias, con `nidaqmx==1.7.0` |
+| `docs/PLAN_PRUEBAS_LABORATORIO.md` | Lo que hay que comprobar el día que se conecte el chasis (fase 2B) |
+
+**Cómo funciona `cdaq.py`:**
+
+- **Estados:**
+  - `desactivado`: `habilitado: false`; no se carga `nidaqmx`.
+  - `libre` y `conectando`.
+  - `midiendo`.
+  - `ocupado`: códigos DAQmx −50103, −200022 y −201105; reintenta como mínimo cada 30 s.
+  - `no_disponible`: falta el chasis o un módulo.
+  - `desconectado`: códigos −201003, −88705 y −89130; reintenta cada `reintento_s`.
+  - `error`.
+- **Termopar abierto:** se lee `in_stream.open_thrmcpl_chans_exist` y luego `open_thrmcpl_chans`. El valor se guarda **vacío**; en el CSV aparece `abierto:<nombre>` en la columna `avisos`, y el canal sale en `resumen()["abiertos"]`.
+- **Modo común fuera de rango:** el valor se guarda, con el aviso `modo_comun`.
+- **Desconexión durante un registro:** se escribe una fila `hueco:<motivo>` en el CSV.
+- **Simulado:** en el modo simulado del panel y con dispositivos simulados de NI MAX (`is_simulated`), se marca `simulado: true`, los nombres llevan `SIM_`, los ids `sim.`, se añade un aviso, el CSV empieza con «DATOS SIMULADOS: NO SON MEDIDAS REALES» y el fichero se llama `cdaq_SIMULADO.csv`.
+
+**Límites de la implementación y de la interfaz:**
+- **La interfaz web todavía no muestra el cDAQ:** solo la API. Mostrarlo en `index.html` y `vivo.html` queda para una fase posterior, porque no se pidió en la 2A.
+- **No está integrado en `ensayo.py` ni `tramo.py`**, para no tocar su lógica.
+- El registro del cDAQ se hace desde `/api/cdaq/registro/iniciar` y `/api/cdaq/registro/parar` y crea `<proyecto>\registros\...\cdaq.csv` y `registro.json`. Usa `almacen.destino` sin modificar `almacen.py`.
+
+**Simulación sin chasis:**
+- En la ayuda local de NI-DAQmx 26.8 y en la API C instalada **no hay forma de crear dispositivos simulados por línea de comandos**. La ayuda remite a NI MAX, y en `NIDAQmx.h` solo existen `DAQmxAddNetworkDevice` y `DAQmxDeleteNetworkDevice`.
+- Crear uno en NI MAX es un cambio en la configuración de NI del PC: no se ha hecho. Por eso las pruebas usan sustitutos de `nidaqmx` y el modo simulado del panel.
 
 ---
 
@@ -124,8 +181,8 @@ Las páginas `ni.com/docs/...` (especificaciones del 9178, 9213 y 9201, *Getting
 |---|---|---|
 | D1 | cDAQ-9178: USB 2.0 Hi-Speed, 9-30 V, 15 W | **Coincide** ([W-9178], [L-UM]) |
 | D2 | 3 motores AI (`ai`, `te0`, `te1`), hasta 7 tareas de reloj hardware, 4 contadores | **Coincide, con un matiz:** las 7 son flujos de datos de cualquier tipo. **Para AI el límite es 3 tareas.** Además solo hay 1 tarea AO, 1 DI y 1 DO temporizadas por hardware por chasis ([L-HLP]) |
-| D3 | 9213: 75 S/s con todos los canales, 100 S/s máximo | **Coincide** con [L-213S]. La ayuda del driver añade que los 100 S/s solo aplican con 13 canales o menos, y da la fórmula `MaxMultiChanRate/N`. Con el ejemplo de la ayuda (1360,54), 16 canales darían unos 85 S/s, **no 75**. Las dos fuentes no cuadran exactamente. Hay que medirlo con la API (`ai_max_multi_chan_rate`, `samp_clk_max_rate`) en un dispositivo simulado o real |
-| D4 | 9213: tipos J K T E N B R S, más C y A en la revisión de oct 2026 | **Parcial.** La revisión D (378914D-01, oct 2026) dice «Added thermocouple type C and A **errors graph**», y C y A aparecen en la tabla de sensibilidad. Pero la línea de rangos de la misma especificación sigue listando solo los 8 tipos NIST. El driver 26.8 sí tiene los tipos A y C |
+| D3 | 9213: 75 S/s con todos los canales, 100 S/s máximo | **SIN RESOLVER hasta medirla** (decisión 4; plan de laboratorio). Coincide con [L-213S]. La ayuda del driver añade que los 100 S/s solo aplican con 13 canales o menos, y da la fórmula `MaxMultiChanRate/N`. Con el ejemplo de la ayuda (1360,54), 16 canales darían unos 85 S/s, **no 75**. Las dos fuentes no cuadran exactamente. Hay que medirlo con la API (`ai_max_multi_chan_rate`, `samp_clk_max_rate`) en un dispositivo simulado o real |
+| D4 | 9213: tipos J K T E N B R S, más C y A en la revisión de oct 2026 | **Parcial.** La revisión D (378914D-01, oct 2026) dice «Added thermocouple type C and A **errors graph**», y C y A aparecen en la tabla de sensibilidad. Pero la línea de rangos de la misma especificación sigue listando solo los 8 tipos NIST. El driver 26.8 sí tiene los tipos A y C. **Por verificar con el driver y el 9213 real** (decisión 4) |
 | D5 | 9213: 55 ms y 740 µs por canal; sensibilidad del tipo K < 0,02 °C (alta resolución) y < 0,25 °C (alta velocidad) | **Coincide** ([L-213S]) |
 | D6 | 9201: 8 single-ended ±10 V, SAR de 12 bits, 500 kS/s, un solo ADC | **Coincide.** Los 500 kS/s son **agregados escaneando**; con un solo canal llega a **800 kS/s** («All Other Chassis») |
 | D7 | 9201: sobretensión ±100 V | **Coincide como protección**, pero el **límite de seguridad de trabajo es ±60 V DC** canal-COM. No hay que confundirlos |
@@ -138,7 +195,7 @@ Las páginas `ni.com/docs/...` (especificaciones del 9178, 9213 y 9201, *Getting
 
 ## 3. Restricciones del chasis que afectan al diseño
 
-1. **Tres tareas AI como máximo por chasis** (`ai`, `te0`, `te1`) ([L-UM], [L-HLP]). Una tarea para el 9213 y otra para el 9201 ocupan dos; queda **una libre** para el compañero.
+1. **Tres tareas AI como máximo por chasis** (`ai`, `te0`, `te1`) ([L-UM], [L-HLP]). Una tarea para el 9213 y otra para el 9201 ocupan dos. Queda un motor libre, pero ningún módulo AI libre: por la decisión 1, el panel es dueño de los dos.
 2. **Los canales de un módulo no se pueden repartir en varias tareas** ([L-UM] cap. 2: «channels from a single module cannot be used in multiple tasks»). Si el VI del compañero usa *un* canal del 9213, el panel no puede usar *ningún* otro canal de ese módulo mientras tanto. El conflicto no es «los mismos canales», sino **el módulo entero**.
 3. **Módulos lentos y rápidos en la misma tarea:** si la tarea va más deprisa que el módulo lento (el 9213), este **repite la última muestra sin avisar** ([L-UM] «Slow Sample Rate Modules»; [L-HLP]). Además, «la primera muestra se adquiere al hacer *commit* de la tarea» y la segunda tras el disparo de arranque. El propio manual recomienda separarlos en tareas distintas, que es lo propuesto.
 4. **Lectura bajo demanda también reserva motor:** «On-demand analog input tasks must reserve resources from a timing engine» ([L-HLP] `timingengines`). Leer bajo demanda no evita el límite de 3 ni el conflicto con LabVIEW.
@@ -146,7 +203,7 @@ Las páginas `ni.com/docs/...` (especificaciones del 9178, 9213 y 9201, *Getting
 6. **Reserva exclusiva:** los recursos se reservan al pasar al estado *Reserved*, y esa transición falla si otra tarea ya los tiene ([L-HLP] `reservedstate`). Textos del driver instalado ([L-H]): −50103 «The specified resource is reserved», −200022 «Resource requested by this task has already been reserved by a different task» y −201105 (lo mismo «with conflicting settings»).
 7. **Conflicto con LabVIEW:**
    - La documentación habla de «tareas» sin distinguir proceso. *Deducción no verificada:* una tarea del VI del compañero bloquea igual que una nuestra, y el error esperado es uno de los del punto 6.
-   - La coexistencia es posible si se reparten los módulos (por ejemplo, él el 9201 y el panel el 9213) y entre los dos no superan 3 tareas AI.
+   - La coexistencia sería posible repartiendo los módulos, pero **Kevin ha decidido que el servidor es el único dueño** (§0.1). Si el VI está abierto con un módulo reservado, el panel queda en «ocupado» y reintenta cada 30 s. El plan de laboratorio incluye confirmar que el VI está cerrado.
    - En **este** PC no hay LabVIEW de desarrollo (no existe ningún `LabVIEW.exe`; solo runtimes 2026 y recursos). Si el VI corre en el PC del compañero con el cDAQ conectado allí, el panel **no verá el chasis**: un USB solo tiene un anfitrión (deducción). Ver la pregunta P1.
 8. **Varios hilos o procesos:** en la documentación leída **no he encontrado** ninguna garantía sobre seguridad entre hilos de `nidaqmx` ni del driver (el README de GitHub tampoco la menciona). Diseño prudente: **un único hilo dueño** de todas las llamadas DAQmx dentro del proceso del panel, y los endpoints solo tocan datos protegidos por lock (como `tc08.py`).
 9. **Simulación:** un dispositivo simulado se comporta igual en verificación y reserva de recursos, y devuelve un seno a fondo de escala con un 3 % de ruido. **No se puede mezclar en una tarea con dispositivos reales** ([L-HLP] `tasksimdev`, `readwritesimdev`).
@@ -241,6 +298,11 @@ Las páginas `ni.com/docs/...` (especificaciones del 9178, 9213 y 9201, *Getting
 ---
 
 ## 6. Preguntas abiertas
+
+**Estado tras la fase 2A:**
+- **Contestadas:** P1 (sí, este PC), P2 (el panel es el único dueño) y P10 (`nidaqmx` 1.7.0 instalado; no se crean dispositivos simulados en NI MAX).
+- **Pendientes y configurables con TODO_CONFIRMAR:** P3, P4 (frecuencia), P5 y P6.
+- **Siguen abiertas:** P7, P8 y P9.
 
 1. **P1.** ¿El cDAQ irá por USB a **este** PC (el del panel)? ¿El VI del compañero corre en este PC o en otro? (Aquí no hay LabVIEW de desarrollo.)
 2. **P2.** ¿Cómo convivimos con el compañero: por turnos (Tomar/Soltar, como TC-08 y PicoLog), repartiendo módulos (¿quién se queda el 9213 y quién el 9201?), o el panel es el único dueño y él lee del panel?
