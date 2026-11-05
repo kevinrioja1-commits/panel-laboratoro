@@ -347,12 +347,16 @@ class CDAQ:
         self._reconfigurar = threading.Event()
         self._primer = threading.Event()
         self._hilo = None
+        self._hilo_detectar = None
         self.lecturas = 0
         self.ultimo_error = None
         if self.cfg["habilitado"] and self.cfg["en_uso"]:
             self._lanzar("panel (arranque)")
         elif self.cfg["habilitado"] and not self.cfg["simulado"]:
-            threading.Thread(target=self._detectar, daemon=True).start()   # solo mira si está (sin tareas)
+            # solo mira si está (lista dispositivos, sin tareas). El hilo de medida espera a que termine: así nunca
+            # hay dos hilos llamando a DAQmx a la vez
+            self._hilo_detectar = threading.Thread(target=self._detectar, name="cdaq-detectar", daemon=True)
+            self._hilo_detectar.start()
 
     # -------------------------------------------------- utilidades
     def _nuevo_backend(self):
@@ -439,6 +443,9 @@ class CDAQ:
     # -------------------------------------------------- hilo dueño de DAQmx
     def _bucle(self):
         b = None
+        d = self._hilo_detectar
+        if d and d.is_alive():
+            d.join(timeout=TIMEOUT_LECTURA_S + 5)      # que la detección del arranque no use DAQmx a la vez
         try:
             while not self._parar.is_set():
                 if b is None:
