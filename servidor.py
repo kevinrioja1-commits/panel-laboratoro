@@ -24,6 +24,7 @@ from fuente import COLA_APAGADO_S, Fuente, puertos
 from osciloscopio import Osciloscopio
 from picolog import PicoLog
 from tc08 import TC08, config_por_defecto
+from cdaq import CDAQ, config_por_defecto as cdaq_config_por_defecto
 from registro import Registro
 from detalle_osc import DetalleOsc
 from tramo import Tramos
@@ -58,6 +59,8 @@ def guardar_cfg():
 
 
 tc = TC08(reg, cfg["temperaturas"], guardar_cfg)   # TC-08 manejado por el panel (si lo toma)
+# cDAQ-9178 (NI 9213 + NI 9201), NO PROBADO CON HARDWARE. Con «habilitado»: false no carga nidaqmx ni hace nada
+daq = CDAQ(reg, cfg.setdefault("cdaq", cdaq_config_por_defecto()), guardar_cfg)
 
 
 class _Temperaturas:
@@ -120,6 +123,7 @@ def estado():
     return {"osciloscopio": osc.resumen(), "fuente": fte.resumen(), "ensayo": ensayos.resumen(),
             "preparado": ensayos.preparado, "picolog": pl.resumen(), "tc08": tc.resumen(),
             "temperaturas": {"fuente": "tc08" if temps.activa() is tc else "picolog", "grabando": REG_TEMP["ruta"]},
+            "cdaq": dict(daq.resumen(), grabando=REG_CDAQ["ruta"]),
             "registro": reg.ultimos(60)}
 
 
@@ -598,6 +602,67 @@ def fte_historia(desde: float = 0.0):
     return fte.historia_desde(desde)
 
 
+# ------------------------------------------------------------------- cDAQ-9178 (NO PROBADO CON HARDWARE)
+REG_CDAQ = {"ruta": None}
+
+
+@app.post("/api/cdaq/tomar")
+def cdaq_tomar(x_autor: str = Header(None)):
+    """El panel toma el cDAQ (crea y arranca las tareas en su hilo). Devuelve el estado tras el primer intento."""
+    return ejecutar(lambda: daq.tomar(autor_de(x_autor)))
+
+
+@app.post("/api/cdaq/soltar")
+def cdaq_soltar(x_autor: str = Header(None)):
+    """Cierra las tareas DAQmx: los módulos quedan libres para otro programa."""
+    return ejecutar(lambda: daq.soltar(autor_de(x_autor)))
+
+
+@app.post("/api/cdaq/configurar")
+def cdaq_configurar(p: dict = Body(...), x_autor: str = Header(None)):
+    """Cambia la sección «cdaq» de config.json (ver cdaq.config_por_defecto)."""
+    return ejecutar(lambda: daq.configurar(p, autor_de(x_autor)))
+
+
+@app.get("/api/cdaq/historia")
+def cdaq_historia(desde: float = 0.0):
+    """{simulado, aviso, canales: [{id, nombre, unidad, color, limite, modulo}], datos: {id: [[t, v]...]}}; v null = termopar abierto."""
+    return daq.historia_desde(desde)
+
+
+@app.post("/api/cdaq/registro/iniciar")
+def cdaq_registro_iniciar(p: dict = Body(...), x_autor: str = Header(None)):
+    r"""<proyecto>\registros\<carpeta>\AAAAMMDD_HHMM_nombre\cdaq.csv (cdaq_SIMULADO.csv si es simulado) y registro.json.
+    {proyecto, carpeta, nombre, notas, pre_s}"""
+    def hacer():
+        if daq.grab:
+            raise RuntimeError("Ya se está grabando el cDAQ")
+        almacen._limpio(p["nombre"])
+        ruta, _, rel = almacen.destino(p.get("proyecto", ""), "registros", p.get("carpeta", ""), p["nombre"],
+                                       carpeta_propia=True)
+        pre = float(p.get("pre_s") or 0)
+        with open(os.path.join(ruta, "registro.json"), "w", encoding="utf-8") as f:
+            json.dump({"inicio": time.strftime("%Y-%m-%dT%H:%M:%S"), "nombre": p["nombre"], "notas": p.get("notas", ""),
+                       "proyecto": p.get("proyecto", ""), "carpeta": p.get("carpeta", ""), "ruta": rel,
+                       "tipo": "cdaq", "pre_registro_s": pre, "cdaq": daq.ficha()}, f, ensure_ascii=False, indent=1)
+        daq.iniciar_registro(os.path.join(ruta, "cdaq_SIMULADO.csv" if daq.simulado else "cdaq.csv"),
+                             autor_de(x_autor), pre, {"notas": p.get("notas", ""), "registro": rel})
+        REG_CDAQ["ruta"] = rel
+        return {"ruta": rel, "simulado": daq.simulado}
+    return ejecutar(hacer)
+
+
+@app.post("/api/cdaq/registro/parar")
+def cdaq_registro_parar(x_autor: str = Header(None)):
+    def hacer():
+        if not REG_CDAQ["ruta"]:
+            raise RuntimeError("No hay ninguna grabación del cDAQ en marcha")
+        rel, REG_CDAQ["ruta"] = REG_CDAQ["ruta"], None
+        daq.parar_registro(autor_de(x_autor), "parado")
+        return {"ruta": rel}
+    return ejecutar(hacer)
+
+
 _cerrado = threading.Event()
 
 
@@ -614,6 +679,10 @@ def al_cerrar():
         reg.anotar("panel (cierre)", "ensayo", "error al cerrar", str(e))
     try:
         tc.cerrar()                              # el TC-08 queda libre (si no, el proceso no terminaba)
+    except Exception:
+        pass
+    try:
+        daq.cerrar()                             # cierra las tareas DAQmx: los módulos del cDAQ quedan libres
     except Exception:
         pass
     try:

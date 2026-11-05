@@ -80,5 +80,249 @@
         "limite_C": null
       }
     }
+  },
+  "cdaq": {
+    "habilitado": false,
+    "simulado": false,
+    "en_uso": false,
+    "chasis": "",
+    "periodo_s": 1.0,
+    "reintento_s": 10.0,
+    "TODO_CONFIRMAR": [
+      "periodo_s: frecuencia de registro deseada",
+      "termopares.canales.*.tipo: tipo de termopar de cada canal (K por defecto)",
+      "termopares.canales.*.activo/nombre/min_C/max_C/limite_C: qué canales se usan y para qué",
+      "tensiones.canales.*.mide: qué mide cada canal del 9201 (y su unidad, ganancia y desplazamiento)"
+    ],
+    "termopares": {
+      "modulo": "",
+      "modo_adc": "alta_resolucion",
+      "autozero": "cada_muestra",
+      "cjc": "interna",
+      "cjc_valor_C": 25.0,
+      "canales": {
+        "0": {
+          "activo": true,
+          "nombre": "T0",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "1": {
+          "activo": false,
+          "nombre": "T1",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "2": {
+          "activo": false,
+          "nombre": "T2",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "3": {
+          "activo": false,
+          "nombre": "T3",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "4": {
+          "activo": false,
+          "nombre": "T4",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "5": {
+          "activo": false,
+          "nombre": "T5",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "6": {
+          "activo": false,
+          "nombre": "T6",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "7": {
+          "activo": false,
+          "nombre": "T7",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "8": {
+          "activo": false,
+          "nombre": "T8",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "9": {
+          "activo": false,
+          "nombre": "T9",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "10": {
+          "activo": false,
+          "nombre": "T10",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "11": {
+          "activo": false,
+          "nombre": "T11",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "12": {
+          "activo": false,
+          "nombre": "T12",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "13": {
+          "activo": false,
+          "nombre": "T13",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "14": {
+          "activo": false,
+          "nombre": "T14",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        },
+        "15": {
+          "activo": false,
+          "nombre": "T15",
+          "tipo": "K",
+          "min_C": -20.0,
+          "max_C": 400.0,
+          "limite_C": null
+        }
+      }
+    },
+    "tensiones": {
+      "modulo": "",
+      "canales": {
+        "0": {
+          "activo": true,
+          "nombre": "V0",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "1": {
+          "activo": false,
+          "nombre": "V1",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "2": {
+          "activo": false,
+          "nombre": "V2",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "3": {
+          "activo": false,
+          "nombre": "V3",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "4": {
+          "activo": false,
+          "nombre": "V4",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "5": {
+          "activo": false,
+          "nombre": "V5",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "6": {
+          "activo": false,
+          "nombre": "V6",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        },
+        "7": {
+          "activo": false,
+          "nombre": "V7",
+          "mide": "TODO_CONFIRMAR",
+          "unidad": "V",
+          "min_V": -10.0,
+          "max_V": 10.0,
+          "ganancia": 1.0,
+          "desplazamiento": 0.0,
+          "limite": null
+        }
+      }
+    }
   }
 }
