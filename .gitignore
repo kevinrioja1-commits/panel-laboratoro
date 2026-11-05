@@ -10,3 +10,6 @@ config_local*
 *.antes_*
 _descartado_*/
 pruebas/informes/
+
+# Descubrimiento del cDAQ (herramientas/cdaq_descubrir.py): lleva numeros de serie
+docs/cdaq_descubrimiento_*
