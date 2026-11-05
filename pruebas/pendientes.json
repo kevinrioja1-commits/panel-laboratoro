@@ -152,6 +152,46 @@
       "instrucciones": "En MATLAB: cd('C:\\Proyectos\\Osciloscopio\\Visor_osciloscopio'); osc  → en el árbol debe salir «Tramos» con los tramos guardados (p. ej. el de la prueba osc_muestreos_vista_tramo).",
       "estado": "pendiente",
       "historial": []
+    },
+    {
+      "id": "regresion_cdaq_sin_hardware",
+      "tipo": "regresion",
+      "titulo": "cDAQ sin chasis: cdaq.py y cdaq_descubrir.py con nidaqmx sustituido, modo simulado y driver real sin dispositivos (95 comprobaciones)",
+      "desde": "2026-11-05",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "prueba_cdaq_sin_hardware.py"
+      ],
+      "estado": "siempre",
+      "historial": []
+    },
+    {
+      "id": "regresion_cdaq_servidor",
+      "tipo": "regresion",
+      "titulo": "Servidor con el cDAQ sin equipos: arranca igual que main con el cDAQ desactivado, «no_disponible» sin chasis y registro simulado (27 comprobaciones)",
+      "desde": "2026-11-05",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "prueba_cdaq_servidor.py"
+      ],
+      "estado": "siempre",
+      "historial": []
+    },
+    {
+      "id": "manual_cdaq_laboratorio",
+      "tipo": "manual",
+      "titulo": "cDAQ-9178 (NI 9213 + NI 9201) con el chasis conectado: fase 2B (NO PROBADO CON HARDWARE hasta entonces)",
+      "desde": "2026-11-05",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Con el cDAQ-9178 conectado por USB a este PC y el VI de LabVIEW del compañero CERRADO: seguir docs/PLAN_PRUEBAS_LABORATORIO.md en orden y avisarme en cada paso marcado.",
+      "estado": "pendiente",
+      "historial": []
     }
   ]
 }
