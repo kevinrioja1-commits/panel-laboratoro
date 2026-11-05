@@ -1,0 +1,10 @@
+# Dependencias del panel de laboratorio (Python 3.12, sin venv: lo que ejecuta arrancar_panel.bat)
+# Versiones instaladas el 2026-11-05.
+fastapi==0.162.0
+uvicorn==0.54.0
+PyVISA==1.16.2
+pyserial==3.5
+h5py==3.16.0
+numpy==2.5.3
+# cDAQ-9178 (NI 9213 + NI 9201). Requiere el driver NI-DAQmx instalado en el PC (26.8.0).
+nidaqmx==1.7.0
