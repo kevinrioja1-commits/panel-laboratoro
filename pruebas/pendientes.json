@@ -1,0 +1,157 @@
+{
+  "LEEME": "Registro de pruebas pendientes de validar con los equipos. Lo lee lanzar_pendientes.py. Norma (2026-11-04): todo cambio que solo se haya podido probar sin equipos deja aquí su prueba automática antes de darlo por terminado. 'necesita' = sin ese equipo la prueba no se lanza; 'aprovecha' = se lanza igual, pero las partes de ese equipo salen OMITIDAS y la prueba no queda validada del todo. 'enciende_salida' = solo con --con-salida (confirmación expresa del usuario). 'tipo': automatica | manual (necesita la mano del usuario: se explica qué hacer) | regresion (sin equipos: se lanza siempre para comprobar que no se ha roto nada). 'estado': pendiente | validada | validada_parcial.",
+  "pruebas": [
+    {
+      "id": "regresion_seguridad_simulada",
+      "tipo": "regresion",
+      "titulo": "Seguridad de la salida con la fuente simulada (34 comprobaciones)",
+      "desde": "2026-11-04",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "prueba_seguridad_simulada.py"
+      ],
+      "estado": "siempre",
+      "historial": []
+    },
+    {
+      "id": "como_antes_panel_equipos",
+      "tipo": "automatica",
+      "titulo": "Como antes, con equipos: capturas (completa, registro completo, solo imagen, sin ficha), datalogger de 12 s, lectura y topes de la fuente (validar_panel.py del 2-nov, 43 OK entonces), SIN encender",
+      "cambio": "Que el rediseño v4, los colores y lo del 4-nov no hayan roto lo validado el 2-nov.",
+      "desde": "2026-11-04",
+      "necesita": [
+        "osc",
+        "fuente"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "validar_panel.py"
+      ],
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "como_antes_panel_salida",
+      "tipo": "automatica",
+      "titulo": "Como antes, con la salida: CC 1 A y CV 3 V sobre 1 Ω, foto de la fuente en la ficha, datalogger con escalón (validar_panel.py --salida)",
+      "cambio": "Lo mismo que como_antes_panel_equipos con la salida encendida.",
+      "desde": "2026-11-04",
+      "necesita": [
+        "osc",
+        "fuente"
+      ],
+      "aprovecha": [],
+      "enciende_salida": true,
+      "montaje": "C1 del osciloscopio y la salida de la fuente sobre la resistencia de 1 Ω (C1 a 0,5 V/div, offset 0).",
+      "comando": [
+        "validar_panel.py",
+        "--salida"
+      ],
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "rediseno_v4",
+      "tipo": "automatica",
+      "titulo": "Rediseño v4 (fases A-E), colores, aspecto B y lectura del ratón, con los equipos reales",
+      "cambio": "4-nov: equipos en uso, zona principal, sacar/traer la gráfica, termopares, fichas del osciloscopio, Encender/APAGAR en la cabecera, barra de estado, Guardar con 4 modos, ensayo en 3 pasos, espacios de trabajo, Solo mirar, colores, aspecto B, lectura del ratón con temperaturas. Validado con el banco sin equipos el 4-nov (149 OK). También: Esc en Solo mirar tras tocar la gráfica y cabecera en una línea con los estados de los equipos (arreglados 4-nov 16:45).",
+      "desde": "2026-11-04",
+      "necesita": [
+        "osc",
+        "fuente"
+      ],
+      "aprovecha": [
+        "temp"
+      ],
+      "enciende_salida": false,
+      "comando": [
+        "validar_rediseno.py"
+      ],
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "osc_muestreos_vista_tramo",
+      "tipo": "automatica",
+      "titulo": "Osciloscopio: muestreos bajos (50→1 kSa/s) y mínimo real del Roll, vista en vivo + ✂ Tramo pendiente + puntos reales, configuración igual al final",
+      "cambio": "4-nov: muestreos bajos del registro, vista en vivo sin registro, ✂ Tramo, puntos reales (detalle_osc.py).",
+      "desde": "2026-11-04",
+      "necesita": [
+        "osc"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "pendientes_laboratorio.py",
+        "--solo",
+        "osc"
+      ],
+      "despues": "Dejar en el desplegable de muestreos solo los que el MXO respeta (resultado A1).",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "seguridad_fuente_real",
+      "tipo": "automatica",
+      "titulo": "Seguridad de la salida con la fuente real sobre 1 Ω: APAGAR y «local» durante un plan, desconectar con ON, encender al iniciar (≤ 3 V / 0,6 A)",
+      "cambio": "4-nov: arreglos de la revisión externa ALTA 1-4.",
+      "desde": "2026-11-04",
+      "necesita": [
+        "fuente"
+      ],
+      "aprovecha": [],
+      "enciende_salida": true,
+      "montaje": "Salida de la fuente sobre la resistencia de 1 Ω.",
+      "comando": [
+        "validar_seguridad.py",
+        "--proyecto",
+        "PR00737-ECOCOOK"
+      ],
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_reinicio_mxo",
+      "tipo": "manual",
+      "titulo": "Reconexión tras reiniciar el MXO de verdad (puerto 4880, IP dinámica)",
+      "desde": "2026-11-03",
+      "necesita": [
+        "osc"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Con el panel abierto, apaga y enciende el osciloscopio. NO toques el panel mientras arranca. Cuando la píldora vuelva a «Osciloscopio · listo» (sin recargar la página), dímelo y compruebo el historial y la IP.",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_senal_recortada_vivo",
+      "tipo": "manual",
+      "titulo": "Registro con señal recortada en vivo (aviso «recortada» en En vivo y en la lectura del ratón)",
+      "desde": "2026-11-02",
+      "necesita": [
+        "osc"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Pon un canal con escala pequeña para que la señal se salga de pantalla y lanza un registro corto desde el panel; mira En vivo.",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_tramos_matlab",
+      "tipo": "manual",
+      "titulo": "osc.m: grupo «Tramos» en el árbol (no puedo ejecutar MATLAB)",
+      "desde": "2026-11-04",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "En MATLAB: cd('C:\\Proyectos\\Osciloscopio\\Visor_osciloscopio'); osc  → en el árbol debe salir «Tramos» con los tramos guardados (p. ej. el de la prueba osc_muestreos_vista_tramo).",
+      "estado": "pendiente",
+      "historial": []
+    }
+  ]
+}

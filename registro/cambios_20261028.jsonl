@@ -1,0 +1,285 @@
+{"hora": "2026-10-28T13:37:59.788", "autor": "claude", "equipo": "osciloscopio", "accion": "aplicar", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T13:38:00.306", "autor": "claude", "equipo": "osciloscopio", "accion": "aplicar", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.25"}}
+{"hora": "2026-10-28T13:38:13.325", "autor": "usuario", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-28T13:38:13.536", "autor": "claude", "equipo": "fuente", "accion": "fijar V limite", "detalle": {"enviado": "SOUR:VOLT 90.000", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-28T13:38:13.545", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 50.0", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.0, "P_W": 50.0, "salida": false}}}
+{"hora": "2026-10-28T13:38:13.545", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.5000", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.5, "P_W": 50.0, "salida": false}}}
+{"hora": "2026-10-28T13:38:13.642", "autor": "usuario", "equipo": "fuente", "accion": "salida ON", "detalle": {"enviado": "OUTP ON", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.5, "P_W": 50.0, "salida": true}}}
+{"hora": "2026-10-28T13:38:15.848", "autor": "usuario", "equipo": "fuente", "accion": "salida OFF", "detalle": {"enviado": "OUTP OFF", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.5, "P_W": 50.0, "salida": false}}}
+{"hora": "2026-10-28T13:38:31.377", "autor": "usuario", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": true, "limites": {"imax_A": 1.0, "vmax_V": 100.0, "pmax_W": 100.0}}}
+{"hora": "2026-10-28T13:38:31.411", "autor": "usuario", "equipo": "fuente", "accion": "salida ON", "detalle": {"enviado": "OUTP ON", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.5, "P_W": 50.0, "salida": true}}}
+{"hora": "2026-10-28T13:38:31.453", "autor": "panel (automatico)", "equipo": "fuente", "accion": "salida OFF", "detalle": "opcion apagar si corte: cierre del panel"}
+{"hora": "2026-10-28T13:38:31.453", "autor": "usuario", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-28T13:38:31.572", "autor": "usuario", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": false, "limites": {"imax_A": 1.0, "vmax_V": 100.0, "pmax_W": 100.0}}}
+{"hora": "2026-10-28T13:38:31.681", "autor": "claude", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T13:38:31.775", "autor": "claude", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T13:38:41.280", "autor": "claude", "equipo": "osciloscopio", "accion": "datalogger iniciado", "detalle": {"canales": [1], "sr": 1000000.0, "duracion": 20.0, "proyecto": "PR00702-SUNWELD"}}
+{"hora": "2026-10-28T13:42:09.673", "autor": "claude", "equipo": "osciloscopio", "accion": "datalogger terminado", "detalle": {"codigo": 4294967295, "fichero": null, "ultima_linea": "Llenando la ventana de 1.0 s..."}}
+{"hora": "2026-10-28T13:44:29.034", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados antes de aplicar: NO se aplica nada", "detalle": {"horizontal.posicion_s": [0.0, 0.01]}}
+{"hora": "2026-10-28T13:44:29.960", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.posicion_s": [0.01, 0.0]}}
+{"hora": "2026-10-28T13:48:26.506", "autor": "usuario", "equipo": "osciloscopio", "accion": "aplicar", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 1250000000", "errores_equipo": "-222,\"Data out of range;:ACQuire:POINts 1250000000\""}}
+{"hora": "2026-10-28T13:48:29.777", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T13:49:09.775", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T13:49:11.394", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T13:49:47.516", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T13:49:50.199", "autor": "usuario", "equipo": "osciloscopio", "accion": "aplicar", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 40000000"}}
+{"hora": "2026-10-28T13:53:56.142", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T14:04:55.401", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:04:55.581", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.escala_s_div": [0.25, 7.51318163e-05], "horizontal.posicion_s": [0.0, 6.597499999999999e-05], "disparo.nivel_V": [3.0969, 2.38499], "disparo.pendiente": ["POS", "EITH"], "canales.1.escala_V_div": [0.8325009999999999, 0.62547], "canales.1.offset_V": [0.0, -0.6172664999999999]}}
+{"hora": "2026-10-28T14:04:58.110", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T14:08:50.221", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:08:50.305", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.escala_s_div": [7.51318163e-05, 5.644772780000001e-05], "horizontal.posicion_s": [6.597499999999999e-05, 0.0001425], "disparo.nivel_V": [2.38499, 2.15552], "canales.1.escala_V_div": [0.62547, 0.46993], "canales.1.offset_V": [-0.6172664999999999, -0.100151]}}
+{"hora": "2026-10-28T14:11:48.484", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.4.escala_V_div": "CHANnel4:SCALe 5"}}
+{"hora": "2026-10-28T14:11:48.616", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambio a mano detectado: NO se aplica", "detalle": {"canales.4.escala_V_div": [2.5, 5.0]}}
+{"hora": "2026-10-28T14:11:48.866", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.4.escala_V_div": "CHANnel4:SCALe 2.5"}}
+{"hora": "2026-10-28T14:16:51.769", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.00014814477"}}
+{"hora": "2026-10-28T14:16:53.264", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.00015379477"}}
+{"hora": "2026-10-28T14:16:54.014", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.00015944477"}}
+{"hora": "2026-10-28T14:16:54.428", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.00016509477"}}
+{"hora": "2026-10-28T14:16:56.771", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T14:17:48.579", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.pendiente": "TRIGger:EVENt1:EDGE:SLOPe POS"}}
+{"hora": "2026-10-28T14:17:52.035", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T14:17:57.195", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:17:59.409", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T14:18:07.514", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:18:28.834", "autor": "usuario", "equipo": "osciloscopio", "accion": "run", "detalle": null}
+{"hora": "2026-10-28T14:18:32.401", "autor": "usuario", "equipo": "osciloscopio", "accion": "stop", "detalle": null}
+{"hora": "2026-10-28T14:18:35.031", "autor": "usuario", "equipo": "osciloscopio", "accion": "run", "detalle": null}
+{"hora": "2026-10-28T14:18:38.773", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 5e-05"}}
+{"hora": "2026-10-28T14:18:40.083", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 2e-05"}}
+{"hora": "2026-10-28T14:18:41.500", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 1e-05"}}
+{"hora": "2026-10-28T14:18:45.227", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 2e-05"}}
+{"hora": "2026-10-28T14:18:49.700", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.202507"}}
+{"hora": "2026-10-28T14:18:50.742", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.155517"}}
+{"hora": "2026-10-28T14:18:51.693", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.108527"}}
+{"hora": "2026-10-28T14:18:53.356", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.061537"}}
+{"hora": "2026-10-28T14:18:55.245", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.108533"}}
+{"hora": "2026-10-28T14:18:55.509", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.155523"}}
+{"hora": "2026-10-28T14:18:55.767", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.202513"}}
+{"hora": "2026-10-28T14:18:56.013", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.249503"}}
+{"hora": "2026-10-28T14:18:56.200", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:18:56.335", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:18:56.474", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:18:56.615", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:18:56.771", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:18:56.987", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.nivel_V": "TRIGger:EVENt1:LEVel1:VALue 2.296493", "errores_equipo": "-222,\"Data out of range;TRIGger:EVENt1:LEVel1:VALue 2.296493\""}}
+{"hora": "2026-10-28T14:22:57.581", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.2"}}
+{"hora": "2026-10-28T14:22:58.182", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.1"}}
+{"hora": "2026-10-28T14:22:59.965", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.2"}}
+{"hora": "2026-10-28T14:23:00.401", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.5"}}
+{"hora": "2026-10-28T14:23:00.894", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 1"}}
+{"hora": "2026-10-28T14:23:02.117", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 2"}}
+{"hora": "2026-10-28T14:23:05.919", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 5e-05"}}
+{"hora": "2026-10-28T14:23:06.485", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.0001"}}
+{"hora": "2026-10-28T14:23:07.021", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.0002"}}
+{"hora": "2026-10-28T14:23:07.454", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.0005"}}
+{"hora": "2026-10-28T14:23:08.033", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.001"}}
+{"hora": "2026-10-28T14:26:47.298", "autor": "usuario", "equipo": "osciloscopio", "accion": "forzar manual", "detalle": "conexion remota cerrada; panel del equipo libre"}
+{"hora": "2026-10-28T14:26:55.208", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:27:48.440", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet -0.300151"}}
+{"hora": "2026-10-28T14:33:31.389", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 5"}}
+{"hora": "2026-10-28T14:33:33.326", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 2"}}
+{"hora": "2026-10-28T14:33:33.790", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 1"}}
+{"hora": "2026-10-28T14:33:34.437", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.5"}}
+{"hora": "2026-10-28T14:33:35.054", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.2"}}
+{"hora": "2026-10-28T14:33:35.956", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.1"}}
+{"hora": "2026-10-28T14:33:37.881", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.2"}}
+{"hora": "2026-10-28T14:33:51.621", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"disparo.nivel_V": [0.69986, 1.69985], "canales.1.escala_V_div": [0.2, 0.4]}}
+{"hora": "2026-10-28T14:33:52.693", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambio a mano detectado: NO se aplica", "detalle": {"canales.1.escala_V_div": [0.2, 0.4]}}
+{"hora": "2026-10-28T14:34:09.188", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.5"}}
+{"hora": "2026-10-28T14:34:39.628", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"canales.4.escala_V_div": [2.5, 5.0]}}
+{"hora": "2026-10-28T14:34:39.628", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 2"}}
+{"hora": "2026-10-28T14:34:45.360", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"canales.3.escala_V_div": [2.0, 1.0], "canales.4.escala_V_div": [5.0, 2.5]}}
+{"hora": "2026-10-28T14:35:14.104", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.002"}}
+{"hora": "2026-10-28T14:35:21.702", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.2"}}
+{"hora": "2026-10-28T14:35:23.904", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 0.5"}}
+{"hora": "2026-10-28T14:35:25.565", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 1"}}
+{"hora": "2026-10-28T14:35:32.128", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.005"}}
+{"hora": "2026-10-28T14:35:33.648", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.01"}}
+{"hora": "2026-10-28T14:35:34.716", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.02"}}
+{"hora": "2026-10-28T14:35:35.765", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.05"}}
+{"hora": "2026-10-28T14:35:36.922", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T14:35:38.194", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T14:35:59.697", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronizacion pausada", "detalle": null}
+{"hora": "2026-10-28T14:36:02.885", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronizacion activada", "detalle": null}
+{"hora": "2026-10-28T14:36:12.017", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T14:36:17.052", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T14:36:22.548", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T14:37:23.272", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T14:37:36.518", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.posicion_s": [0.0, -0.01875015]}}
+{"hora": "2026-10-28T14:39:41.536", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envian nada al osciloscopio hasta 'Retomar'"}
+{"hora": "2026-10-28T14:41:28.772", "autor": "claude", "equipo": "osciloscopio", "accion": "sincronizacion pausada", "detalle": null}
+{"hora": "2026-10-28T14:42:29.543", "autor": "claude", "equipo": "osciloscopio", "accion": "sincronizacion activada", "detalle": null}
+{"hora": "2026-10-28T14:42:58.866", "autor": "claude", "equipo": "osciloscopio", "accion": "sincronizacion pausada", "detalle": null}
+{"hora": "2026-10-28T14:44:43.875", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:44:45.833", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"disparo.nivel_V": [2.2495, 2.25], "canales.1.escala_V_div": [1.0, 50.0]}}
+{"hora": "2026-10-28T14:44:45.833", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.referencia_pct": "TIMebase:REFerence 5"}}
+{"hora": "2026-10-28T14:44:46.116", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.referencia_pct": "TIMebase:REFerence 0"}}
+{"hora": "2026-10-28T14:44:48.455", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envian nada al osciloscopio hasta 'Retomar'"}
+{"hora": "2026-10-28T14:45:14.331", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:45:17.018", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"canales.1.escala_V_div": [50.0, 84.0]}}
+{"hora": "2026-10-28T14:45:17.018", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 50"}}
+{"hora": "2026-10-28T14:45:18.559", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 20"}}
+{"hora": "2026-10-28T14:45:19.941", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 10"}}
+{"hora": "2026-10-28T14:45:20.471", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 5"}}
+{"hora": "2026-10-28T14:45:22.193", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 2"}}
+{"hora": "2026-10-28T14:45:24.212", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 1"}}
+{"hora": "2026-10-28T14:45:30.528", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T14:45:39.452", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T14:45:58.369", "autor": "usuario", "equipo": "osciloscopio", "accion": "run", "detalle": null}
+{"hora": "2026-10-28T14:49:17.431", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.escala_V_div": "CHANnel1:SCALe 2"}}
+{"hora": "2026-10-28T14:50:00.551", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"disparo.nivel_V": [2.2495, 2.25], "canales.1.escala_V_div": [2.0, 100.0]}}
+{"hora": "2026-10-28T14:50:26.384", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envian nada al osciloscopio hasta 'Retomar'"}
+{"hora": "2026-10-28T14:50:30.416", "autor": "usuario", "equipo": "osciloscopio", "accion": "retomar control", "detalle": null}
+{"hora": "2026-10-28T14:50:34.650", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.05"}}
+{"hora": "2026-10-28T14:51:38.173", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.1"}}
+{"hora": "2026-10-28T14:51:53.382", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -5.5"}}
+{"hora": "2026-10-28T14:52:01.029", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.5"}}
+{"hora": "2026-10-28T14:52:02.589", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.45"}}
+{"hora": "2026-10-28T14:52:14.273", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T14:53:39.157", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T14:56:02.076", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T14:56:03.866", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T14:56:46.555", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronizacion pausada", "detalle": null}
+{"hora": "2026-10-28T14:56:50.713", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronizacion activada", "detalle": null}
+{"hora": "2026-10-28T14:56:52.357", "autor": "claude", "equipo": "osciloscopio", "accion": "sincronizacion pausada", "detalle": null}
+{"hora": "2026-10-28T14:56:55.017", "autor": "claude", "equipo": "osciloscopio", "accion": "sincronizacion activada", "detalle": null}
+{"hora": "2026-10-28T15:01:30.044", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T15:01:38.277", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 1"}}
+{"hora": "2026-10-28T15:02:02.164", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 5000000"}}
+{"hora": "2026-10-28T15:02:05.191", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 10000000"}}
+{"hora": "2026-10-28T15:06:24.935", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet -10.300151"}}
+{"hora": "2026-10-28T15:06:25.163", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet -20.300151"}}
+{"hora": "2026-10-28T15:06:59.700", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.1"}}
+{"hora": "2026-10-28T15:07:02.099", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.2"}}
+{"hora": "2026-10-28T15:07:38.331", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T15:07:41.393", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE MAN"}}
+{"hora": "2026-10-28T15:07:41.476", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE MAN"}}
+{"hora": "2026-10-28T15:07:44.042", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.3"}}
+{"hora": "2026-10-28T15:07:45.497", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0.4"}}
+{"hora": "2026-10-28T15:07:55.432", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 2"}}
+{"hora": "2026-10-28T15:08:07.152", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T15:08:37.799", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 20000000"}}
+{"hora": "2026-10-28T15:09:19.215", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.2"}}
+{"hora": "2026-10-28T15:09:45.546", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T15:09:46.280", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T15:09:48.177", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 1"}}
+{"hora": "2026-10-28T15:09:48.997", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T15:09:51.441", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T15:10:06.759", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T15:10:32.187", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 2500000"}}
+{"hora": "2026-10-28T15:10:34.467", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 2000000"}}
+{"hora": "2026-10-28T15:10:39.240", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 1000000"}}
+{"hora": "2026-10-28T15:10:49.684", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 2000000"}}
+{"hora": "2026-10-28T15:10:55.219", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T15:11:14.880", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE MAN"}}
+{"hora": "2026-10-28T15:11:14.956", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE MAN"}}
+{"hora": "2026-10-28T15:11:20.672", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 20000000"}}
+{"hora": "2026-10-28T15:15:37.966", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.02"}}
+{"hora": "2026-10-28T15:15:42.556", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T15:15:42.974", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T15:16:18.775", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.modo": "TRIGger:MODE AUTO"}}
+{"hora": "2026-10-28T15:17:48.189", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.pendiente": "TRIGger:EVENt1:EDGE:SLOPe EITH"}}
+{"hora": "2026-10-28T15:17:48.593", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.pendiente": "TRIGger:EVENt1:EDGE:SLOPe EITH"}}
+{"hora": "2026-10-28T15:17:50.894", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"disparo.pendiente": "TRIGger:EVENt1:EDGE:SLOPe POS"}}
+{"hora": "2026-10-28T15:18:29.094", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"disparo.nivel_V": [2.25, -0.3002], "canales.1.escala_V_div": [100.0, 4.0]}}
+{"hora": "2026-10-28T15:18:30.495", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 0"}}
+{"hora": "2026-10-28T15:20:30.493", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 0.4"}}
+{"hora": "2026-10-28T15:20:30.726", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 0.8"}}
+{"hora": "2026-10-28T15:20:30.918", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 1.2"}}
+{"hora": "2026-10-28T15:20:31.102", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 1.6"}}
+{"hora": "2026-10-28T15:20:31.372", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 2"}}
+{"hora": "2026-10-28T15:20:34.152", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.1.offset_V": "CHANnel1:OFFSet 0"}}
+{"hora": "2026-10-28T15:24:05.445", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 2"}}
+{"hora": "2026-10-28T15:24:05.673", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 5"}}
+{"hora": "2026-10-28T15:24:06.045", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 10"}}
+{"hora": "2026-10-28T15:24:06.108", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 20", "errores_equipo": "-222,\"Data out of range;CHANnel3:SCALe 20\""}}
+{"hora": "2026-10-28T15:24:06.171", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 20", "errores_equipo": "-222,\"Data out of range;CHANnel3:SCALe 20\""}}
+{"hora": "2026-10-28T15:24:06.541", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 20", "errores_equipo": "-222,\"Data out of range;CHANnel3:SCALe 20\""}}
+{"hora": "2026-10-28T15:24:06.621", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 20", "errores_equipo": "-222,\"Data out of range;CHANnel3:SCALe 20\""}}
+{"hora": "2026-10-28T15:24:06.664", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 20", "errores_equipo": "-222,\"Data out of range;CHANnel3:SCALe 20\""}}
+{"hora": "2026-10-28T15:24:06.901", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"canales.3.escala_V_div": "CHANnel3:SCALe 5"}}
+{"hora": "2026-10-28T15:28:06.538", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-28T15:28:06.610", "autor": "claude", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": false, "limites": {"imax_A": 0.8, "vmax_V": 100.0, "pmax_W": 100.0}}}
+{"hora": "2026-10-28T15:28:06.649", "autor": "claude", "equipo": "fuente", "accion": "fijar V límite", "detalle": {"enviado": "SOUR:VOLT 90.000", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-28T15:28:06.650", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 50.0", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.0, "P_W": 50.0, "salida": false}}}
+{"hora": "2026-10-28T15:28:06.651", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.5000", "fuente_confirma": {"V_lim_V": 90.0, "I_A": 0.5, "P_W": 50.0, "salida": false}}}
+{"hora": "2026-10-28T15:28:06.684", "autor": "claude", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": false, "limites": {"imax_A": 0.3, "vmax_V": 100.0, "pmax_W": 100.0}}}
+{"hora": "2026-10-28T15:28:06.796", "autor": "claude", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": false, "limites": {"imax_A": 1.0, "vmax_V": 100.0, "pmax_W": 100.0}}}
+{"hora": "2026-10-28T15:28:06.840", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-28T15:35:25.696", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 20000000"}}
+{"hora": "2026-10-28T15:35:36.242", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T15:37:56.212", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE MAN"}}
+{"hora": "2026-10-28T15:37:56.268", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE MAN"}}
+{"hora": "2026-10-28T15:38:02.114", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T15:38:02.757", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 1"}}
+{"hora": "2026-10-28T15:38:14.414", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T15:39:03.449", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronización activada", "detalle": null}
+{"hora": "2026-10-28T15:39:17.439", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronización pausada", "detalle": null}
+{"hora": "2026-10-28T15:39:40.550", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T15:39:42.806", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T15:42:31.421", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T15:42:57.449", "autor": "claude", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T15:46:20.340", "autor": "claude", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T15:46:20.482", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.posicion_s": [-0.02, -1.4999376]}}
+{"hora": "2026-10-28T15:49:33.528", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T15:50:36.605", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.posicion_s": [-1.4999376, 0.0]}}
+{"hora": "2026-10-28T15:50:36.605", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambio a mano detectado: NO se aplica", "detalle": {"horizontal.posicion_s": [-1.4999376, 0.0]}}
+{"hora": "2026-10-28T15:50:44.179", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronización activada", "detalle": null}
+{"hora": "2026-10-28T15:53:35.859", "autor": "claude", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T15:54:37.796", "autor": "claude", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T15:54:37.864", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.escala_s_div": [0.5, 0.0001], "horizontal.referencia_pct": [0.0, 10.0], "horizontal.muestreo_Sa_s": [5000000.0, 10000000.0], "horizontal.puntos": [10000000.0, 100000.0], "horizontal.roll": ["AUTO", "OFF"], "horizontal.ambito_exportacion": ["DISP", "ALL"]}}
+{"hora": "2026-10-28T15:54:50.381", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.escala_s_div": [0.0001, 0.5], "horizontal.referencia_pct": [10.0, 0.0], "horizontal.muestreo_Sa_s": [10000000.0, 5000000.0], "horizontal.puntos": [100000.0, 10000000.0], "horizontal.roll": ["OFF", "AUTO"], "horizontal.ambito_exportacion": ["ALL", "DISP"]}}
+{"hora": "2026-10-28T15:55:09.040", "autor": "claude", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T15:57:07.175", "autor": "claude", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T16:00:27.084", "autor": "claude", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T16:02:57.153", "autor": "claude", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T16:08:37.243", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 1"}}
+{"hora": "2026-10-28T16:08:47.901", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T16:08:49.830", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T16:09:01.668", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T16:09:05.079", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.05"}}
+{"hora": "2026-10-28T16:09:20.151", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T16:09:21.587", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T16:09:25.160", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T16:15:31.979", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T16:15:41.499", "autor": "usuario", "equipo": "osciloscopio", "accion": "sincronización activada", "detalle": null}
+{"hora": "2026-10-28T16:15:49.080", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T16:15:52.615", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T16:15:52.680", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T16:15:54.864", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE MAN"}}
+{"hora": "2026-10-28T16:15:54.931", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE MAN"}}
+{"hora": "2026-10-28T16:15:57.795", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T16:16:11.908", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 20000000"}}
+{"hora": "2026-10-28T16:16:15.226", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 10000000"}}
+{"hora": "2026-10-28T16:16:15.519", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 5000000"}}
+{"hora": "2026-10-28T16:16:36.209", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.5"}}
+{"hora": "2026-10-28T16:16:45.725", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.2"}}
+{"hora": "2026-10-28T16:16:46.369", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.1"}}
+{"hora": "2026-10-28T16:17:13.180", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.01"}}
+{"hora": "2026-10-28T16:17:14.812", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.02"}}
+{"hora": "2026-10-28T16:17:15.709", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.03"}}
+{"hora": "2026-10-28T16:17:18.135", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.02"}}
+{"hora": "2026-10-28T16:17:20.215", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition -0.01"}}
+{"hora": "2026-10-28T16:17:22.131", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.posicion_s": "TIMebase:HORizontal:POSition 0"}}
+{"hora": "2026-10-28T16:17:32.955", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T16:17:33.409", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T16:17:41.276", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 20000000"}}
+{"hora": "2026-10-28T16:17:46.113", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_modo": "ACQuire:SRATe:MODE AUTO"}}
+{"hora": "2026-10-28T16:17:50.340", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 20000000"}}
+{"hora": "2026-10-28T16:17:52.816", "autor": "usuario", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos_modo": "ACQuire:POINts:MODE AUTO"}}
+{"hora": "2026-10-28T16:20:33.982", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla encendido", "detalle": null}
+{"hora": "2026-10-28T16:20:34.018", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla", "detalle": {"por": "horizontal.muestreo_Sa_s", "sample_rate": 10000000.0, "record_length": 10000000.0, "span_s": 1.0, "errores": "0,\"No error\""}}
+{"hora": "2026-10-28T16:20:35.164", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.muestreo_Sa_s": "ACQuire:SRATe:MODE MAN;:ACQuire:SRATe 2000000.0"}}
+{"hora": "2026-10-28T16:20:35.448", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla", "detalle": {"por": "horizontal.muestreo_Sa_s", "sample_rate": 2000000.0, "record_length": 2000000.0, "span_s": 1.0, "errores": "0,\"No error\""}}
+{"hora": "2026-10-28T16:20:36.055", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.puntos": "ACQuire:POINts:MODE MAN;:ACQuire:POINts 5000000.0"}}
+{"hora": "2026-10-28T16:20:36.452", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla", "detalle": {"por": "horizontal.puntos", "sample_rate": 5000000.0, "record_length": 5000000.0, "span_s": 1.0, "errores": "0,\"No error\""}}
+{"hora": "2026-10-28T16:20:37.028", "autor": "claude", "equipo": "osciloscopio", "accion": "ajuste", "detalle": {"horizontal.escala_s_div": "TIMebase:SCALe 0.05"}}
+{"hora": "2026-10-28T16:20:37.317", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla", "detalle": {"por": "horizontal.escala_s_div", "sample_rate": 5000000.0, "record_length": 2500000.0, "span_s": 0.5, "errores": "0,\"No error\""}}
+{"hora": "2026-10-28T16:20:37.492", "autor": "claude", "equipo": "osciloscopio", "accion": "registro ajustado a la pantalla apagado", "detalle": null}
+{"hora": "2026-10-28T16:20:37.547", "autor": "claude", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-28T16:20:39.590", "autor": "claude", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-28T16:20:39.642", "autor": "equipo (a mano o externo)", "equipo": "osciloscopio", "accion": "cambios detectados al leer", "detalle": {"horizontal.escala_s_div": [0.05, 0.1], "horizontal.muestreo_Sa_s": [5000000.0, 10000000.0], "horizontal.muestreo_modo": ["MAN", "AUTO"], "horizontal.puntos": [2500000.0, 10000000.0], "horizontal.puntos_modo": ["MAN", "AUTO"]}}
+{"hora": "2026-10-28T16:25:28.011", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-28T16:25:28.011", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-28T16:25:28.018", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}

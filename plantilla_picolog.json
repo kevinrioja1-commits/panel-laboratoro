@@ -1,0 +1,275 @@
+{
+ "_nota": "metadata.json de un .picolog real de PicoLog 6.2.13 (TC-08), usada como plantilla por tc08.py para escribir temperaturas.picolog; los valores se sustituyen al guardar",
+ "metadata": {
+  "alarms": [],
+  "annotations": [],
+  "appVersion": "6.2.13",
+  "devices": {
+   "items": [
+    {
+     "__type": "TC08Device",
+     "coldJunction": {
+      "__type": "TC08ColdJunctionChannel",
+      "captureConfig": {
+       "interval": 1000,
+       "mode": "average"
+      },
+      "capturedSamples": 0,
+      "channelIdentifier": "cold-junction",
+      "channelType": "cold-junction",
+      "connectedPrivate": true,
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": false,
+      "id": "id210e0626-8278-4312-9666-b44913a821de"
+     },
+     "id": "iddda8c3a8-7fdb-4cf4-a440-36c6769398b4",
+     "order": 20,
+     "serialInternal": "A0067/685",
+     "thermocouple1": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch1",
+      "channelType": "thermocouple",
+      "color": "#0000FF",
+      "connectedPrivate": true,
+      "description": "Canal 1",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "id6c3d55b4-1b0b-40a9-994b-aeb0ca2aafcc",
+      "input": "thermo-k",
+      "max": 29.49856185913086,
+      "min": 29.49856185913086,
+      "order": 1333.4375,
+      "overRange": false,
+      "valuePrivate": 29.49856185913086
+     },
+     "thermocouple2": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch2",
+      "channelType": "thermocouple",
+      "color": "#FF0000",
+      "connectedPrivate": true,
+      "description": "Canal 2",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "id31d7432f-1066-4c5e-bc9f-eed79bc5800f",
+      "input": "thermo-k",
+      "max": 29.881210327148438,
+      "min": 29.881210327148438,
+      "order": 1433.4375,
+      "overRange": false,
+      "valuePrivate": 29.881210327148438
+     },
+     "thermocouple3": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch3",
+      "channelType": "thermocouple",
+      "color": "#228B22",
+      "connectedPrivate": true,
+      "description": "Canal 3",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "idf2551b45-880f-45b4-baa9-84c293fa8129",
+      "input": "thermo-k",
+      "max": 30.170194625854492,
+      "min": 30.170194625854492,
+      "order": 1533.4375,
+      "overRange": false,
+      "valuePrivate": 30.170194625854492
+     },
+     "thermocouple4": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 1000,
+       "mode": "average"
+      },
+      "capturedSamples": 0,
+      "channelIdentifier": "ch4",
+      "channelType": "thermocouple",
+      "connectedPrivate": true,
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": false,
+      "id": "idcc2e1a93-2991-422c-86ef-f5e275028890",
+      "overRange": false
+     },
+     "thermocouple5": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 1000,
+       "mode": "average"
+      },
+      "capturedSamples": 0,
+      "channelIdentifier": "ch5",
+      "channelType": "thermocouple",
+      "connectedPrivate": true,
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": false,
+      "id": "idc6e652ee-f5f7-4f3e-8abd-b6fbfc51b5ba",
+      "overRange": false
+     },
+     "thermocouple6": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch6",
+      "channelType": "thermocouple",
+      "color": "#662482",
+      "connectedPrivate": true,
+      "description": "Canal 4",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "id4426cf20-f58e-4dfb-b340-62ccbe0efd6b",
+      "input": "thermo-k",
+      "max": 30.498090744018555,
+      "min": 30.498090744018555,
+      "order": 1733.4375,
+      "overRange": false,
+      "valuePrivate": 30.498090744018555
+     },
+     "thermocouple7": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch7",
+      "channelType": "thermocouple",
+      "color": "#939597",
+      "connectedPrivate": true,
+      "description": "Canal 5",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "idc0c5d79d-837b-4b4d-94fd-777701dd0940",
+      "input": "thermo-k",
+      "max": 29.458091735839844,
+      "min": 29.458091735839844,
+      "order": 1833.4375,
+      "overRange": false,
+      "valuePrivate": 29.458091735839844
+     },
+     "thermocouple8": {
+      "__type": "TC08ThermocoupleChannel",
+      "alarm": false,
+      "axis": 1,
+      "captureConfig": {
+       "interval": 100,
+       "mode": "average"
+      },
+      "capturedSamples": 2128,
+      "channelIdentifier": "ch8",
+      "channelType": "thermocouple",
+      "color": "#B8860B",
+      "connectedPrivate": true,
+      "description": "Canal 6",
+      "deviceSerial": "A0067/685",
+      "display": true,
+      "enabled": true,
+      "id": "id9ba930bc-0a66-4b60-bb82-07c01c0c05b5",
+      "input": "thermo-k",
+      "max": 29.561111450195312,
+      "min": 29.561111450195312,
+      "order": 1843.4375,
+      "overRange": false,
+      "valuePrivate": 29.561111450195312
+     }
+    }
+   ]
+  },
+  "fixedLength": false,
+  "hasStarted": true,
+  "hasStopped": false,
+  "id": "a6e9dedf-cad2-4cad-ab90-414d7577728d",
+  "isCloud": false,
+  "isRunning": false,
+  "labels": [],
+  "modifiedDate": "2026-09-10T07:17:38.974Z",
+  "savedDate": "2026-09-10T07:17:48.813Z",
+  "startDate": "2026-09-10T07:14:08.724Z",
+  "stopAfterTime": false,
+  "tableSettings": {
+   "autoScroll": false,
+   "columns": [
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch1",
+     "id": "id2abc2316-3db5-4189-b294-3bad44c4496d",
+     "lastSample": true,
+     "siScale": 1
+    },
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch2",
+     "id": "ida3cf53c6-6069-4741-b0ed-47d85da7448a",
+     "lastSample": true,
+     "siScale": 1
+    },
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch3",
+     "id": "idacba54de-3d5b-479c-bbdd-da6710adda3f",
+     "lastSample": true,
+     "siScale": 1
+    },
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch6",
+     "id": "id92fd8128-8593-4a74-9d8c-3dec7004f282",
+     "lastSample": true,
+     "siScale": 1
+    },
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch7",
+     "id": "ide65d3d0f-1fb3-4ee2-8682-e208a261ad7f",
+     "lastSample": true,
+     "siScale": 1
+    },
+    {
+     "__type": "TableColumn",
+     "channelKey": "tc-08.A0067/685.ch8",
+     "id": "id50602b08-20bb-4464-a0cd-12c823ecde5f",
+     "lastSample": true,
+     "siScale": 1
+    }
+   ],
+   "interval": 100,
+   "precision": 3,
+   "timeFormat": "time-from-start"
+  },
+  "timezone": "Europe/Madrid",
+  "version": 2
+ }
+}

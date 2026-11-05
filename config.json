@@ -1,0 +1,84 @@
+{
+  "puerto_panel": 8765,
+  "carpeta_contexto": "C:\\Proyectos\\Osciloscopio\\Contexto Claude",
+  "abrir_navegador": true,
+  "osciloscopio": {
+    "host": "mxo34-102098.local",
+    "sincronizar_s": 1.0,
+    "sincronizar_continuo": false,
+    "ajuste_pantalla": true,
+    "ip_respaldo": "10.127.105.108",
+    "mac": "00:90:B8:2C:9B:B0"
+  },
+  "fuente": {
+    "periodo_s": 0.1,
+    "apagar_si_corte": false,
+    "vigilante_s": 5,
+    "bits_alarma": {
+      "OV": 0,
+      "OC": 1,
+      "OP": 2
+    },
+    "bits_alarma_nota": "POR CONFIRMAR: bit de STAT:QUES:COND? para cada proteccion (Programming Guide EA)",
+    "limites": {
+      "imax_A": 10.0,
+      "vmax_V": 10.0,
+      "pmax_W": 100.0
+    }
+  },
+  "temperaturas": {
+    "intervalo_ms": 200,
+    "red_hz": 50,
+    "en_uso": false,
+    "canales": {
+      "1": {
+        "activo": true,
+        "nombre": "TC1",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "2": {
+        "activo": false,
+        "nombre": "TC2",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "3": {
+        "activo": false,
+        "nombre": "TC3",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "4": {
+        "activo": false,
+        "nombre": "TC4",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "5": {
+        "activo": false,
+        "nombre": "TC5",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "6": {
+        "activo": false,
+        "nombre": "TC6",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "7": {
+        "activo": false,
+        "nombre": "TC7",
+        "tipo": "K",
+        "limite_C": null
+      },
+      "8": {
+        "activo": false,
+        "nombre": "TC8",
+        "tipo": "K",
+        "limite_C": null
+      }
+    }
+  }
+}

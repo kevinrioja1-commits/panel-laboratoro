@@ -1,0 +1,83 @@
+{"hora": "2026-10-30T09:18:13.710", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T09:18:13.711", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T09:18:13.714", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T10:54:06.312", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T10:54:06.313", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T10:54:06.315", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T10:54:13.745", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T10:54:30.259", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0.5 → 0.1 s", "detalle": null}
+{"hora": "2026-10-30T10:54:33.525", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0.1 → 2 s", "detalle": null}
+{"hora": "2026-10-30T10:54:39.801", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 2 → 0.2 s", "detalle": null}
+{"hora": "2026-10-30T10:54:43.129", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0.2 → 0.5 s", "detalle": null}
+{"hora": "2026-10-30T10:54:43.142", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T10:55:05.881", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T10:55:05.881", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T10:55:05.882", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:00:22.332", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:00:24.521", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-30T11:00:33.919", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:00:36.968", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-30T11:00:45.667", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:00:47.907", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-30T11:08:05.815", "autor": "usuario", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:08:07.047", "autor": "usuario", "equipo": "osciloscopio", "accion": "volver a modo panel", "detalle": null}
+{"hora": "2026-10-30T11:11:00.279", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:11:02.853", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:11:59.589", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T11:11:59.590", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:11:59.590", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:15:08.122", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:08.132", "autor": "claude", "equipo": "fuente", "accion": "fijar V límite", "detalle": {"enviado": "SOUR:VOLT 50.000", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:08.133", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 15.0", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.0, "P_W": 15.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:08.134", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.8000", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.8, "P_W": 15.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:12.293", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:15:42.835", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:42.841", "autor": "claude", "equipo": "fuente", "accion": "fijar V límite", "detalle": {"enviado": "SOUR:VOLT 50.000", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:42.842", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 15.0", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.0, "P_W": 15.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:42.842", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.8000", "fuente_confirma": {"V_lim_V": 50.0, "I_A": 0.8, "P_W": 15.0, "salida": false}}}
+{"hora": "2026-10-30T11:15:46.994", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:16:55.150", "autor": "usuario", "equipo": "fuente", "accion": "opciones", "detalle": {"apagar_si_corte": false, "limites": {"imax_A": 1.2, "vmax_V": 100.0, "pmax_W": 20.0}}}
+{"hora": "2026-10-30T11:18:09.847", "autor": "usuario", "equipo": "fuente", "accion": "lectura cada 0,5 → 0,1 s", "detalle": null}
+{"hora": "2026-10-30T11:18:49.726", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T11:18:49.727", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:18:49.727", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:19:07.562", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 500.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:19:09.599", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 10.000", "fuente_confirma": {"V_lim_V": 10.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:19:09.599", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 5.0", "fuente_confirma": {"V_lim_V": 10.0, "I_A": 0.0, "P_W": 5.0, "salida": false}}}
+{"hora": "2026-10-30T11:19:09.600", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.5000", "fuente_confirma": {"V_lim_V": 10.0, "I_A": 0.5, "P_W": 5.0, "salida": false}}}
+{"hora": "2026-10-30T11:19:11.171", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:33:34.520", "autor": "claude", "equipo": "panel", "accion": "cerrar panel", "detalle": null}
+{"hora": "2026-10-30T11:33:34.521", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:33:34.525", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}
+{"hora": "2026-10-30T11:33:44.334", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 300.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:33:48.000", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:54:30.061", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 300.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:40.007", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0,1 → 0,5 s", "detalle": null}
+{"hora": "2026-10-30T11:54:46.531", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 2.000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:46.532", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 10.0", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.0, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:46.534", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.5000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:48.064", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 2.000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:48.065", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 20.0", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:48.067", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 1.0000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:48.106", "autor": "claude", "equipo": "fuente", "accion": "salida ON", "detalle": {"enviado": "OUTP ON", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": true}}}
+{"hora": "2026-10-30T11:54:51.154", "autor": "claude", "equipo": "fuente", "accion": "salida OFF", "detalle": {"enviado": "OUTP OFF", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:53.194", "autor": "claude", "equipo": "fuente", "accion": "salida OFF", "detalle": {"enviado": "OUTP OFF", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:54:55.267", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0,5 → 0,1 s", "detalle": null}
+{"hora": "2026-10-30T11:54:55.335", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T11:55:12.321", "autor": "claude", "equipo": "fuente", "accion": "conectar", "detalle": {"puerto": "simulada", "idn": "SIMULADO,EA-PS 9500-20 1U,0,0", "consignas": {"V_lim_V": 300.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:19.141", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0,1 → 0,5 s", "detalle": null}
+{"hora": "2026-10-30T11:55:25.642", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 2.000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.0, "P_W": 1000.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:25.643", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 10.0", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.0, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:25.644", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 0.5000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:27.170", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 2.000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 10.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:27.171", "autor": "claude", "equipo": "fuente", "accion": "fijar P", "detalle": {"enviado": "SOUR:POW 20.0", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 0.5, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:27.172", "autor": "claude", "equipo": "fuente", "accion": "fijar I", "detalle": {"enviado": "SOUR:CURR 1.0000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:27.177", "autor": "claude", "equipo": "fuente", "accion": "salida ON", "detalle": {"enviado": "OUTP ON", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": true}}}
+{"hora": "2026-10-30T11:55:30.184", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 0.500", "fuente_confirma": {"V_lim_V": 0.5, "I_A": 1.0, "P_W": 20.0, "salida": true}}}
+{"hora": "2026-10-30T11:55:32.727", "autor": "claude", "equipo": "fuente", "accion": "fijar V", "detalle": {"enviado": "SOUR:VOLT 2.000", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": true}}}
+{"hora": "2026-10-30T11:55:36.975", "autor": "claude", "equipo": "fuente", "accion": "salida OFF", "detalle": {"enviado": "OUTP OFF", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:39.032", "autor": "claude", "equipo": "fuente", "accion": "salida OFF", "detalle": {"enviado": "OUTP OFF", "fuente_confirma": {"V_lim_V": 2.0, "I_A": 1.0, "P_W": 20.0, "salida": false}}}
+{"hora": "2026-10-30T11:55:41.087", "autor": "claude", "equipo": "fuente", "accion": "lectura cada 0,5 → 0,1 s", "detalle": null}
+{"hora": "2026-10-30T11:55:41.149", "autor": "claude", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T17:34:23.405", "autor": "panel (cierre)", "equipo": "fuente", "accion": "desconectar", "detalle": null}
+{"hora": "2026-10-30T17:34:23.407", "autor": "panel (cierre)", "equipo": "osciloscopio", "accion": "modo manual", "detalle": "el panel (y Claude) no envían nada al osciloscopio hasta «Volver a modo panel»"}

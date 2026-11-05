@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banco en vivo</title>
+<script>
+  try { const t = localStorage.getItem("tema"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { }
+</script>
+<style>
+/* mismos colores que el panel (index.html) */
+:root {
+  --bg: #eef1f5; --panel: #ffffff; --panel2: #f6f8fb; --borde: #dde2ea; --texto: #18202a; --suave: #64707d;
+  --acento: #2b3440; --acento-suave: #e4e8ee; --ok: #15803d; --mal: #c62828; --aviso: #b45309;
+  --rejilla: #e8ecf1; --cc: #9fcbf7; --cv: #fdcd8c; --cp: #d9b8f2; --apagada: #e1e1e1; --limite: #8c8c8c;
+  --c1: #b38600; --c2: #14876a; --c3: #d4561c; --c4: #2f69d9; --acento-txt: #ffffff; --ok-fuerte: #15803d; --mal-fuerte: #c62828; --fuente: #6250d6; --fuente-cons: #3b2c9e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --panel: #181c22; --panel2: #1f242c; --borde: #2c333d; --texto: #e7eaee; --suave: #95a1ae;
+    --acento: #e3e8ef; --acento-suave: #2a323d; --ok: #4ade80; --mal: #f26b6b; --aviso: #f0a73a;
+    --rejilla: #262c35; --cc: #24486e; --cv: #6b4a1c; --cp: #4b3466; --apagada: #30353d; --limite: #8a939e;
+    --c1: #b38b00; --c2: #1d9a80; --c3: #e0662a; --c4: #5a86ec; --acento-txt: #12161c; --ok-fuerte: #15803d; --mal-fuerte: #c62828; --fuente: #9085e9; --fuente-cons: #d0caf7;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --panel: #181c22; --panel2: #1f242c; --borde: #2c333d; --texto: #e7eaee; --suave: #95a1ae;
+  --acento: #e3e8ef; --acento-suave: #2a323d; --ok: #4ade80; --mal: #f26b6b; --aviso: #f0a73a;
+  --rejilla: #262c35; --cc: #24486e; --cv: #6b4a1c; --cp: #4b3466; --apagada: #30353d; --limite: #8a939e;
+  --c1: #b38b00; --c2: #1d9a80; --c3: #e0662a; --c4: #5a86ec; --acento-txt: #12161c; --ok-fuerte: #15803d; --mal-fuerte: #c62828; --fuente: #9085e9; --fuente-cons: #d0caf7;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font: 14px/1.45 "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--texto);
+  display: flex; flex-direction: column; }
+button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--borde); background: var(--panel);
+  color: var(--texto); padding: 5px 11px; }
+button:hover:not(:disabled) { border-color: var(--acento); }
+button.peligro { background: var(--mal-fuerte); border-color: var(--mal-fuerte); color: #fff; font-weight: 700; }
+button.exito { background: var(--ok-fuerte); border-color: var(--ok-fuerte); color: #fff; }
+button.exito:disabled, button.peligro:disabled { opacity: .4; cursor: not-allowed; }
+.segmentado { display: inline-flex; border: 1px solid var(--borde); border-radius: 9px; overflow: hidden; }
+.segmentado button { border: 0; border-radius: 0; background: var(--panel); }
+.segmentado button + button { border-left: 1px solid var(--borde); }
+.segmentado button.activo { background: var(--acento); color: var(--acento-txt); }
+#mostrar { position: absolute; right: 0; top: 36px; z-index: 5; background: var(--panel); border: 1px solid var(--borde);
+  border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.18); padding: 8px 12px; min-width: 210px; font-size: 13px; }
+#mostrar label { display: flex; gap: 6px; align-items: center; padding: 2px 0; white-space: nowrap; cursor: pointer; }
+#mostrar .grupo { font-weight: 650; margin-top: 4px; }
+#mostrar .hijos { padding-left: 20px; }
+#mostrar .hijos.apagado { opacity: .45; }
+#mostrar { min-width: 300px; }
+#mostrar .seccionLect { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--borde); font-weight: 650; }
+#mostrar .seccionLect span { font-weight: 400; color: var(--suave); font-size: 12px; display: block; }
+#lectura i.mc { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+/* dentro del panel: cabecera de una linea (título, V/I/P, Encender/APAGAR y la ayuda ya están en el panel, al lado) */
+body.incrustado header h1, body.incrustado #vV, body.incrustado #vI, body.incrustado #vP, body.incrustado #bEncender,
+body.incrustado #bApagar, body.incrustado main > .suave { display: none !important; }
+body.incrustado header { padding: 6px 12px; gap: 8px 12px; }
+#bTramo.activo { background: var(--acento); border-color: var(--acento); color: var(--acento-txt); }
+#panelTramo { position: fixed; right: 16px; top: 54px; z-index: 6; width: 340px; background: var(--panel);
+  border: 1px solid var(--borde); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 12px 14px; font-size: 13px; }
+#panelTramo h3 { margin: 0 0 6px; font-size: 14px; }
+#panelTramo label.campo { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+#panelTramo input[type=text], #panelTramo select, #panelTramo textarea { font: inherit; padding: 4px 6px; }
+#panelTramo .fila { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+#panelTramo .botones { display: flex; gap: 8px; margin-top: 10px; }
+#tramoRes { margin-top: 8px; font-size: 12px; white-space: pre-line; }
+#mostrar .salto { flex-basis: 100%; height: 0; }
+#mostrar .estadoEq { font-weight: 400; color: var(--suave); font-size: 12px; margin-left: 4px; }
+#mostrar .accion { padding: 4px 0 6px 20px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
+#mostrar .accion label { padding: 0; }
+#mostrar .msgEq { padding-left: 20px; font-size: 12px; color: var(--mal); max-width: 330px; white-space: normal; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 8px 16px; background: var(--panel);
+  border-bottom: 1px solid var(--borde); }
+header h1 { font-size: 15px; margin: 0; font-weight: 650; }
+.valor { font: 600 20px/1 Consolas, monospace; }
+.valor small { font: 12px "Segoe UI", sans-serif; color: var(--suave); margin-left: 3px; }
+.suave { color: var(--suave); font-size: 12px; }
+.espacio { flex: 1; }
+#estado { font-weight: 700; }
+#estado.on { color: var(--ok); } #estado.off { color: var(--suave); }
+main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px 16px 12px; gap: 6px; }
+#zona { flex: 1; min-height: 260px; position: relative; background: var(--panel); border: 1px solid var(--borde);
+  border-radius: 10px; }
+#general { height: 64px; position: relative; background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; }
+canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#lectura { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--borde);
+  border-radius: 8px; padding: 6px 9px; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  display: none; z-index: 2; }
+#lectura b { font-family: Consolas, monospace; }
+#aviso { color: var(--mal); font-weight: 700; }
+#cfgTemp { background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+#cfgTemp .fila-tc { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 4px 0; }
+#cfgTemp summary { cursor: pointer; margin-top: 4px; font-weight: 600; }
+#cfgTemp select, #cfgTemp input { font: inherit; padding: 2px 5px; border: 1px solid var(--borde); border-radius: 6px;
+  background: var(--panel); color: var(--texto); }
+#tcTabla { border-collapse: collapse; margin: 6px 0; }
+#tcTabla th, #tcTabla td { padding: 2px 8px; text-align: left; }
+#tcTabla th { font-weight: 600; color: var(--suave); font-size: 12px; }
+#tcTabla input[type=text] { width: 120px; } #tcTabla input[type=number] { width: 80px; }
+button.primario { background: var(--acento); border-color: var(--acento); color: var(--acento-txt); }
+.valor.alarma { background: var(--mal); color: #fff !important; border-radius: 6px; padding: 0 5px; }
+.valor.alarma small { color: #fff; }
+@media (max-width: 700px) { header { padding: 8px 16px; } .valor { font-size: 16px; } main { padding: 6px 16px 10px; } }
+
+/* ==== Aspecto B «Pantalla de instrumento» (2026-11-04): marco en grafito oscuro, gráficas sobre negro ==== */
+:root { --marco: #232a33; --marco2: #2b333e; --marco3: #343d49; --marco-borde: #3c4652; --marco-txt: #e7ebf0; --marco-suave: #9aa6b4;
+  --marco-ok: #4ade80; --marco-aviso: #f0a73a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --marco: #0d1015; --marco2: #151a20; --marco3: #1c222a; --marco-borde: #2d3541; } }
+:root[data-theme="dark"] { --marco: #0d1015; --marco2: #151a20; --marco3: #1c222a; --marco-borde: #2d3541; }
+header { background: var(--marco); color: var(--marco-txt); border-color: var(--marco-borde); }
+header h1 { color: var(--marco-txt); }
+header .suave, header #oscEstado { color: var(--marco-suave); }
+header button:not(#mostrar button):not(.exito):not(.peligro) { background: var(--marco3); color: var(--marco-txt); border-color: var(--marco-borde); }
+header .segmentado { border-color: var(--marco-borde); }
+header .segmentado button + button { border-left-color: var(--marco-borde); }
+header .segmentado button.activo, header #bSeguir.activo, header #bTramo.activo, header button.primario:not(#mostrar button) {
+  background: var(--marco-txt) !important; color: var(--marco) !important; border-color: var(--marco-txt) !important; }
+header #estado.on { color: var(--marco-ok); }
+#mostrar { color: var(--texto); }
+/* la gráfica, siempre sobre negro (también en tema claro): sus colores salen de aquí, no del tema de la página */
+#zona, #general {
+  background: #0b0f14; border-color: #232a33; color: #e7ebf0;
+  --panel: #151a20; --panel2: #0e1217; --borde: #2b333e; --texto: #e7ebf0; --suave: #9aa6b4; --rejilla: #1f262f;
+  --cc: #24486e; --cv: #6b4a1c; --cp: #4b3466; --apagada: #262c34; --limite: #8a939e; --acento: #e3e8ef;
+  --c1: #b38b00; --c2: #1d9a80; --c3: #e0662a; --c4: #5a86ec; --fuente: #9085e9; --fuente-cons: #d0caf7;
+  --mal: #f26b6b; --ok: #4ade80;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>En vivo</h1>
+  <span class="valor" id="vV">—<small>V</small></span>
+  <span class="valor" id="vI">—<small>A</small></span>
+  <span class="valor" id="vP">—<small>W</small></span>
+  <span>Salida: <span id="estado" class="off">—</span></span>
+  <span id="aviso"></span>
+  <span class="suave" id="oscEstado"></span>
+  <span id="tempVals" title="Temperaturas de PicoLog (la captura la lleva PicoLog; el panel solo la lee)"></span>
+  <span class="espacio"></span>
+  <div class="segmentado" id="ventanas" title="Tiempo visible">
+    <button data-s="10">10 s</button><button data-s="60" class="activo">1 min</button><button data-s="600">10 min</button><button data-s="0">Todo</button>
+  </div>
+  <button id="bSeguir" title="La gráfica avanza con el tiempo">● Seguir</button>
+  <button id="bAcoplar" hidden></button>
+  <button id="bTramo" title="Marcar un tramo arrastrando sobre la gráfica y guardarlo (fuente, osciloscopio con sus muestras reales y temperaturas) en <proyecto>\tramos">✂ Tramo</button>
+  <div style="position:relative"><button id="bMostrar" title="Elige qué se ve: la fuente (V, I, P), los canales del osciloscopio y las temperaturas">Mostrar ▾</button>
+    <div id="mostrar" style="display:none"></div></div>
+  <button id="bAjustar" title="Vuelve a la ventana elegida, siguiendo, con la amplitud ajustada (o doble clic en la gráfica)">Ajustar</button>
+  <button id="bPararPlan" class="peligro" style="display:none" title="Para el ensayo programado: apaga la salida y termina el ensayo">■ PARAR plan</button>
+  <button id="bEncender" class="exito" title="Enciende la salida de la fuente con sus consignas (pide confirmación, como en la tarjeta de la fuente)">Encender</button>
+  <button id="bApagar" class="peligro" title="Apaga la salida de la fuente">APAGAR</button>
+</header>
+<div id="panelTramo" style="display:none">
+  <h3>✂ Guardar tramo</h3>
+  <div id="tramoHoras" class="suave"></div>
+  <div class="fila" id="tramoQue">
+    <label><input type="checkbox" data-q="fuente" checked> Fuente</label>
+    <label><input type="checkbox" data-q="osc" checked> Osciloscopio</label>
+    <label><input type="checkbox" data-q="temp" checked> Temperaturas</label>
+  </div>
+  <label class="campo">Proyecto<select id="tramoProy"></select></label>
+  <label class="campo">Carpeta (opcional, dentro de tramos\)<input type="text" id="tramoCarpeta" placeholder="p. ej. arranques"></label>
+  <label class="campo">Nombre<input type="text" id="tramoNombre" placeholder="p. ej. pico_encendido"></label>
+  <label class="campo">Notas<textarea id="tramoNotas" rows="2"></textarea></label>
+  <div class="botones"><button class="primario" id="bTramoGuardar">Guardar</button><button id="bTramoCancelar">Cancelar</button>
+    <button id="bTramoAbrir" style="display:none">Abrir carpeta</button></div>
+  <div id="tramoRes"></div>
+</div>
+<div id="planVivo" style="display:none;padding:4px 22px;font-size:13px;border-bottom:1px solid var(--borde)"></div>
+<main>
+  <div id="cfgTemp" style="display:none">
+    <div class="fila-tc"><b>Temperaturas desde:</b> <span id="tcFuente">—</span>
+      <button id="bTomar" title="El panel maneja el TC-08 (PicoLog tiene que estar cerrado)">Usar el TC-08 aquí</button>
+      <button id="bSoltar" title="Deja el TC-08 libre para abrirlo con PicoLog">Soltar TC-08</button></div>
+    <details id="tcDet"><summary>Configuración del TC-08</summary>
+      <div class="fila-tc">Intervalo <select id="tcIv"></select>
+        · Red <select id="tcRed"><option value="50">50 Hz</option><option value="60">60 Hz</option></select>
+        <span class="suave">el TC-08 mide como mínimo cada 200 ms</span></div>
+      <table id="tcTabla"><thead><tr><th>Activo</th><th>Canal</th><th>Nombre</th><th>Tipo</th><th>Límite (°C)</th></tr></thead><tbody></tbody></table>
+      <div class="fila-tc"><button id="bTcAplicar" class="primario">Aplicar</button> <span class="suave" id="tcMsg"></span></div>
+    </details>
+  </div>
+  <div class="suave">Arrastra para ampliar un tramo · rueda: tiempo (sobre el eje Y: zoom vertical; doble clic en el eje: automático) · doble clic: ajustar · clic en la leyenda: mostrar u ocultar.
+    Consigna continua = regula (la alcanza el circuito); gris punteada = límite. Osciloscopio: solo durante un registro
+    (Registrar · Osciloscopio o Ambos), mínimo–máximo y media cada 0,1 s; la forma de onda completa queda en osc.h5.</div>
+  <div id="zona"><canvas id="cv"></canvas><div id="lectura"></div></div>
+  <div id="general" title="Todo lo que hay en memoria (hasta 2 h). Arrastra el recuadro para moverte"><canvas id="cg"></canvas></div>
+</main>
+<script>
+"use strict";
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// ------------------------------------------------------------------ datos (memoria del servidor: ultimas 2 h)
+// columnas de /api/fuente/historia: [hora, V, I, P, salida, modo, V_consigna, I_consigna, P_consigna]
+const D = { t: [], V: [], I: [], P: [], sal: [], modo: [], cV: [], cI: [], cP: [], est: [] };
+// estado por lectura (apagada / CC / CV / CP) sin los cambios de menos de 0,5 s con la salida encendida: una
+// lectura suelta de otro modo troceaba el tramo y repetia el texto (visto el 2-nov)
+function estados() {
+  const raw = D.t.map((_, i) => !D.sal[i] || !D.modo[i] ? "apagada" : D.modo[i]), tramos = [];
+  raw.forEach((e, i) => { const u = tramos[tramos.length - 1]; if (u && u.e === e) u.b = i; else tramos.push({ e, a: i, b: i }); });
+  for (let k = 1; k < tramos.length - 1; k++) {
+    const r = tramos[k], antes = tramos[k - 1].e, dur = D.t[Math.min(r.b + 1, D.t.length - 1)] - D.t[r.a];
+    if (dur < 0.5 && r.e !== "apagada" && antes !== "apagada" && antes === tramos[k + 1].e) r.e = antes;
+  }
+  D.est = new Array(raw.length);
+  for (const r of tramos) for (let i = r.a; i <= r.b; i++) D.est[i] = r.e;
+}
+let ultimo = 0, conectada = false;
+async function traer() {
+  try {
+    const r = await fetch(`/api/fuente/historia?desde=${ultimo}`);
+    const filas = await r.json();
+    for (const f of filas) {
+      D.t.push(f[0]); D.V.push(f[1]); D.I.push(f[2]); D.P.push(f[3]); D.sal.push(!!f[4]); D.modo.push(f[5] || "");
+      D.cV.push(f[6]); D.cI.push(f[7]); D.cP.push(f[8]); D.est.push("");
+    }
+    if (filas.length) ultimo = filas[filas.length - 1][0];
+    // lo mas antiguo de 2 h fuera (como el servidor)
+    let n = 0; while (n < D.t.length && D.t[n] < ultimo - 7200) n++;
+    if (n) for (const k in D) D[k].splice(0, n);
+    if (filas.length || n) { estados(); pedirDibujo(); }
+  } catch (e) { }
+}
+// osciloscopio: resumen de cada bloque que lee el datalogger (/api/osc/vivo): [hora, min, max, media, recortada]
+let O = { info: null, clave: "", datos: {} }, ultOsc = 0;
+async function traerOsc() {
+  try {
+    const r = await (await fetch(`/api/osc/vivo?desde=${ultOsc}`)).json();
+    if (!r.info) return;
+    const clave = JSON.stringify(r.info);
+    if (clave !== O.clave) {                    // registro nuevo: se empieza de cero
+      O = { info: r.info, clave, datos: {} }; ultOsc = 0;
+      return traerOsc();
+    }
+    let nuevos = 0;
+    for (const [c, filas] of Object.entries(r.datos)) {
+      const s = O.datos[c] || (O.datos[c] = { t: [], mn: [], mx: [], me: [], rec: [] });
+      for (const f of filas) { s.t.push(f[0]); s.mn.push(f[1]); s.mx.push(f[2]); s.me.push(f[3]); s.rec.push(!!f[4]); }
+      if (filas.length) { ultOsc = Math.max(ultOsc, filas[filas.length - 1][0]); nuevos += filas.length; }
+    }
+    if (nuevos) pedirDibujo();
+  } catch (e) { }
+}
+async function estado() {
+  try {
+    const e = await (await fetch("/api/estado")).json(), f = e.fuente, m = f.medida || {};
+    ultE = e;
+    conectada = f.estado === "conectada";
+    $("#vV").innerHTML = `${conectada ? fmt(m.V, 2) : "—"}<small>V</small>`;
+    $("#vI").innerHTML = `${conectada ? fmt(m.I, 3) : "—"}<small>A</small>`;
+    $("#vP").innerHTML = `${conectada ? fmt(m.P, 1) : "—"}<small>W</small>`;
+    const on = conectada && m.salida;
+    ultF = f;
+    // Encender y APAGAR juntos, como en la tarjeta de la fuente (2026-11-04): Encender solo si se puede
+    $("#bEncender").disabled = !conectada || !!m.salida;
+    $("#bEncender").title = !conectada ? "La fuente no está conectada" : m.salida ? "La salida ya está encendida"
+      : "Enciende la salida de la fuente con sus consignas (pide confirmación, como en la tarjeta de la fuente)";
+    $("#estado").textContent = !conectada ? (f.estado === "desconectada" ? "fuente desconectada" : "sin comunicación")
+      : on ? `ON · ${m.modo || ""}${m.modo ? " · regula " + QUE[m.modo] : ""}` : "OFF";
+    $("#estado").className = on ? "on" : "off";
+    const dl = e.osciloscopio.datalogger || {};
+    if (dlEnMarcha !== !!dl.en_marcha) { dlEnMarcha = !!dl.en_marcha; detPedido = ""; DET = null; pedirDibujo(); }
+    $("#oscEstado").textContent = fueraDeUso.has("osc") ? ""        // el osciloscopio no está en uso en el panel
+      : dl.en_marcha ? `Osciloscopio: registrando ${(dl.args?.canales || []).map(c => "C" + c).join(", ")}`
+      : O.info ? "Osciloscopio: último registro (parado)" : "";
+    pintarTC(e);
+    const a = Object.entries(f.alarmas || {}).filter(([, v]) => v).map(([k]) => k);
+    $("#aviso").textContent = a.length ? "PROTECCIÓN " + a.join(", ") : "";
+    // ensayo programado: etapa en curso y PARAR (fase 5)
+    const pl = e.ensayo && e.ensayo.plan, vivo = pl && ["en marcha", "pausado", "esperando usuario", "esperando registro"].includes(pl.estado);
+    $("#bPararPlan").style.display = vivo ? "" : "none";
+    $("#planVivo").style.display = pl ? "" : "none";
+    if (pl) $("#planVivo").innerHTML = `<b>Plan «${txt(pl.nombre || "sin nombre")}»</b> · ${txt(pl.estado)}` +
+      (pl.etapa ? ` · etapa ${pl.etapa}/${pl.etapas}: ${txt(pl.texto)}` : "") +
+      (pl.queda_etapa_s != null ? ` · quedan ${Math.ceil(pl.queda_etapa_s)} s` : "") +
+      (pl.mensaje ? ` · <b style="color:var(--mal)">${txt(pl.mensaje)}</b>` : "");
+  } catch (e) { $("#estado").textContent = "panel sin servidor"; $("#estado").className = "off"; }
+}
+const QUE = { CC: "I", CV: "V", CP: "P" };
+const txt = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+$("#bPararPlan").onclick = async () => {
+  if (!confirm("¿PARAR el plan? Se apaga la salida y se termina el ensayo.")) return;
+  try {
+    const r = await fetch("/api/ensayo/plan/parar", { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" }, body: "{}" });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  } catch (e) { alert("No se pudo parar el plan: " + e.message + "\nPulsa APAGAR o apaga en el frontal de la fuente."); }
+};
+const fmt = (x, d) => x === null || x === undefined || isNaN(x) ? "—" : Number(x).toFixed(d).replace(".", ",");
+
+// ------------------------------------------------------------------ vista
+const MAG = [{ k: "V", u: "V", d: 2, modo: "CV" }, { k: "I", u: "A", d: 3, modo: "CC" }, { k: "P", u: "W", d: 1, modo: "CP" }];
+const visible = {};          // "V.medida", "V.regula", "V.limite"... -> false si se oculto en la leyenda
+let ventana = 60, seguir = true, x0 = 0, x1 = 1;
+// temperaturas de PicoLog (/api/picolog/historia): una serie por termopar, con el nombre que tiene en PicoLog
+const SOLO_TEMP = new URLSearchParams(location.search).get("solo") === "temp";
+if (SOLO_TEMP) { document.title = "Temperaturas"; $("header h1").textContent = "Temperaturas";
+  for (const id of ["#vV", "#vI", "#vP"]) $(id).style.display = "none";
+  $("main > .suave").textContent = "Lo que va capturando PicoLog (el panel solo lo lee, con ~1 s de retraso; los nombres son los de " +
+    "PicoLog). Arrastra para ampliar un tramo · rueda: tiempo (sobre el eje Y: zoom vertical; doble clic en el eje: automático) · doble clic: ajustar · clic en la leyenda: mostrar u ocultar."; }
+let T = { canales: [], datos: {}, captura: "" }, ultT = 0;
+// termopares (2026-11-04): siete colores en orden fijo, sin rojo (el rojo es de las alarmas); validados en claro y oscuro.
+// El octavo repite el primero con línea discontinua. No se usa el color que traiga PicoLog: así coinciden panel y MATLAB
+const PALETA_T_CLARO = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6"];
+const PALETA_T_OSCURO = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9"];
+const temaOscuro = () => true;   // la gráfica va siempre sobre negro: paleta de termopares para fondo oscuro
+const PALETA_T = { get length() { return 7; } };
+async function traerTemp() {
+  try {
+    const r = await (await fetch(`/api/picolog/historia?desde=${ultT}`)).json();
+    const clave = r.canales.map(c => c.id).join("|");
+    if (clave !== T.captura) { T = { canales: r.canales, datos: {}, captura: clave }; ultT = 0; if (clave) return traerTemp(); }
+    T.canales = r.canales;                      // los nombres pueden cambiar en PicoLog
+    let n = 0;
+    for (const [id, filas] of Object.entries(r.datos)) {
+      const s = T.datos[id] || (T.datos[id] = { t: [], v: [] });
+      for (const [tt, v] of filas) { s.t.push(tt); s.v.push(v); }
+      if (filas.length) { ultT = Math.max(ultT, filas[filas.length - 1][0]); n += filas.length; }
+      let k = 0; while (k < s.t.length && s.t[k] < ultT - 7200) k++;
+      if (k) { s.t.splice(0, k); s.v.splice(0, k); }
+    }
+    $("#tempVals").innerHTML = T.canales.map((c, j) => { const s = T.datos[c.id], v = s && s.v.length ? s.v[s.v.length - 1] : NaN;
+      const alarma = c.limite_C != null && v >= c.limite_C;
+      return `<span class="valor${alarma ? " alarma" : ""}" style="color:${colorT(c, j)}" title="${alarma ? "¡Por encima del límite de " + c.limite_C + " °C!" : ""}">${fmt(v, 1)}<small>${txtT(c.nombre)} °C</small></span>`; }).join(" ");
+    if (n) pedirDibujo();
+  } catch (e) { }
+}
+// ------------------------------------------------------------------ TC-08 manejado por el panel
+if (SOLO_TEMP) $("#cfgTemp").style.display = "";
+for (const ms of [200, 500, 1000, 2000, 5000, 10000, 30000, 60000])
+  $("#tcIv").add(new Option(ms < 1000 ? `${ms} ms` : `${ms / 1000} s`, ms));
+let tcEditando = false;
+$("#tcDet").addEventListener("input", () => { tcEditando = true; $("#tcMsg").textContent = "cambios sin aplicar"; });
+async function postTC(ruta, cuerpo) {
+  const r = await fetch(ruta, { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" },
+    body: JSON.stringify(cuerpo || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || r.statusText);
+  return j;
+}
+function pintarTC(e) {
+  if (!SOLO_TEMP || !e) return;
+  const tc = e.tc08 || {}, pl = e.picolog || {}, usa = (e.temperaturas || {}).fuente === "tc08";
+  $("#tcFuente").textContent = usa ? `TC-08 ${tc.serie || ""} manejado por el panel · cada ${tc.intervalo_ms} ms` +
+      (tc.registro ? " · ● grabando en el ensayo" : "") + (tc.mensaje ? ` · ${tc.mensaje}` : "")
+    : pl.estado === "capturando" ? "PicoLog (captura en marcha; el panel la lee)"
+    : `ninguna · ${tc.mensaje || "pulsa «Usar el TC-08 aquí» (con PicoLog cerrado) o captura con PicoLog"}`;
+  $("#bTomar").style.display = usa ? "none" : ""; $("#bSoltar").style.display = usa ? "" : "none";
+  if (tcEditando || !tc.config) return;
+  const c = tc.config;
+  $("#tcIv").value = String(c.intervalo_ms); $("#tcRed").value = String(c.red_hz);
+  const tb = $("#tcTabla tbody");
+  if (!tb.children.length) for (let k = 1; k <= 8; k++) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><input type="checkbox"></td><td>${k}</td><td><input type="text" maxlength="40"></td>
+      <td><select>${"BEJKNRST".split("").map(x => `<option>${x}</option>`).join("")}</select></td>
+      <td><input type="number" step="any" placeholder="sin límite"></td>`;
+    tb.append(tr);
+  }
+  [...tb.children].forEach((tr, i) => {
+    const q = c.canales[String(i + 1)], [a, , n, tp, l] = tr.children;
+    a.firstChild.checked = q.activo; n.firstChild.value = q.nombre; tp.firstChild.value = q.tipo;
+    l.firstChild.value = q.limite_C == null ? "" : q.limite_C;
+  });
+}
+$("#bTcAplicar").onclick = async () => {
+  const canales = {};
+  [...$("#tcTabla tbody").children].forEach((tr, i) => {
+    const [a, , n, tp, l] = tr.children;
+    canales[String(i + 1)] = { activo: a.firstChild.checked, nombre: n.firstChild.value, tipo: tp.firstChild.value,
+      limite_C: l.firstChild.value === "" ? null : +l.firstChild.value };
+  });
+  try {
+    await postTC("/api/tc08/configurar", { intervalo_ms: +$("#tcIv").value, red_hz: +$("#tcRed").value, canales });
+    tcEditando = false; $("#tcMsg").textContent = "aplicado";
+  } catch (err) { $("#tcMsg").textContent = err.message; }
+};
+$("#bTomar").onclick = async () => { try { await postTC("/api/tc08/tomar"); $("#tcMsg").textContent = ""; } catch (err) { alert(err.message); } };
+$("#bSoltar").onclick = async () => { try { await postTC("/api/tc08/soltar"); } catch (err) { alert(err.message); } };
+const colorT = (c, j) => (temaOscuro() ? PALETA_T_OSCURO : PALETA_T_CLARO)[j % 7];
+const discontinuaT = j => j >= 7;   // el octavo termopar: mismo color que el primero, discontinuo
+const txtT = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function extremos() {
+  let a = Infinity, b = -Infinity;
+  if (D.t.length) { a = D.t[0]; b = D.t[D.t.length - 1]; }
+  for (const s of Object.values(O.datos)) if (s.t.length) { a = Math.min(a, s.t[0]); b = Math.max(b, s.t[s.t.length - 1]); }
+  for (const s of Object.values(T.datos)) if (s.t.length) { a = Math.min(a, s.t[0]); b = Math.max(b, s.t[s.t.length - 1]); }
+  return isFinite(a) ? [a, b] : [Date.now() / 1000 - 60, Date.now() / 1000];
+}
+function rango() {
+  const [ta, tf] = extremos();
+  if (seguir) {
+    if (ventana === 0) { x0 = ta; x1 = tf; }
+    else { x1 = tf; x0 = tf - ventana; }
+  }
+  if (x1 - x0 < 1e-5) x1 = x0 + 1e-5;
+}
+$$("#ventanas button").forEach(b => b.onclick = () => {
+  $$("#ventanas button").forEach(x => x.classList.toggle("activo", x === b));
+  ventana = +b.dataset.s; ponerSeguir(true);
+});
+function ponerSeguir(v) {
+  seguir = v; $("#bSeguir").classList.toggle("activo", v);
+  $("#bSeguir").style.background = v ? "var(--acento)" : ""; $("#bSeguir").style.color = v ? "var(--acento-txt)" : "";
+  pedirDibujo();
+}
+$("#bSeguir").onclick = () => ponerSeguir(!seguir);
+$("#bAjustar").onclick = () => { yZoom = {}; ponerSeguir(true); };
+let ultF = null;              // ultimo estado de la fuente (consignas para la confirmacion de Encender)
+$("#bEncender").onclick = async () => {
+  const k = (ultF && ultF.consignas) || {};
+  if (!confirm(`¿Encender la salida de la fuente?
+
+V: ${fmt(k.V_lim_V, 2)} V
+I: ${fmt(k.I_A, 3)} A
+P: ${fmt(k.P_W, 1)} W`)) return;
+  try {
+    const r = await fetch("/api/fuente/salida", { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" },
+      body: JSON.stringify({ encender: true, confirmado: true }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  } catch (e) { alert("No se encendió: " + e.message); }
+  estado();
+};
+$("#bApagar").onclick = async () => {
+  try {
+    const r = await fetch("/api/fuente/salida", { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" },
+      body: JSON.stringify({ encender: false }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  } catch (e) { alert("No se pudo apagar: " + e.message + "\nApaga en el frontal de la fuente."); }
+};
+
+// ------------------------------------------------------------------ dibujo
+const cv = $("#cv"), cg = $("#cg");
+let pend = false;
+// «Mostrar»: lo que el usuario quita (grupo entero o cada elemento); se recuerda en este navegador
+let ocultos = new Set();
+try { ocultos = new Set(JSON.parse(localStorage.getItem("vivo_ocultos") || "[]")); } catch (e) { }
+// dentro del panel (?usa=fte,temp): los equipos que no están «en uso» no se dibujan (2026-11-04); si los marcas en
+// «Mostrar», vuelven
+const fueraDeUso = new Set();
+{ const u = new URLSearchParams(location.search).get("usa");
+  if (u !== null) for (const [k, g] of [["osc", "osc"], ["fte", "fuente"], ["temp", "temp"]]) if (!u.split(",").includes(k)) fueraDeUso.add(g); }
+const ver = k => !ocultos.has(k) && !fueraDeUso.has(k);
+let arbolClave = "";
+// «Mostrar»: los tres equipos SIEMPRE (2026-11-04), cada uno con su estado y, si no da datos, el botón para activarlo:
+// el panel sirve para la fuente sola, el osciloscopio solo, las temperaturas solas o cualquier combinación
+let ultE = null, msgEq = {}, vistaCan = new Set([1]), vistaSr = "100e3";
+const SR_VISTA = [["1e3", "1 kSa/s"], ["10e3", "10 kSa/s"], ["100e3", "100 kSa/s"], ["500e3", "500 kSa/s"], ["1e6", "1 MSa/s"]];
+async function accionEq(eq, ruta, cuerpo) {
+  msgEq[eq] = "";
+  try {
+    const r = await fetch(ruta, { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" },
+      body: JSON.stringify(cuerpo || {}) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  } catch (e) { msgEq[eq] = e.message; }
+  await estado(); pintarMostrar(true);
+}
+function estadoEquipos() {
+  const e = ultE || {}, f = e.fuente || {}, o = e.osciloscopio || {}, dl = o.datalogger || {}, tc = e.tc08 || {}, pl = e.picolog || {};
+  const fte = f.estado === "conectada" ? (f.simulada ? "conectada (simulada)" : "conectada")
+    : f.estado === "sin_comunicacion" ? "sin comunicación" : "no conectada";
+  const vista = dl.en_marcha && dl.vista, reg = dl.en_marcha && !dl.vista;
+  const osc = vista ? `vista en vivo · ${(dl.args?.canales || []).map(c => "C" + c).join(", ")} a ${ing(dl.args?.sr)}Sa/s`
+    : reg ? "registrando (Registrar o Ensayo)" : o.modo === "manual" ? "en modo manual" : o.idn ? "libre" : "sin comunicación";
+  const usaTc = (e.temperaturas || {}).fuente === "tc08" && tc.estado === "midiendo";
+  const temp = usaTc ? `TC-08 midiendo cada ${tc.intervalo_ms} ms` : pl.estado === "capturando" ? "PicoLog capturando" : "sin medir";
+  return { f, fte, vista, reg, osc, oscLibre: !dl.en_marcha && !!o.idn, usaTc, temp, tempOk: usaTc || pl.estado === "capturando" };
+}
+const ing = x => x == null ? "—" : x >= 1e6 ? `${+(x / 1e6).toPrecision(3)} M` : x >= 1e3 ? `${+(x / 1e3).toPrecision(3)} k` : `${x} `;
+function pintarMostrar(forzar) {
+  const q = estadoEquipos(), grupos = [];
+  if (!SOLO_TEMP) grupos.push({ k: "fuente", t: "Fuente", estado: q.fte,
+    hijos: D.t.length ? [["V", "Tensión (V)"], ["I", "Corriente (A)"], ["P", "Potencia (W)"]] : [],
+    accion: q.f.estado !== "conectada" ? "fuente" : null });
+  const cs = Object.keys(O.datos).filter(c => O.datos[c].t.length).sort();
+  if (!SOLO_TEMP) grupos.push({ k: "osc", t: "Osciloscopio", estado: q.osc, hijos: cs.map(c => {
+    const e = (O.info && O.info.etiquetas || {})[c]; return [c, `C${c}${e ? " · " + e : ""}`]; }),
+    accion: q.vista ? "pararVista" : q.oscLibre ? "vista" : null });
+  grupos.push({ k: "temp", t: "Temperatura", estado: q.temp, hijos: T.canales.map(c => [c.id, c.nombre]),
+    accion: q.tempOk ? null : "tc08" });
+  const clave = JSON.stringify([grupos, msgEq, [...lecturaOculta]]);
+  if (clave === arbolClave && !forzar) return;
+  arbolClave = clave;
+  const caja = $("#mostrar");
+  caja.innerHTML = "";
+  for (const g of grupos) {
+    const lg = document.createElement("label"); lg.className = "grupo";
+    lg.innerHTML = `<input type="checkbox" ${ver(g.k) ? "checked" : ""}> ${g.t} <span class="estadoEq">· ${txtT(g.estado)}</span>`;
+    const hijos = document.createElement("div"); hijos.className = "hijos" + (ver(g.k) ? "" : " apagado");
+    for (const [id, txt] of g.hijos) {
+      const l = document.createElement("label"), k = `${g.k}.${id}`;
+      l.innerHTML = `<input type="checkbox" ${ver(k) ? "checked" : ""}> ${txtT(txt)}`;
+      l.querySelector("input").onchange = ev => cambiar(k, ev.target.checked);
+      hijos.append(l);
+    }
+    lg.querySelector("input").onchange = ev => { cambiar(g.k, ev.target.checked); hijos.classList.toggle("apagado", !ev.target.checked); };
+    caja.append(lg, hijos);
+    const ac = document.createElement("div"); ac.className = "accion";
+    if (g.accion === "fuente") {
+      ac.innerHTML = `<button>Conectar la fuente</button><span class="suave">(por USB, la detecta sola)</span>`;
+      ac.querySelector("button").onclick = () => accionEq("fuente", "/api/fuente/conectar", { origen: "auto" });
+    } else if (g.accion === "vista") {
+      ac.innerHTML = `<b>Ver en vivo:</b>` + [1, 2, 3, 4].map(c => `<label><input type="checkbox" data-c="${c}" ${vistaCan.has(c) ? "checked" : ""}> C${c}</label>`).join("") +
+        `<span class="salto"></span><select>${SR_VISTA.map(([v, t]) => `<option value="${v}" ${v === vistaSr ? "selected" : ""}>${t}</option>`).join("")}</select>` +
+        `<button class="primario" title="Lee el osciloscopio sin guardar un registro (fichero temporal). Cambia su configuración mientras dura (modo Roll) y la restaura al parar">Ver en vivo</button>`;
+      ac.querySelectorAll("input[data-c]").forEach(i => i.onchange = () => { const c = +i.dataset.c; i.checked ? vistaCan.add(c) : vistaCan.delete(c); });
+      ac.querySelector("select").onchange = ev => { vistaSr = ev.target.value; };
+      ac.querySelector("button").onclick = () => accionEq("osc", "/api/osc/vista/iniciar", { canales: [...vistaCan].sort(), sr: +vistaSr });
+    } else if (g.accion === "pararVista") {
+      ac.innerHTML = `<button>■ Parar la vista</button><span class="suave">al parar: puntos reales al ampliar</span>`;
+      ac.querySelector("button").onclick = () => accionEq("osc", "/api/osc/vista/parar", {});
+    } else if (g.accion === "tc08") {
+      ac.innerHTML = `<button>Usar el TC-08</button><span class="suave">(con PicoLog cerrado)</span>`;
+      ac.querySelector("button").onclick = () => accionEq("temp", "/api/tc08/tomar", {});
+    }
+    if (ac.innerHTML) caja.append(ac);
+    const eq = { fuente: "fuente", osc: "osc", temp: "temp" }[g.k];
+    if (msgEq[eq]) { const m = document.createElement("div"); m.className = "msgEq"; m.textContent = msgEq[eq]; caja.append(m); }
+  }
+  // qué sale en la lectura al pasar el ratón por la gráfica
+  const conDatos = grupos.filter(g => g.hijos.length);
+  if (!conDatos.length) return;
+  const tit = document.createElement("div"); tit.className = "seccionLect";
+  tit.innerHTML = "En la lectura del ratón<span>lo que sale al pasar el ratón por la gráfica</span>";
+  caja.append(tit);
+  for (const g of conDatos) {
+    const lg = document.createElement("label"); lg.className = "grupo";
+    lg.innerHTML = `<input type="checkbox" ${enLectura(g.k) ? "checked" : ""}> ${g.t}`;
+    const hijos = document.createElement("div"); hijos.className = "hijos" + (enLectura(g.k) ? "" : " apagado");
+    const lista = g.k === "fuente" ? [["salida", "Salida y lo que regula"], ...g.hijos] : g.hijos;
+    for (const [id, txt] of lista) {
+      const l = document.createElement("label"), k = `${g.k}.${id}`;
+      l.innerHTML = `<input type="checkbox" ${!lecturaOculta.has(k) ? "checked" : ""}> ${txtT(txt)}`;
+      l.querySelector("input").onchange = ev => cambiarLectura(k, ev.target.checked);
+      hijos.append(l);
+    }
+    lg.querySelector("input").onchange = ev => { cambiarLectura(g.k, ev.target.checked); hijos.classList.toggle("apagado", !ev.target.checked); };
+    caja.append(lg, hijos);
+  }
+}
+function cambiar(k, si) {
+  if (si) { ocultos.delete(k); fueraDeUso.delete(k); } else ocultos.add(k);
+  try { localStorage.setItem("vivo_ocultos", JSON.stringify([...ocultos])); } catch (e) { }
+  pedirDibujo();
+}
+$("#bMostrar").onclick = ev => { ev.stopPropagation(); pintarMostrar(true);
+  $("#mostrar").style.display = $("#mostrar").style.display === "none" ? "block" : "none"; };
+$("#mostrar").onclick = ev => ev.stopPropagation();
+addEventListener("click", () => { $("#mostrar").style.display = "none"; });
+setInterval(() => pintarMostrar(false), 1000);
+// zoom vertical por franja (rueda sobre su eje Y); sin entrada = amplitud automatica
+let yZoom = {};
+function ejeY(f, lo, hi) {
+  const z = yZoom[f.clave];
+  if (z) { lo = z.lo; hi = z.hi; }
+  f.lo = lo; f.hi = hi;
+  return [lo, hi];
+}
+function franjaEn(py) { return franjas.find(f => f.clave && py >= f.y && py <= f.y + f.h); }
+function pedirDibujo() { if (!pend) { pend = true; requestAnimationFrame(() => { pend = false; dibujar(); }); } }
+// los colores del dibujo salen de la zona de la gráfica, que va siempre sobre negro (aspecto B, 2026-11-04)
+const css = n => getComputedStyle(document.getElementById("zona") || document.documentElement).getPropertyValue(n).trim();
+function preparar(c) {
+  const r = c.getBoundingClientRect(), k = devicePixelRatio || 1;
+  if (c.width !== Math.round(r.width * k) || c.height !== Math.round(r.height * k)) {
+    c.width = Math.round(r.width * k); c.height = Math.round(r.height * k);
+  }
+  const g = c.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, r.width, r.height);
+  return [g, r.width, r.height];
+}
+// primer indice con t >= x
+function buscar(x) { let a = 0, b = D.t.length; while (a < b) { const m = (a + b) >> 1; if (D.t[m] < x) a = m + 1; else b = m; } return a; }
+// paso «redondo» 1-2-5
+function paso125(v) { const e = Math.pow(10, Math.floor(Math.log10(v))), m = v / e; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * e; }
+let franjas = [], margenIzq = 58, margenDer = 12, leyendas = [];
+function dibujar() {
+  rango();
+  const [g, W, H] = preparar(cv);
+  const ALTO_EV = 30, EJE = 22, hueco = 8;
+  const mags = MAG.filter(m => ver("fuente") && ver("fuente." + m.k));
+  const conFuente = !SOLO_TEMP && D.t.length > 0 && mags.length > 0;
+  const canales = SOLO_TEMP || !ver("osc") ? [] : Object.keys(O.datos).filter(c => O.datos[c].t.length && ver("osc." + c)).sort();
+  const conTemp = ver("temp") && T.canales.some(c => ver("temp." + c.id) && T.datos[c.id] && T.datos[c.id].t.length);
+  const n = (conFuente ? mags.length : 0) + canales.length + (conTemp ? (SOLO_TEMP ? 2 : 1) : 0);
+  const hF = Math.max(44, (H - (conFuente ? ALTO_EV + hueco : 0) - EJE - hueco * (n + 1)) / Math.max(1, n));
+  franjas = [];
+  let y = 6;
+  if (conFuente) { franjas.push({ tipo: "ev", y, h: ALTO_EV }); y += ALTO_EV + hueco; }
+  if (conFuente) for (const m of mags) { franjas.push({ tipo: "mag", m, y, h: hF, clave: "mag." + m.k }); y += hF + hueco; }
+  if (conTemp) { const h = SOLO_TEMP ? 2 * hF + hueco : hF; franjas.push({ tipo: "temp", y, h, clave: "temp" }); y += h + hueco; }
+  for (const c of canales) { franjas.push({ tipo: "osc", c, y, h: hF, clave: "osc." + c }); y += hF + hueco; }
+  const X = t => margenIzq + (t - x0) / (x1 - x0) * (W - margenIzq - margenDer);
+  const i0 = Math.max(0, buscar(x0) - 1), i1 = Math.min(D.t.length - 1, buscar(x1));
+  g.font = "12px Segoe UI, sans-serif"; g.textBaseline = "middle";
+  // marcas de tiempo (hora local)
+  const span = x1 - x0, pasos = [1e-6, 2e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 0.01, 0.02,
+    0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
+  const paso = pasos.find(p => p >= span / 8) || 3600;
+  const marcas = [];
+  // marcas desde un origen entero (si no, con pasos de us la suma acumulaba error sobre la hora Unix)
+  const base = Math.floor(x0), kIni = Math.ceil((x0 - base) / paso), kFin = Math.floor((x1 - base) / paso);
+  for (let k = kIni; k <= kFin && marcas.length < 200; k++) marcas.push(base + k * paso);
+  const dec = paso < 1 ? Math.min(6, Math.ceil(-Math.log10(paso) - 1e-9)) : 0;
+  const hora = t => { const d = new Date(Math.floor(t) * 1000), z = n => String(n).padStart(2, "0");
+    return `${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}` +
+      (dec ? "," + (t - Math.floor(t)).toFixed(dec).slice(2) : ""); };
+  leyendas = [];
+  for (const f of franjas) {
+    g.fillStyle = css("--panel2"); g.fillRect(margenIzq, f.y, W - margenIzq - margenDer, f.h);
+    g.strokeStyle = css("--rejilla"); g.lineWidth = 1;
+    for (const t of marcas) { g.beginPath(); g.moveTo(Math.round(X(t)) + .5, f.y); g.lineTo(Math.round(X(t)) + .5, f.y + f.h); g.stroke(); }
+    if (f.tipo === "ev") franjaEventos(g, f, X, i0, i1);
+    else if (f.tipo === "mag") franjaMag(g, f, X, i0, i1, W);
+    else if (f.tipo === "temp") franjaTemp(g, f, X, W);
+    else franjaOsc(g, f, X, W);
+    g.strokeStyle = css("--borde"); g.strokeRect(margenIzq + .5, f.y + .5, W - margenIzq - margenDer - 1, f.h - 1);
+  }
+  // lineas de ON / OFF en todas las franjas de senal (el texto va en la de eventos)
+  for (let i = Math.max(1, i0); i <= i1; i++) if (D.sal[i] !== D.sal[i - 1]) {
+    g.strokeStyle = D.sal[i] ? css("--ok") : css("--mal"); g.setLineDash([5, 4]); g.lineWidth = 1.2;
+    const x = Math.round(X(D.t[i])) + .5;
+    for (const f of franjas.filter(f => f.tipo !== "ev")) { g.beginPath(); g.moveTo(x, f.y); g.lineTo(x, f.y + f.h); g.stroke(); }
+    g.setLineDash([]);
+  }
+  // eje de tiempo
+  g.fillStyle = css("--suave"); g.textAlign = "center";
+  if (!franjas.length) { g.fillStyle = css("--suave"); g.textAlign = "center";
+    g.fillText(SOLO_TEMP ? "Sin temperaturas: abre PicoLog y empieza una captura (el panel la lee sola)"
+      : conectada ? "Esperando lecturas…" : "La fuente no está conectada y no hay registro del osciloscopio", W / 2, H / 2); return; }
+  const yEje = franjas[franjas.length - 1].y + franjas[franjas.length - 1].h + 12;
+  for (const t of marcas) g.fillText(hora(t), X(t), yEje);
+  if (tramoSel && franjas.length) {
+    const a = Math.max(margenIzq, X(tramoSel.t0)), b = Math.min(W - margenDer, X(tramoSel.t1));
+    if (b > a) { g.fillStyle = css("--acento"); g.globalAlpha = .13;
+      g.fillRect(a, franjas[0].y, b - a, franjas[franjas.length - 1].y + franjas[franjas.length - 1].h - franjas[0].y);
+      g.globalAlpha = 1; }
+  }
+  if (cursorX !== null) dibujarCursor(g, W, X);
+  dibujarGeneral();
+  if (canales.length) pedirDetalle(W - margenIzq - margenDer);
+}
+// ------------------------------------------------------------------ puntos reales del osciloscopio (2026-11-04)
+// Con el registro ya cerrado, el servidor lee osc.h5 por niveles (/api/osc/vivo/detalle): al ampliar se ven las
+// muestras de verdad, no solo el minimo-maximo de cada 0,1 s. Durante el registro, solo la envolvente.
+let DET = null, detEstado = "", detAvance = 0, detTimer = null, detPedido = "", dlEnMarcha = false;
+function pedirDetalle(ancho) {
+  if (dlEnMarcha || !O.info) { DET = null; detEstado = dlEnMarcha ? "registrando" : ""; return; }
+  clearTimeout(detTimer);
+  detTimer = setTimeout(async () => {
+    const a = x0, b = x1, clave = `${a}|${b}`;
+    if (clave === detPedido) return;
+    detPedido = clave;
+    try {
+      const r = await (await fetch(`/api/osc/vivo/detalle?t0=${a}&t1=${b}&puntos=${Math.max(200, Math.round(ancho))}`)).json();
+      detEstado = r.estado; detAvance = r.avance || 0;
+      if (r.estado === "listo") DET = { x0: a, x1: b, c: r.canales };
+      else if (r.estado === "preparando") { detPedido = ""; setTimeout(() => pedirDetalle(ancho), 700); }
+      else DET = null;
+      pedirDibujo();
+    } catch (e) { detPedido = ""; }
+  }, 150);
+}
+function detalleDe(c) {
+  // vale si cubre casi lo que se ve (al desplazar, hasta que llega el nuevo, se usa el anterior si se parece)
+  if (!DET || !DET.c[c]) return null;
+  const sv = x1 - x0, sd = DET.x1 - DET.x0;
+  return sd > 0.5 * sv && sd < 2 * sv && DET.x1 > x0 && DET.x0 < x1 ? DET.c[c] : null;
+}
+function franjaEventos(g, f, X, i0, i1) {
+  const col = { apagada: css("--apagada"), CC: css("--cc"), CV: css("--cv"), CP: css("--cp") };
+  const est = i => D.est[i];
+  let a = i0;
+  g.save(); g.beginPath(); g.rect(margenIzq, f.y, cv.clientWidth - margenIzq - margenDer, f.h); g.clip();
+  for (let i = i0 + 1; i <= i1 + 1; i++) {
+    if (i <= i1 && est(i) === est(a)) continue;
+    const e = est(a), xa = X(D.t[a]), xb = X(D.t[Math.min(i, i1)]);
+    g.fillStyle = col[e] || col.apagada; g.fillRect(xa, f.y, xb - xa, f.h);
+    const txt = e === "apagada" ? "apagada" : `${e} · regula ${QUE[e]}`;
+    g.fillStyle = css("--texto"); g.textAlign = "center"; g.font = "12px Segoe UI, sans-serif";
+    if (xb - xa > g.measureText(txt).width + 8) g.fillText(txt, (xa + xb) / 2, f.y + f.h / 2);
+    a = i;
+  }
+  for (let i = Math.max(1, i0); i <= i1; i++) if (D.sal[i] !== D.sal[i - 1]) {
+    const x = X(D.t[i]), on = D.sal[i], c = on ? css("--ok") : css("--mal");
+    g.strokeStyle = c; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(x, f.y); g.lineTo(x, f.y + f.h); g.stroke(); g.setLineDash([]);
+    g.font = "bold 12px Segoe UI, sans-serif"; const t = on ? "ON" : "OFF", w = g.measureText(t).width + 8;
+    g.fillStyle = css("--panel"); g.fillRect(x - w / 2, f.y + f.h / 2 - 9, w, 18);
+    g.strokeStyle = c; g.strokeRect(x - w / 2 + .5, f.y + f.h / 2 - 8.5, w - 1, 17);
+    g.fillStyle = c; g.textAlign = "center"; g.fillText(t, x, f.y + f.h / 2);
+  }
+  g.restore();
+}
+// serie de una magnitud: medida, consigna donde regula o consigna donde es limite (NaN fuera)
+function valor(m, serie, i) {
+  if (serie === "medida") return D[m.k][i];
+  const c = D["c" + m.k][i], regula = D.sal[i] && D.modo[i] === m.modo;
+  if (serie === "regula") return regula ? c : NaN;
+  return regula ? NaN : c;
+}
+function franjaMag(g, f, X, i0, i1, W) {
+  const m = f.m, series = [
+    { s: "medida", nombre: `${m.k} · medida`, color: css("--fuente"), ancho: 1.5, puntos: [] },
+    { s: "regula", nombre: `${m.k} · consigna (regula)`, color: css("--fuente-cons"), ancho: 2.2, puntos: [] },
+    { s: "limite", nombre: `${m.k} · consigna (límite)`, color: css("--limite"), ancho: 1.3, puntos: [2, 3] }];
+  // amplitud: medida y consigna donde regula; el limite solo si no aplasta la senal (si no, se indica arriba)
+  let lo = Infinity, hi = -Infinity, limHi = -Infinity;
+  for (let i = i0; i <= i1; i++) for (const s of series) {
+    if (visible[`${m.k}.${s.s}`] === false) continue;
+    const v = valor(m, s.s, i); if (v == null || isNaN(v)) continue;
+    if (s.s === "limite") { limHi = Math.max(limHi, v); continue; }
+    lo = Math.min(lo, v); hi = Math.max(hi, v);
+  }
+  if (!isFinite(lo)) { lo = 0; hi = 1; }
+  lo = Math.min(lo, 0);
+  const limiteDentro = limHi > -Infinity && limHi <= Math.max(hi, 1e-9) * 1.6;
+  if (limiteDentro) hi = Math.max(hi, limHi);
+  if (hi - lo < 1e-9) hi = lo + 1;
+  const pad = (hi - lo) * 0.08; lo -= pad * (lo < 0 ? 1 : 0); hi += pad;
+  [lo, hi] = ejeY(f, lo, hi);
+  const Y = v => f.y + f.h - (v - lo) / (hi - lo) * f.h;
+  f.Y = Y; f.lo = lo; f.hi = hi;
+  // eje y
+  const p = paso125((hi - lo) / Math.max(2, Math.floor(f.h / 32)));
+  g.fillStyle = css("--suave"); g.textAlign = "right"; g.font = "11px Segoe UI, sans-serif";
+  for (let v = Math.ceil(lo / p) * p; v <= hi; v += p) {
+    const y = Math.round(Y(v)) + .5;
+    g.strokeStyle = css("--rejilla"); g.beginPath(); g.moveTo(margenIzq, y); g.lineTo(W - margenDer, y); g.stroke();
+    g.fillText(String(+v.toPrecision(4)).replace(".", ","), margenIzq - 6, y);
+  }
+  g.save(); g.translate(14, f.y + f.h / 2); g.rotate(-Math.PI / 2); g.textAlign = "center"; g.fillText(m.u, 0, 0); g.restore();
+  // series: min/max por pixel cuando hay mas puntos que pixeles
+  g.save(); g.beginPath(); g.rect(margenIzq, f.y, W - margenIzq - margenDer, f.h); g.clip();
+  for (const s of series) {
+    if (visible[`${m.k}.${s.s}`] === false) continue;
+    g.strokeStyle = s.color; g.lineWidth = s.ancho; g.setLineDash(s.puntos); g.beginPath();
+    let abierto = false, px = null, mn = 0, mx = 0, ult = 0;
+    const cerrar = () => { if (px === null) return; if (!abierto) { g.moveTo(px, Y(mn)); abierto = true; } else g.lineTo(px, Y(ult === mn ? mx : mn)); g.lineTo(px, Y(mx)); g.lineTo(px, Y(ult)); };
+    for (let i = i0; i <= i1; i++) {
+      const v = valor(m, s.s, i);
+      if (v == null || isNaN(v)) { cerrar(); px = null; abierto = false; continue; }
+      const x = Math.round(X(D.t[i]));
+      if (x === px) { mn = Math.min(mn, v); mx = Math.max(mx, v); ult = v; continue; }
+      cerrar(); px = x; mn = mx = ult = v;
+    }
+    cerrar(); g.stroke(); g.setLineDash([]);
+  }
+  g.restore();
+  if (!limiteDentro && limHi > -Infinity && visible[`${m.k}.limite`] !== false) {
+    g.fillStyle = css("--limite"); g.textAlign = "left"; g.font = "11px Segoe UI, sans-serif";
+    g.fillText(`↑ límite ${fmt(limHi, m.d)} ${m.u} (fuera de escala)`, margenIzq + 8, f.y + 10);
+  }
+  // leyenda dentro, arriba a la derecha; clic para mostrar u ocultar
+  g.font = "12px Segoe UI, sans-serif";
+  const anchoL = Math.max(...series.map(s => g.measureText(s.nombre).width)) + 44, altoL = series.length * 17 + 8;
+  const lx = W - margenDer - anchoL - 6, ly = f.y + 6;
+  g.fillStyle = css("--panel"); g.globalAlpha = .92; g.fillRect(lx, ly, anchoL, altoL); g.globalAlpha = 1;
+  g.strokeStyle = css("--borde"); g.strokeRect(lx + .5, ly + .5, anchoL - 1, altoL - 1);
+  series.forEach((s, j) => {
+    const y = ly + 12 + j * 17, on = visible[`${m.k}.${s.s}`] !== false;
+    g.globalAlpha = on ? 1 : .35;
+    g.strokeStyle = s.color; g.lineWidth = s.ancho; g.setLineDash(s.puntos);
+    g.beginPath(); g.moveTo(lx + 8, y); g.lineTo(lx + 32, y); g.stroke(); g.setLineDash([]);
+    g.fillStyle = css("--texto"); g.textAlign = "left"; g.fillText(s.nombre, lx + 38, y);
+    g.globalAlpha = 1;
+    leyendas.push({ x: lx, y: y - 8, w: anchoL, h: 17, clave: `${m.k}.${s.s}` });
+  });
+}
+// temperaturas: un trazo por termopar (min/max por pixel si hay mas puntos que pixeles), leyenda clicable
+function franjaTemp(g, f, X, W) {
+  const series = T.canales.map((c, j) => ({ c, s: T.datos[c.id], col: colorT(c, j), k: "T." + c.id, dash: discontinuaT(j) ? [3, 3] : [] }))
+    .filter(x => x.s && x.s.t.length && ver("temp." + x.c.id));
+  let lo = Infinity, hi = -Infinity;
+  for (const x of series) {
+    if (visible[x.k] === false) continue;
+    const i0 = Math.max(0, buscarEn(x.s.t, x0) - 1), i1 = Math.min(x.s.t.length - 1, buscarEn(x.s.t, x1));
+    for (let i = i0; i <= i1; i++) { lo = Math.min(lo, x.s.v[i]); hi = Math.max(hi, x.s.v[i]); }
+  }
+  if (!isFinite(lo)) { lo = 20; hi = 30; }
+  if (hi - lo < 1) { const m = (hi + lo) / 2; lo = m - 0.5; hi = m + 0.5; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  [lo, hi] = ejeY(f, lo, hi);
+  const Y = v => f.y + f.h - (v - lo) / (hi - lo) * f.h;
+  const p = paso125((hi - lo) / Math.max(2, Math.floor(f.h / 32)));
+  g.fillStyle = css("--suave"); g.textAlign = "right"; g.font = "11px Segoe UI, sans-serif";
+  for (let v = Math.ceil(lo / p) * p; v <= hi; v += p) {
+    const yy = Math.round(Y(v)) + .5;
+    g.strokeStyle = css("--rejilla"); g.beginPath(); g.moveTo(margenIzq, yy); g.lineTo(W - margenDer, yy); g.stroke();
+    g.fillText(String(+v.toPrecision(4)).replace(".", ","), margenIzq - 6, yy);
+  }
+  g.save(); g.translate(14, f.y + f.h / 2); g.rotate(-Math.PI / 2); g.textAlign = "center"; g.fillText("Temperatura (°C)", 0, 0); g.restore();
+  g.save(); g.beginPath(); g.rect(margenIzq, f.y, W - margenIzq - margenDer, f.h); g.clip();
+  for (const x of series) {
+    if (visible[x.k] === false) continue;
+    const s = x.s, i0 = Math.max(0, buscarEn(s.t, x0) - 1), i1 = Math.min(s.t.length - 1, buscarEn(s.t, x1));
+    g.strokeStyle = x.col; g.lineWidth = 1.6; g.setLineDash(x.dash); g.beginPath();
+    let px = null, mn = 0, mx = 0, ult = 0, abierto = false;
+    const cerrar = () => { if (px === null) return; if (!abierto) { g.moveTo(px, Y(ult)); abierto = true; }
+      g.lineTo(px, Y(mn)); g.lineTo(px, Y(mx)); g.lineTo(px, Y(ult)); };
+    for (let i = i0; i <= i1; i++) {
+      const xx = Math.round(X(s.t[i])), v = s.v[i];
+      if (xx === px) { mn = Math.min(mn, v); mx = Math.max(mx, v); ult = v; continue; }
+      cerrar(); px = xx; mn = mx = ult = v;
+    }
+    cerrar(); g.stroke(); g.setLineDash([]);
+  }
+  // alarma visual: limite de cada termopar (linea discontinua de su color) si cae dentro de la vista
+  for (const x of series) {
+    const L = x.c.limite_C;
+    if (L == null || visible[x.k] === false || L < lo || L > hi) continue;
+    g.strokeStyle = x.col; g.setLineDash([6, 4]); g.lineWidth = 1.2; g.beginPath();
+    g.moveTo(margenIzq, Y(L)); g.lineTo(W - margenDer, Y(L)); g.stroke(); g.setLineDash([]);
+    g.fillStyle = x.col; g.textAlign = "left"; g.font = "11px Segoe UI, sans-serif";
+    g.fillText(`límite ${x.c.nombre} ${fmt(L, 1)} °C`, margenIzq + 6, Y(L) - 7);
+  }
+  g.restore();
+  g.font = "12px Segoe UI, sans-serif";
+  const nombres = series.map(x => `${x.c.nombre} · ${fmt(x.s.v[x.s.v.length - 1], 1)} °C` +
+    (x.c.limite_C != null && x.s.v[x.s.v.length - 1] >= x.c.limite_C ? "  ⚠ LÍMITE" : ""));
+  if (!nombres.length) return;
+  const anchoL = Math.max(...nombres.map(t => g.measureText(t).width)) + 44, altoL = series.length * 17 + 8;
+  const lx = W - margenDer - anchoL - 6, ly = f.y + 6;
+  g.fillStyle = css("--panel"); g.globalAlpha = .92; g.fillRect(lx, ly, anchoL, altoL); g.globalAlpha = 1;
+  g.strokeStyle = css("--borde"); g.strokeRect(lx + .5, ly + .5, anchoL - 1, altoL - 1);
+  series.forEach((x, j) => {
+    const yy = ly + 12 + j * 17, on = visible[x.k] !== false;
+    g.globalAlpha = on ? 1 : .35;
+    g.strokeStyle = x.col; g.lineWidth = 1.6; g.setLineDash(x.dash); g.beginPath(); g.moveTo(lx + 8, yy); g.lineTo(lx + 32, yy); g.stroke(); g.setLineDash([]);
+    g.fillStyle = css("--texto"); g.textAlign = "left"; g.fillText(nombres[j], lx + 38, yy);
+    g.globalAlpha = 1;
+    leyendas.push({ x: lx, y: yy - 8, w: anchoL, h: 17, clave: x.k });
+  });
+}
+// canal del osciloscopio: banda min-max (lo que ve el osciloscopio en cada 0,1 s) y la media
+function buscarEn(t, x) { let a = 0, b = t.length; while (a < b) { const m = (a + b) >> 1; if (t[m] < x) a = m + 1; else b = m; } return a; }
+function franjaOsc(g, f, X, W) {
+  const s = O.datos[f.c], col = css("--c" + f.c) || css("--acento");
+  const eti = (O.info.etiquetas || {})[f.c] || "";
+  const nombre = `C${f.c}${eti ? " · " + eti : ""}`;
+  const kB = `C${f.c}.banda`, kM = `C${f.c}.media`;
+  const det = detalleDe(f.c);
+  if (det) return franjaOscReal(g, f, X, W, det, col, nombre, kB);
+  const i0 = Math.max(0, buscarEn(s.t, x0) - 1), i1 = Math.min(s.t.length - 1, buscarEn(s.t, x1));
+  let lo = Infinity, hi = -Infinity, recortada = false;
+  for (let i = i0; i <= i1; i++) {
+    if (visible[kB] !== false) { lo = Math.min(lo, s.mn[i]); hi = Math.max(hi, s.mx[i]); }
+    if (visible[kM] !== false) { lo = Math.min(lo, s.me[i]); hi = Math.max(hi, s.me[i]); }
+    if (s.rec[i]) recortada = true;
+  }
+  if (!isFinite(lo)) { lo = 0; hi = 1; }
+  if (hi - lo < 1e-9) { hi += 0.5; lo -= 0.5; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  [lo, hi] = ejeY(f, lo, hi);
+  const Y = v => f.y + f.h - (v - lo) / (hi - lo) * f.h;
+  const p = paso125((hi - lo) / Math.max(2, Math.floor(f.h / 32)));
+  g.fillStyle = css("--suave"); g.textAlign = "right"; g.font = "11px Segoe UI, sans-serif";
+  for (let v = Math.ceil(lo / p) * p; v <= hi; v += p) {
+    const yy = Math.round(Y(v)) + .5;
+    g.strokeStyle = css("--rejilla"); g.beginPath(); g.moveTo(margenIzq, yy); g.lineTo(W - margenDer, yy); g.stroke();
+    g.fillText(String(+v.toPrecision(4)).replace(".", ","), margenIzq - 6, yy);
+  }
+  g.save(); g.translate(14, f.y + f.h / 2); g.rotate(-Math.PI / 2); g.textAlign = "center"; g.fillText(`C${f.c} (V)`, 0, 0); g.restore();
+  g.save(); g.beginPath(); g.rect(margenIzq, f.y, W - margenIzq - margenDer, f.h); g.clip();
+  // por pixel: el minimo de los minimos y el maximo de los maximos (banda) y la ultima media
+  const col_ = [];
+  for (let i = i0; i <= i1; i++) {
+    const x = Math.round(X(s.t[i])), u = col_[col_.length - 1];
+    if (u && u.x === x) { u.mn = Math.min(u.mn, s.mn[i]); u.mx = Math.max(u.mx, s.mx[i]); u.me = s.me[i]; }
+    else col_.push({ x, mn: s.mn[i], mx: s.mx[i], me: s.me[i] });
+  }
+  if (visible[kB] !== false && col_.length) {
+    g.fillStyle = col; g.globalAlpha = .28; g.beginPath();
+    col_.forEach((c, j) => j ? g.lineTo(c.x, Y(c.mx)) : g.moveTo(c.x, Y(c.mx)));
+    for (let j = col_.length - 1; j >= 0; j--) g.lineTo(col_[j].x, Y(col_[j].mn));
+    g.closePath(); g.fill(); g.globalAlpha = 1;
+  }
+  if (visible[kM] !== false && col_.length) {
+    g.strokeStyle = col; g.lineWidth = 1.6; g.beginPath();
+    col_.forEach((c, j) => j ? g.lineTo(c.x, Y(c.me)) : g.moveTo(c.x, Y(c.me))); g.stroke();
+  }
+  g.restore();
+  if (recortada) {
+    g.fillStyle = css("--mal"); g.textAlign = "left"; g.font = "bold 11px Segoe UI, sans-serif";
+    g.fillText("RECORTADA: la señal se sale de la pantalla del osciloscopio (revisa escala y offset)", margenIzq + 8, f.y + 10);
+  }
+  // por que no se ven los puntos reales
+  const nota = detEstado === "registrando" ? "mín–máx y media cada 0,1 s · los puntos reales, al terminar el registro"
+    : detEstado === "preparando" ? `preparando los puntos reales… ${Math.round(detAvance * 100)} %`
+    : detEstado === "error" ? "no se pueden leer los puntos reales (ver historial)" : "";
+  if (nota) { g.fillStyle = css("--suave"); g.textAlign = "left"; g.font = "11px Segoe UI, sans-serif";
+    g.fillText(nota, margenIzq + 8, f.y + (recortada ? 24 : 10)); }
+  const series = [{ k: kM, nombre: `${nombre} · media`, linea: true }, { k: kB, nombre: `${nombre} · mín–máx`, linea: false }];
+  g.font = "12px Segoe UI, sans-serif";
+  const anchoL = Math.max(...series.map(x => g.measureText(x.nombre).width)) + 44, altoL = series.length * 17 + 8;
+  const lx = W - margenDer - anchoL - 6, ly = f.y + 6;
+  g.fillStyle = css("--panel"); g.globalAlpha = .92; g.fillRect(lx, ly, anchoL, altoL); g.globalAlpha = 1;
+  g.strokeStyle = css("--borde"); g.strokeRect(lx + .5, ly + .5, anchoL - 1, altoL - 1);
+  series.forEach((x, j) => {
+    const yy = ly + 12 + j * 17, on = visible[x.k] !== false;
+    g.globalAlpha = on ? 1 : .35;
+    if (x.linea) { g.strokeStyle = col; g.lineWidth = 1.6; g.beginPath(); g.moveTo(lx + 8, yy); g.lineTo(lx + 32, yy); g.stroke(); }
+    else { g.fillStyle = col; g.globalAlpha *= .4; g.fillRect(lx + 8, yy - 5, 24, 10); g.globalAlpha = on ? 1 : .35; }
+    g.fillStyle = css("--texto"); g.textAlign = "left"; g.fillText(x.nombre, lx + 38, yy);
+    g.globalAlpha = 1;
+    leyendas.push({ x: lx, y: yy - 8, w: anchoL, h: 17, clave: x.k });
+  });
+}
+function franjaOscReal(g, f, X, W, d, col, nombre, kB) {
+  // d: {base, t, mn, mx, crudo, paso_s} del servidor: t RELATIVO a base (hora Unix), en voltios. Se dibuja con
+  // (base - x0) + t: la hora Unix entera en double solo resuelve ~0,24 us y se juntaban muestras a 5 MSa/s
+  const off = d.base - x0, k = (W - margenIzq - margenDer) / (x1 - x0);
+  X = t => margenIzq + (off + t) * k;
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < d.t.length; i++) if (off + d.t[i] >= -d.paso_s && off + d.t[i] <= x1 - x0) { lo = Math.min(lo, d.mn[i]); hi = Math.max(hi, d.mx[i]); }
+  if (!isFinite(lo)) { lo = 0; hi = 1; }
+  if (hi - lo < 1e-9) { hi += 0.5; lo -= 0.5; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  [lo, hi] = ejeY(f, lo, hi);
+  const Y = v => f.y + f.h - (v - lo) / (hi - lo) * f.h;
+  const p = paso125((hi - lo) / Math.max(2, Math.floor(f.h / 32)));
+  g.fillStyle = css("--suave"); g.textAlign = "right"; g.font = "11px Segoe UI, sans-serif";
+  for (let v = Math.ceil(lo / p) * p; v <= hi; v += p) {
+    const yy = Math.round(Y(v)) + .5;
+    g.strokeStyle = css("--rejilla"); g.beginPath(); g.moveTo(margenIzq, yy); g.lineTo(W - margenDer, yy); g.stroke();
+    g.fillText(String(+v.toPrecision(4)).replace(".", ","), margenIzq - 6, yy);
+  }
+  g.save(); g.translate(14, f.y + f.h / 2); g.rotate(-Math.PI / 2); g.textAlign = "center"; g.fillText(`C${f.c} (V)`, 0, 0); g.restore();
+  const on = visible[kB] !== false;
+  g.save(); g.beginPath(); g.rect(margenIzq, f.y, W - margenIzq - margenDer, f.h); g.clip();
+  if (on) {
+    g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1.3;
+    if (d.crudo) {                 // muestras reales: linea y, si caben, un punto por muestra
+      g.beginPath(); d.t.forEach((t, i) => i ? g.lineTo(X(t), Y(d.mn[i])) : g.moveTo(X(t), Y(d.mn[i]))); g.stroke();
+      if (d.t.length < (W - margenIzq - margenDer) / 4) d.t.forEach((t, i) => { g.beginPath(); g.arc(X(t), Y(d.mn[i]), 2, 0, 7); g.fill(); });
+    } else {                       // minimo y maximo reales de cada tramo (todas las muestras, sin perder picos)
+      g.beginPath();
+      d.t.forEach((t, i) => { const x = Math.round(X(t)) + .5; g.moveTo(x, Y(d.mn[i])); g.lineTo(x, Math.min(Y(d.mx[i]), Y(d.mn[i]) - 1)); });
+      g.stroke();
+    }
+  }
+  g.restore();
+  const paso = d.paso_s, pt = paso >= 1e-3 ? `${+(paso * 1e3).toPrecision(3)} ms` : paso >= 1e-6 ? `${+(paso * 1e6).toPrecision(3)} µs` : `${+(paso * 1e9).toPrecision(3)} ns`;
+  const texto = d.crudo ? `${nombre} · muestras reales (cada ${pt})` : `${nombre} · mín–máx real cada ${pt}`.replace(".", ",");
+  g.font = "12px Segoe UI, sans-serif";
+  const anchoL = g.measureText(texto).width + 44, lx = W - margenDer - anchoL - 6, ly = f.y + 6;
+  g.fillStyle = css("--panel"); g.globalAlpha = .92; g.fillRect(lx, ly, anchoL, 25); g.globalAlpha = 1;
+  g.strokeStyle = css("--borde"); g.strokeRect(lx + .5, ly + .5, anchoL - 1, 24);
+  g.globalAlpha = on ? 1 : .35; g.strokeStyle = col; g.lineWidth = 1.6;
+  g.beginPath(); g.moveTo(lx + 8, ly + 12); g.lineTo(lx + 32, ly + 12); g.stroke();
+  g.fillStyle = css("--texto"); g.textAlign = "left"; g.fillText(texto, lx + 38, ly + 12); g.globalAlpha = 1;
+  leyendas.push({ x: lx, y: ly + 4, w: anchoL, h: 17, clave: kB });
+}
+// vista general: todo lo que hay en memoria, con el recuadro de lo que se ve
+function dibujarGeneral() {
+  const [g, W, H] = preparar(cg);
+  const [a, b0] = extremos(), b = Math.max(b0, a + 1), X = t => 6 + (t - a) / (b - a) * (W - 12);
+  cg.dataset.a = a; cg.dataset.b = b;
+  if (!D.t.length) {
+    const c = Object.keys(O.datos).sort()[0], s = c && O.datos[c];
+    if (s && s.t.length) {
+      let lo = Infinity, hi = -Infinity; for (const v of s.me) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+      g.strokeStyle = css("--c" + c); g.lineWidth = 1; g.beginPath();
+      const paso = Math.max(1, Math.floor(s.t.length / W));
+      for (let i = 0; i < s.t.length; i += paso) { const y = H - 6 - (hi > lo ? (s.me[i] - lo) / (hi - lo) : .5) * (H - 12); i ? g.lineTo(X(s.t[i]), y) : g.moveTo(X(s.t[i]), y); }
+      g.stroke();
+    }
+    g.fillStyle = css("--acento"); g.globalAlpha = .15; g.fillRect(X(x0), 2, X(x1) - X(x0), H - 4); g.globalAlpha = 1;
+    g.strokeStyle = css("--acento"); g.lineWidth = 1.5; g.strokeRect(X(x0), 2, X(x1) - X(x0), H - 4);
+    return;
+  }
+  // estado por tramos (apagada / CC / CV / CP), como la franja de eventos
+  const col = { apagada: css("--apagada"), CC: css("--cc"), CV: css("--cv"), CP: css("--cp") };
+  const est = i => D.est[i];
+  let ini = 0;
+  for (let i = 1; i <= D.t.length; i++) {
+    if (i < D.t.length && est(i) === est(ini)) continue;
+    g.fillStyle = col[est(ini)]; g.fillRect(X(D.t[ini]), 6, X(D.t[Math.min(i, D.t.length - 1)]) - X(D.t[ini]) + 1, H - 12);
+    ini = i;
+  }
+  // P medida normalizada
+  let pm = 0; for (const v of D.P) if (v > pm) pm = v;
+  g.strokeStyle = css("--acento"); g.lineWidth = 1; g.beginPath();
+  const paso = Math.max(1, Math.floor(D.t.length / W));
+  for (let i = 0; i < D.t.length; i += paso) { const y = H - 6 - (pm ? D.P[i] / pm : 0) * (H - 12); i ? g.lineTo(X(D.t[i]), y) : g.moveTo(X(D.t[i]), y); }
+  g.stroke();
+  g.fillStyle = css("--acento"); g.globalAlpha = .15; g.fillRect(X(x0), 2, X(x1) - X(x0), H - 4); g.globalAlpha = 1;
+  g.strokeStyle = css("--acento"); g.lineWidth = 1.5; g.strokeRect(X(x0), 2, X(x1) - X(x0), H - 4);
+}
+
+// ------------------------------------------------------------------ raton: cursor, zoom, rueda, leyenda
+let cursorX = null, arrastre = null;
+function enFranjas(y) { return franjas.length && y >= franjas[0].y && y <= franjas[franjas.length - 1].y + franjas[franjas.length - 1].h; }
+// Lectura al pasar el ratón (2026-11-04): fuente, canales del osciloscopio y temperaturas de ese instante; en
+// «Mostrar ▾ → En la lectura del ratón» se elige qué sale (se recuerda en este navegador)
+let lecturaOculta = new Set();
+try { lecturaOculta = new Set(JSON.parse(localStorage.getItem("vivo_lectura") || "[]")); } catch (e) { }
+const enLectura = k => !lecturaOculta.has(k) && !lecturaOculta.has(k.split(".")[0]);
+function cambiarLectura(k, si) {
+  if (si) lecturaOculta.delete(k); else lecturaOculta.add(k);
+  try { localStorage.setItem("vivo_lectura", JSON.stringify([...lecturaOculta])); } catch (e) { }
+  pedirDibujo();
+}
+function dibujarCursor(g, W, X) {
+  const t = x0 + (cursorX - margenIzq) / (W - margenIzq - margenDer) * (x1 - x0);
+  if (t < x0 || t > x1) return;
+  const cerca = (ts, x) => { let i = Math.min(ts.length - 1, buscarEn(ts, x)); if (i > 0 && x - ts[i - 1] < ts[i] - x) i--; return i; };
+  const marca = col => `<i class="mc" style="background:${col}"></i>`;
+  const filas = [];
+  let tRef = t, cab = "";
+  // fuente: la muestra más cercana (la línea vertical se pega a ella)
+  if (D.t.length && ver("fuente")) {
+    let i = Math.min(D.t.length - 1, buscar(t)); if (i > 0 && t - D.t[i - 1] < D.t[i] - t) i--;
+    tRef = D.t[i];
+    if (enLectura("fuente.salida")) cab = ` · salida ${D.sal[i] ? "ON" : "OFF"}` + (D.sal[i] && D.modo[i] ? ` · ${D.modo[i]} · regula ${QUE[D.modo[i]]}` : "");
+    for (const m of MAG) if (enLectura("fuente." + m.k))
+      filas.push(`${marca(css("--fuente"))}${m.k} <b>${fmt(D[m.k][i], m.d)}</b> ${m.u} <span class="suave">(consigna ${fmt(D["c" + m.k][i], m.d)})</span>`);
+  }
+  // osciloscopio: el tramo de 0,1 s más cercano
+  if (ver("osc")) for (const c of Object.keys(O.datos).sort()) {
+    const s = O.datos[c];
+    if (!s.t.length || !enLectura("osc." + c)) continue;
+    const j = cerca(s.t, tRef);
+    filas.push(Math.abs(s.t[j] - tRef) > 0.5 ? `${marca(css("--c" + c))}C${c} —`
+      : `${marca(css("--c" + c))}C${c} <b>${fmt(s.me[j], 3)}</b> V <span class="suave">(mín ${fmt(s.mn[j], 3)} · máx ${fmt(s.mx[j], 3)})</span>` +
+        (s.rec[j] ? ' <span style="color:var(--mal)">recortada</span>' : ""));
+  }
+  // temperaturas: la medida más cercana de cada termopar (en rojo si pasa su límite)
+  if (ver("temp")) T.canales.forEach((c, j) => {
+    const s = T.datos[c.id];
+    if (!s || !s.t.length || !enLectura("temp." + c.id)) return;
+    const k = cerca(s.t, tRef), v = Math.abs(s.t[k] - tRef) > 3 ? null : s.v[k];
+    const alarma = v != null && c.limite_C != null && v >= c.limite_C;
+    filas.push(`${marca(colorT(c, j))}${txtT(c.nombre)} <b${alarma ? ' style="color:var(--mal)"' : ""}>${v == null ? "—" : fmt(v, 1)}</b> °C` +
+      (alarma ? ' <span style="color:var(--mal)">por encima del límite</span>' : ""));
+  });
+  const x = Math.round(X(tRef)) + .5;
+  g.strokeStyle = css("--texto"); g.globalAlpha = .5; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(x, franjas[0].y); g.lineTo(x, franjas[franjas.length - 1].y + franjas[franjas.length - 1].h); g.stroke(); g.globalAlpha = 1;
+  const d = new Date(Math.floor(tRef) * 1000), z = n => String(n).padStart(2, "0");
+  const L = $("#lectura");
+  L.innerHTML = `${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())},${(tRef - Math.floor(tRef)).toFixed(3).slice(2)}${cab}` +
+    (filas.length ? "<br>" + filas.join("<br>") : "");
+  L.style.display = "block";
+  L.style.left = (x + 14 + L.offsetWidth < W ? x + 14 : x - 14 - L.offsetWidth) + "px";
+  L.style.top = ((franjas[1] || franjas[0]).y + 4) + "px";
+}
+// ------------------------------------------------------------------ ✂ Tramo (2026-11-04)
+let modoTramo = false, tramoSel = null, tramoUltimo = null;
+const horaMs = t => { const d = new Date(Math.floor(t) * 1000), z = n => String(n).padStart(2, "0");
+  return `${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())},${(t - Math.floor(t)).toFixed(3).slice(2)}`; };
+const durTxt = s => s >= 60 ? `${Math.floor(s / 60)} min ${(s % 60).toFixed(0)} s` : s >= 1 ? `${s.toFixed(2).replace(".", ",")} s`
+  : s >= 1e-3 ? `${(s * 1e3).toPrecision(3).replace(".", ",")} ms` : `${(s * 1e6).toPrecision(3).replace(".", ",")} µs`;
+$("#bTramo").onclick = () => {
+  modoTramo = !modoTramo; $("#bTramo").classList.toggle("activo", modoTramo);
+  // texto corto: uno largo empujaba APAGAR a otra linea de la cabecera
+  $("#bTramo").textContent = modoTramo ? "✂ Marcando…" : "✂ Tramo";
+  $("#bTramo").title = modoTramo ? "Arrastra sobre la gráfica para marcar el tramo (pulsa otra vez para dejar de marcar)"
+    : "Marcar un tramo arrastrando sobre la gráfica y guardarlo (fuente, osciloscopio con sus muestras reales y temperaturas)";
+  if (!modoTramo && $("#panelTramo").style.display === "none") { tramoSel = null; pedirDibujo(); }
+};
+async function abrirTramo(t0, t1) {
+  tramoSel = { t0, t1 };
+  $("#tramoHoras").textContent = `${horaMs(t0)} → ${horaMs(t1)} · ${durTxt(t1 - t0)}`;
+  // qué hay en ese tramo (lo que no hay sale desmarcado y en gris)
+  const hay = { fuente: D.t.some(t => t >= t0 && t <= t1),
+    osc: Object.values(O.datos).some(s => s.t.some(t => t >= t0 - 0.1 && t <= t1)),
+    temp: Object.values(T.datos).some(s => s.t.some(t => t >= t0 && t <= t1)) };
+  $$("#tramoQue input").forEach(i => { i.checked = hay[i.dataset.q]; i.disabled = !hay[i.dataset.q]; });
+  $("#tramoRes").textContent = ""; $("#bTramoAbrir").style.display = "none"; $("#bTramoGuardar").disabled = false;
+  const sel = $("#tramoProy");
+  if (!sel.options.length) {
+    try {
+      const ps = await (await fetch("/api/almacen/proyectos")).json();
+      sel.innerHTML = ps.map(p => `<option>${txt(p)}</option>`).join("");
+      let ult = ""; try { ult = localStorage.getItem("tramo_proyecto") || ""; } catch (e) { }
+      if (ult && ps.includes(ult)) sel.value = ult;
+    } catch (e) { }
+  }
+  // justo bajo la cabecera (si se parte en dos lineas en una ventana estrecha, no tapa APAGAR)
+  $("#panelTramo").style.top = Math.round(document.querySelector("header").getBoundingClientRect().bottom + 6) + "px";
+  $("#panelTramo").style.display = "block";
+  pedirDibujo();
+}
+$("#bTramoCancelar").onclick = () => { $("#panelTramo").style.display = "none"; tramoSel = null; pedirDibujo(); };
+$("#bTramoGuardar").onclick = async () => {
+  if (!tramoSel) return;
+  const que = {}; $$("#tramoQue input").forEach(i => que[i.dataset.q] = i.checked && !i.disabled);
+  if (!Object.values(que).some(Boolean)) { $("#tramoRes").textContent = "Marca al menos una cosa que guardar"; return; }
+  const b = $("#bTramoGuardar"); b.disabled = true; $("#tramoRes").textContent = "Guardando…";
+  try {
+    const r = await fetch("/api/tramo/guardar", { method: "POST", headers: { "Content-Type": "application/json", "X-Autor": "usuario" },
+      body: JSON.stringify({ t0: tramoSel.t0, t1: tramoSel.t1, que, proyecto: $("#tramoProy").value,
+        carpeta: $("#tramoCarpeta").value.trim(), nombre: $("#tramoNombre").value.trim(), notas: $("#tramoNotas").value.trim() }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.detail || r.statusText);
+    try { localStorage.setItem("tramo_proyecto", $("#tramoProy").value); } catch (e) { }
+    tramoUltimo = j.ruta;
+    $("#tramoRes").textContent = `Guardado en ${j.ruta}\n` + Object.entries(j.ficheros).map(([f, e]) => `· ${f}: ${e}`).join("\n");
+    $("#bTramoAbrir").style.display = "";
+  } catch (e) { $("#tramoRes").textContent = "No se guardó: " + e.message; b.disabled = false; }
+};
+$("#bTramoAbrir").onclick = () => tramoUltimo && fetch("/api/abrir_carpeta", { method: "POST",
+  headers: { "Content-Type": "application/json", "X-Autor": "usuario" }, body: JSON.stringify({ rel: tramoUltimo }) });
+// dentro del panel (?incrustado=1): «⧉ Sacar» la lleva a una ventana emergente; en esa ventana (?emergente=1):
+// «⇲ Volver al panel» la devuelve (2026-11-04)
+{
+  const q = new URLSearchParams(location.search), dentro = q.get("incrustado") === "1", fuera = q.get("emergente") === "1";
+  const b = $("#bAcoplar");
+  if (dentro) document.body.classList.add("incrustado");
+  if (dentro || (fuera && opener)) {
+    b.hidden = false;
+    b.textContent = dentro ? "⧉ Sacar" : "⇲ Volver al panel";
+    b.title = dentro ? "Saca la gráfica a una ventana emergente; el panel se reorganiza"
+      : "Devuelve la gráfica al panel y cierra esta ventana";
+    b.onclick = () => {
+      // llamada directa (misma web): la ventana emergente se abre dentro del clic y el navegador no la bloquea
+      const destino = dentro ? parent : opener, fn = dentro ? "sacarVivo" : "traerVivo";
+      try { if (typeof destino[fn] === "function") destino[fn](); else destino.postMessage({ vivo: dentro ? "sacar" : "traer" }, location.origin); }
+      catch (e) { try { destino.postMessage({ vivo: dentro ? "sacar" : "traer" }, location.origin); } catch (e2) { } }
+      if (fuera) setTimeout(() => close(), 150);
+    };
+  }
+  if (fuera) document.title = "En vivo · panel";
+  // dentro del panel, Esc también le llega al panel (p. ej. para salir de «Solo mirar» después de tocar la gráfica)
+  if (dentro) addEventListener("keydown", ev => {
+    if (ev.key === "Escape") try { parent.postMessage({ vivo: "esc" }, location.origin); } catch (e) { }
+  });
+}
+addEventListener("storage", ev => {
+  if (ev.key !== "tema") return;
+  if (ev.newValue === "light" || ev.newValue === "dark") document.documentElement.dataset.theme = ev.newValue;
+  else delete document.documentElement.dataset.theme;
+  pedirDibujo();
+});
+function tiempoEn(px) { const W = cv.clientWidth; return x0 + (px - margenIzq) / (W - margenIzq - margenDer) * (x1 - x0); }
+cv.addEventListener("mousemove", e => {
+  const r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  if (arrastre) { arrastre.x1 = px; pedirDibujo(); dibujarSeleccion(); return; }
+  const sobreLeyenda = leyendas.some(l => px >= l.x && px <= l.x + l.w && py >= l.y && py <= l.y + l.h);
+  cv.style.cursor = sobreLeyenda ? "pointer" : "crosshair";
+  cursorX = px >= margenIzq && enFranjas(py) && !sobreLeyenda ? px : null;
+  if (cursorX === null) $("#lectura").style.display = "none";
+  pedirDibujo();
+});
+cv.addEventListener("mouseleave", () => { cursorX = null; $("#lectura").style.display = "none"; pedirDibujo(); });
+cv.addEventListener("mousedown", e => {
+  const r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  const l = leyendas.find(l => px >= l.x && px <= l.x + l.w && py >= l.y && py <= l.y + l.h);
+  if (l) { visible[l.clave] = visible[l.clave] === false; pedirDibujo(); return; }
+  if (px >= margenIzq && enFranjas(py)) arrastre = { x0: px, x1: px };
+});
+addEventListener("mouseup", () => {
+  if (!arrastre) return;
+  const a = Math.min(arrastre.x0, arrastre.x1), b = Math.max(arrastre.x0, arrastre.x1);
+  if (b - a > 6) {
+    const ta = tiempoEn(a), tb = tiempoEn(b);
+    if (modoTramo) abrirTramo(ta, tb);
+    else { x0 = ta; x1 = tb; ponerSeguir(false); }
+  }
+  arrastre = null; pedirDibujo();
+});
+function dibujarSeleccion() {
+  requestAnimationFrame(() => {
+    if (!arrastre) return;
+    const g = cv.getContext("2d"), k = devicePixelRatio || 1; g.setTransform(k, 0, 0, k, 0, 0);
+    const a = Math.min(arrastre.x0, arrastre.x1), b = Math.max(arrastre.x0, arrastre.x1);
+    g.fillStyle = css("--acento"); g.globalAlpha = .15;
+    g.fillRect(a, franjas[0].y, b - a, franjas[franjas.length - 1].y + franjas[franjas.length - 1].h - franjas[0].y);
+    g.globalAlpha = 1;
+  });
+}
+cv.addEventListener("wheel", e => {
+  e.preventDefault();
+  const r0 = cv.getBoundingClientRect(), px = e.clientX - r0.left, py = e.clientY - r0.top;
+  const fy = px < margenIzq ? franjaEn(py) : null;
+  if (fy) {                                   // sobre el eje Y: zoom vertical de esa franja, centrado en el raton
+    const b = yZoom[fy.clave] || { lo: fy.lo, hi: fy.hi };
+    const v = b.hi - (py - fy.y) / fy.h * (b.hi - b.lo), k = e.deltaY > 0 ? 1.25 : 0.8;
+    yZoom[fy.clave] = { lo: v - (v - b.lo) * k, hi: v + (b.hi - v) * k };
+    pedirDibujo(); return;
+  }
+  const r = cv.getBoundingClientRect(), t = tiempoEn(e.clientX - r.left), f = e.deltaY > 0 ? 1.25 : 0.8;
+  rango(); x0 = t - (t - x0) * f; x1 = t + (x1 - t) * f; ponerSeguir(false);
+}, { passive: false });
+cv.addEventListener("dblclick", e => {
+  const r = cv.getBoundingClientRect(), fy = e.clientX - r.left < margenIzq ? franjaEn(e.clientY - r.top) : null;
+  if (fy) { delete yZoom[fy.clave]; pedirDibujo(); return; }      // doble clic en el eje Y: automatico
+  yZoom = {}; ponerSeguir(true);
+});
+// vista general: arrastrar el recuadro (o clic para centrar ahi)
+let moverGeneral = null;
+cg.addEventListener("mousedown", e => { moverGeneral = { px: e.clientX, x0, x1 }; moverGen(e, true); });
+addEventListener("mousemove", e => { if (moverGeneral) moverGen(e, false); });
+addEventListener("mouseup", () => { moverGeneral = null; });
+function moverGen(e, clic) {
+  const r = cg.getBoundingClientRect(), a = +cg.dataset.a, b = +cg.dataset.b, ancho = x1 - x0;
+  if (!b) return;
+  const t = a + (e.clientX - r.left - 6) / (r.width - 12) * (b - a);
+  if (clic && (t < x0 || t > x1)) { x0 = t - ancho / 2; x1 = t + ancho / 2; }
+  else if (!clic) { const dt = (e.clientX - moverGeneral.px) / (r.width - 12) * (b - a); x0 = moverGeneral.x0 + dt; x1 = moverGeneral.x1 + dt; }
+  ponerSeguir(false);
+}
+addEventListener("resize", pedirDibujo);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", pedirDibujo);
+
+ponerSeguir(true);
+traer(); traerOsc(); estado();
+setInterval(traer, 500);
+setInterval(traerOsc, 500);
+setInterval(traerTemp, 100);       // lo mas rapido: el TC-08 da un dato cada 200 ms
+setInterval(estado, 1000);
+setInterval(() => { if (seguir) pedirDibujo(); }, 500);
+</script>
+</body>
+</html>

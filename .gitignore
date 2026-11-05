@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.log
+*.h5
+*.tdms
+.env
+config_local*
+*.antes_*
+_descartado_*/
+pruebas/informes/
