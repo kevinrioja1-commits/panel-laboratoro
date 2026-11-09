@@ -1014,6 +1014,9 @@ class Osciloscopio:
         if abs(div - round(div)) > 1e-9:
             raise ValueError(f"{sr:g} Sa/s no divide exactamente 5 GSa/s: el osciloscopio interpolaría y no hay "
                              "continuidad garantizada")
+        if sr < 5e3:     # 9-nov: mínimo medido en Roll (a 2 y 1 kSa/s el datalogger se quedaba colgado)
+            raise ValueError(f"{sr:g} Sa/s está por debajo del mínimo que admite el osciloscopio en Roll "
+                             "(5 kSa/s, medido el 9-nov)")
         if sr * len(canales) > 12.5e6:
             raise ValueError(f"{sr * len(canales) / 1e6:g} MSa/s en total supera el máximo medido (~12,5 MSa/s). "
                              f"Con {len(canales)} canales, como mucho {12.5 / len(canales):g} MSa/s por canal")

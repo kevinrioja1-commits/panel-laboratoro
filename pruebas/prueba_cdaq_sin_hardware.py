@@ -111,11 +111,21 @@ class FSystem:
 class FChan:
     def __init__(self, **kw):
         self.__dict__.update(kw)
+        self.name = kw.get("nombre", "")      # como AIChannel.name (lectura de vuelta del driver)
 
 
 class FColl:
     def __init__(self, t):
         self.t, self.chans = t, []
+
+    def __len__(self):                 # 9-nov: la lectura de vuelta del driver recorre los canales
+        return len(self.chans)
+
+    def __getitem__(self, i):
+        return self.chans[i]
+
+    def __iter__(self):
+        return iter(self.chans)
 
     def add_ai_thrmcpl_chan(self, physical_channel, name_to_assign_to_channel='', min_val=0.0, max_val=100.0,
                             units=K.TemperatureUnits.DEG_C, thermocouple_type=K.ThermocoupleType.J,
@@ -138,6 +148,7 @@ class FColl:
 class FIn:
     def __init__(self, t):
         self.t, self._leido = t, False
+        self.input_buf_size, self.avail_samp_per_chan = None, 1
 
     @property
     def open_thrmcpl_chans_exist(self):
@@ -159,10 +170,21 @@ class FIn:
         return sorted(B.modo_comun & {c.nombre for c in self.t.ai_channels.chans})
 
 
+class FTiming:
+    """9-nov: el panel mide por defecto con reloj de hardware (continuo)."""
+    def __init__(self):
+        self.samp_timing_type, self.samp_clk_rate, self.samp_quant_samp_mode = K.SampleTimingType.ON_DEMAND, None, None
+
+    def cfg_samp_clk_timing(self, rate, source="", active_edge=None, sample_mode=None, samps_per_chan=1000):
+        _hilo("cfg_samp_clk_timing")
+        self.samp_timing_type, self.samp_clk_rate, self.samp_quant_samp_mode = K.SampleTimingType.SAMPLE_CLOCK, rate, sample_mode
+
+
 class FTask:
     def __init__(self, new_task_name=""):
         _hilo("Task")
         self.ai_channels, self.in_stream = FColl(self), FIn(self)
+        self.timing = FTiming()
         self.arrancada = self.cerrada = False
         B.tareas.append(self)
 
@@ -178,11 +200,22 @@ class FTask:
             raise DaqError("Device cannot be accessed.", B.fallo_read)
         v = [(100.0 if c.nombre in B.abiertos else 20.0 + int(c.nombre[2:])) if c.medida == "tc"
              else 1.5 + int(c.nombre[1:]) for c in self.ai_channels.chans]
+        if number_of_samples_per_channel is not None:     # con reloj: una muestra nueva por canal en cada lectura
+            return [[x] for x in v] if len(v) > 1 else [v[0]]
         return v[0] if len(v) == 1 else v
 
     def close(self):
         _hilo("close")
         self.cerrada = True
+
+
+def hay_chasis_real():
+    """9-nov: con el chasis conectado, lo de «sin chasis» no se puede probar (sale OMITIDA)."""
+    try:
+        import nidaqmx.system
+        return bool(list(nidaqmx.system.System.local().devices))
+    except Exception:
+        return False
 
 
 def firmas_iguales(falso, real):
@@ -444,7 +477,7 @@ try:
     s = cdaq.BackendSimulado(abiertos={1})
     s.abrir(cfg)
     lect = s.leer()
-    ok("simulado: puede simular un termopar abierto", lect["sim.9213.ai1"][1] is None and lect["sim.9213.ai1"][2] == "abierto")
+    ok("simulado: puede simular un termopar abierto", lect["sim.9213.ai1"][0][1] is None and lect["sim.9213.ai1"][0][2] == "abierto")
 except Exception:
     ok("bloque 7 sin excepciones", False, traceback.format_exc()[-300:])
 finally:
@@ -539,8 +572,11 @@ try:
     ok("descubrir: un error que no es de DAQmx tampoco aborta", "error" in d2["canales"]["AI"]["cDAQ1Mod1/ai0"]["ai_meas_types"])
     md = dsc.a_markdown(inv)
     ok("descubrir: markdown con tabla de dispositivos y aviso de serie", "| cDAQ1Mod1 |" in md and "números de serie" in md)
-    ok("descubrir: real sin chasis termina limpio (0) sin escribir",
-       dsc.main(["--salida", os.path.join(TMP, "desc")]) == 0 and not os.path.exists(os.path.join(TMP, "desc")))
+    if hay_chasis_real():
+        print("OMITIDA descubrir: real sin chasis (el chasis está conectado)", flush=True)
+    else:
+        ok("descubrir: real sin chasis termina limpio (0) sin escribir",
+           dsc.main(["--salida", os.path.join(TMP, "desc")]) == 0 and not os.path.exists(os.path.join(TMP, "desc")))
 except Exception:
     ok("bloque 9 sin excepciones", False, traceback.format_exc()[-300:])
 

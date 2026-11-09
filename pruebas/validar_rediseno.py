@@ -183,6 +183,12 @@ window.T = {
   var: (n, el) => getComputedStyle(el || document.documentElement).getPropertyValue(n).trim().toLowerCase(),
   bg: s => getComputedStyle(typeof s === "string" ? document.querySelector(s) : s).backgroundColor,
   marcar: (id, si) => { const i = document.querySelector(id); if (i.checked !== si) i.click(); return i.checked; },
+  // 9-nov: un equipo conectado no se puede desmarcar. Para recorrer las combinaciones como si no lo estuvieran, se
+  // apaga durante la prueba lo que fuerza «en uso» y se desbloquean las casillas; T.usoReal() lo devuelve todo.
+  usoSimulado: () => { if (!window.__usoPC) window.__usoPC = usoPorConexion; usoPorConexion = () => {};
+    ['#usaOsc', '#usaFte', '#usaTemp'].forEach(s => document.querySelector(s).disabled = false); return true; },
+  usoReal: () => { if (window.__usoPC) { usoPorConexion = window.__usoPC; window.__usoPC = null; } refrescar(); return true; },
+  caja: s => { const r = document.querySelector(s).getBoundingClientRect(); return [r.left, r.top, r.width, r.height, r.bottom]; },
 };
 true
 """
@@ -217,7 +223,10 @@ def huella_servidor(E):
 PEOR_CABECERA = """clearInterval(window.__peor); window.__peor = setInterval(() => {
   T.q('#pOsc').innerHTML = '<span class="nl">Osciloscopio</span><span class="nc">Osc.</span> · sin comunicación';
   T.q('#pFte').textContent = 'Fuente · sin comunicación'; T.q('#pPl').textContent = 'TC-08 · 8 canales · ⚠ LÍMITE';
-  if (uso.fte) { T.q('#cabFte').hidden = false; T.q('#cabSal').textContent = 'ON · 12,34 V · 1,234 A'; }
+  if (uso.fte) { T.q('#cabFte').hidden = false; T.q('#cabSal').textContent = 'ON'; }   /* 9-nov: la cabecera solo dice ON/OFF */
+  /* 9-nov: los equipos nuevos con su texto más largo */
+  T.q('#pSpd').hidden = false; T.q('#usaSpd').closest('label').hidden = false; T.q('#pSpd').innerHTML = 'Siglent<span class="est"> · sin conexión</span>';
+  T.q('#pCdaq').hidden = false; T.q('#pCdaq').innerHTML = 'cDAQ<span class="est"> · sin USB</span> ● ⚠';
   T.q('#bManual').classList.add('oculto'); T.q('#bRetomar').classList.remove('oculto'); }, 50); true"""
 ESTABLE = r"C:\Users\kgaviria\Documents\Copias\version_20261104_estable\Panel_laboratorio"
 PANEL = os.path.dirname(AQUI)
@@ -251,6 +260,86 @@ def sin_desborde(P, grupo, donde):
         f"la página mide {P.js('document.documentElement.scrollWidth')} px de ancho y la ventana {P.js('innerWidth')}" if d else "")
 
 
+def disposicion_v4(P, EQ, foto):
+    """9-nov: las 5 diferencias con la propuesta v4 (https://claude.ai/artifact/37psUco32fkSJxp74WWSWR) arregladas:
+    APAGAR con la fuente conectada, pantalla pequeña con la gráfica, fuente arriba a la derecha, fichas bajo la
+    pantalla (canales arriba; horizontal y disparo abajo) y la tarjeta de la fuente sin hueco en ventana estrecha."""
+    G = "V4 disposición"
+    if not EQ.get("osc"):
+        chk(G, "disposición v4 (necesita la pantalla del osciloscopio)", None, "sin osciloscopio")
+        return
+    P.tamano(1536, 864)
+    P.js("T.clic('#selPrincipal button[data-p=pantalla]')")
+    time.sleep(1.2)
+    if EQ.get("fte"):
+        chk(G, "1536×864, pantalla: la fuente arriba de la columna derecha (no bajo la pantalla)",
+            P.js("!!T.q('#cajaFte').closest('#lado') && !T.q('#cajaFte').closest('#izq')"))
+        chk(G, "1536×864, pantalla: APAGAR de la tarjeta a la vista sin desplazar",
+            P.js("(() => { const r = T.q('#bOff').getBoundingClientRect(); return r.width > 0 && r.bottom <= innerHeight; })()"))
+    chk(G, "fichas justo bajo la pantalla", P.js("T.q('#cajaLeer').previousElementSibling === T.q('#cajaVista')"))
+    chk(G, "fichas: los cuatro canales en la fila de arriba",
+        P.js("T.q('#fichasOsc .fichas-can').querySelectorAll('.ficha[data-sec=secCan]').length === 4"))
+    chk(G, "fichas: horizontal y disparo en la fila de abajo",
+        P.js("(() => { const c = T.q('#fichasOsc .fichas-can .ficha').getBoundingClientRect().top;"
+             " const o = [...document.querySelectorAll('#fichasOsc .fichas-otras .ficha')];"
+             " return o.length === 2 && o.every(b => b.getBoundingClientRect().top > c + 10); })()"))
+    chk(G, "1536×864: las fichas se ven enteras sin desplazar (encima del historial)",
+        P.js("T.caja('#cajaLeer')[4] <= innerHeight - T.q('#historial').offsetHeight + 1"))
+    chk(G, "1536×864: la pantalla no se queda en el ancho mínimo (380 px)", P.js("T.caja('#cajaVista')[2] > 500"),
+        P.js("Math.round(T.caja('#cajaVista')[2]) + ' px'"))
+    # 9-nov: arrastrando el divisor la pantalla puede pasar del ajuste automático (antes tenía un tope por el alto)
+    auto = P.js("Math.round(T.caja('#izq')[2])")
+    P.js("anchoIzq = innerWidth - 500; ajustarVista()")
+    time.sleep(0.4)
+    ancho = P.js("Math.round(T.caja('#izq')[2])")
+    chk(G, "arrastrar el divisor: la pantalla se agranda por encima del ajuste automático",
+        ancho > auto + 50 and P.js("T.caja('#cajaVista .marco')[2] > " + str(auto)), f"automático {auto} px → arrastrado {ancho} px")
+    P.js("anchoIzq = null; ajustarVista()")
+    time.sleep(0.4)
+    foto("V4_pantalla_1536")
+    # con la gráfica en grande: la pantalla pequeña arriba a la derecha
+    P.js("T.clic('#selPrincipal button[data-p=grafica]')")
+    ok = P.esperar("document.body.classList.contains('vista-mini') && !!T.q('#cajaVista').closest('#lado')", 5)
+    chk(G, "gráfica en grande: la pantalla del osciloscopio pequeña en la columna derecha", ok)
+    if ok:
+        time.sleep(1)
+        chk(G, "la pantalla pequeña es pequeña (≤ 400 px)", P.js("T.caja('#cajaVista .marco')[2] <= 401"),
+            P.js("Math.round(T.caja('#cajaVista .marco')[2]) + ' px'"))
+        chk(G, "sus fichas debajo y la fuente después",
+            P.js("T.q('#cajaLeer').previousElementSibling === T.q('#cajaVista') && "
+                 "(!T.vis('#cajaFte') || !!(T.q('#cajaLeer').compareDocumentPosition(T.q('#cajaFte')) & 4))"))
+        chk(G, "en la pequeña los canales apagados sin «apagado» (no cabe)",
+            P.js("[...document.querySelectorAll('#fichasOsc .ficha.off span')].every(s => !T.vis(s))"))
+        foto("V4_grafica_mini_1536")
+        P.js("T.clic('#tapa')")
+        ok = P.esperar("!document.body.classList.contains('principal-grafica') && !!T.q('#cajaVista').closest('#izq')", 5)
+        chk(G, "clic en la pantalla pequeña: pasa a la zona grande", ok)
+    # ventana estrecha (700-1150 px): pantalla y fichas a la izquierda, fuente a la derecha y sin hueco
+    P.tamano(1056, 722)
+    P.js("T.clic('#selPrincipal button[data-p=pantalla]')")
+    time.sleep(1.2)
+    if EQ.get("fte"):
+        chk(G, "1056×722: la fuente al lado de la pantalla", P.js("T.caja('#cajaFte')[0] > T.caja('#cajaVista')[0] + 100"))
+        chk(G, "1056×722: la tarjeta de la fuente sin hueco (consignas < 120 px de alto)",
+            P.js("T.q('#cajaFte .consignas').getBoundingClientRect().height < 120"),
+            P.js("Math.round(T.q('#cajaFte .consignas').getBoundingClientRect().height) + ' px'"))
+    chk(G, "1056×722: las fichas bajo la pantalla", P.js("T.caja('#cajaLeer')[1] >= T.caja('#cajaVista')[4] - 1"))
+    foto("V4_estrecha_1056")
+    # 9-nov: historial abierto legible en los dos temas (en claro salía texto oscuro sobre el marco grafito)
+    for tema in ("light", "dark"):
+        P.js(f"document.documentElement.dataset.theme = '{tema}'; T.q('#historial').classList.add('abierto')")
+        time.sleep(0.3)
+        lum = ("(c => { const v = c.match(/[\\d.]+/g).map(Number).slice(0, 3).map(x => x / 255)"
+               ".map(x => x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; })")
+        con = P.js(f"(() => {{ const L = {lum}, e = T.q('#histCuerpo'), a = L(getComputedStyle(e).color), b = L(getComputedStyle(e).backgroundColor);"
+                   " return Math.round((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) * 10) / 10; })()")
+        chk(G, f"historial abierto legible en tema {'claro' if tema == 'light' else 'oscuro'} (contraste ≥ 4,5)", con >= 4.5, f"{con}:1")
+    P.js("T.q('#historial').classList.remove('abierto'); delete document.documentElement.dataset.theme")
+    P.tamano(1536, 864)
+    P.js("T.clic('#selPrincipal button[data-p=grafica]')")
+    time.sleep(0.6)
+
+
 def pruebas(P, url, EQ, carpeta):
     foto = lambda n: P.foto(os.path.join(carpeta, n + ".png"))
     combo = lambda: P.js("comboUso()")
@@ -270,6 +359,22 @@ def pruebas(P, url, EQ, carpeta):
     G = "A1 equipos en uso"
     chk(G, "tres casillas (osciloscopio, fuente, temperaturas) marcadas al empezar",
         P.js("['#usaOsc','#usaFte','#usaTemp'].every(s => T.q(s) && T.q(s).checked)"))
+    # 9-nov (2ª decisión del usuario): al conectarse se marca solo, pero se puede desmarcar aunque siga conectado
+    for k, s, n in (("osc", "#usaOsc", "osciloscopio"), ("fte", "#usaFte", "fuente"), ("temp", "#usaTemp", "temperaturas")):
+        if EQ.get(k):
+            P.js(f"T.marcar('{s}', false)")
+            time.sleep(1.5)                  # más que una lectura del estado: no debe volver a marcarse
+            chk(G, f"{n} conectado: se puede desmarcar y no se vuelve a marcar solo", P.js(f"!T.q('{s}').checked"))
+            P.js(f"T.marcar('{s}', true)")
+            time.sleep(0.3)
+    if EQ.get("osc"):   # al conectarse se marca: se simula que estaba desconectado en la lectura anterior
+        P.js("T.marcar('#usaOsc', false); CON_ANT = { ...CON_ANT, osc: false }")
+        ok = P.esperar("T.q('#usaOsc').checked", 4)
+        chk(G, "al conectarse un equipo, se marca solo", ok)
+    if EQ.get("fte"):
+        chk(G, "fuente conectada: Encender/APAGAR en la cabecera", P.js("T.vis('#cabFte') && T.vis('#cabOff')"))
+    # lo de antes, como si los equipos no estuvieran conectados
+    P.js("T.usoSimulado()")
     P.js("T.marcar('#usaOsc', false)")
     time.sleep(0.4)
     chk(G, "sin osciloscopio: se ocultan su pantalla, sus ajustes y el selector Pantalla/Gráfica",
@@ -277,11 +382,17 @@ def pruebas(P, url, EQ, carpeta):
     chk(G, "sin osciloscopio: la gráfica ocupa la zona grande", P.js("T.vis('#cajaVivo')"))
     P.js("T.marcar('#usaFte', false)")
     time.sleep(0.3)
-    chk(G, "sin fuente: su tarjeta y Encender/APAGAR de la cabecera no se ven", P.js("!T.vis('#cajaFte') && !T.vis('#cabFte')"))
+    # 9-nov: sin fuente en uso su tarjeta no se ve, pero si está conectada Encender/APAGAR siguen en la cabecera
+    chk(G, "sin fuente en uso: su tarjeta no se ve", P.js("!T.vis('#cajaFte')"))
+    # (9-nov) con la Siglent conectada, APAGAR (todas las fuentes) sigue en la cabecera aunque la EA no esté
+    chk(G, "sin fuente en uso: Encender/APAGAR en la cabecera solo si hay alguna fuente conectada",
+        P.js("T.vis('#cabFte') === (E.fuente.estado === 'conectada' || (E.siglent || {}).estado === 'conectada')"))
+    P.js("T.marcar('#usaSpd', false); T.marcar('#usaDaq', false)")    # 9-nov: Siglent y cDAQ también son equipos
+    time.sleep(0.3)
     P.js("T.marcar('#usaTemp', false)")
     time.sleep(0.3)
     chk(G, "no deja quitar el último equipo en uso", P.js("T.q('#usaTemp').checked"))
-    for s in ("#usaOsc", "#usaFte", "#usaTemp"):
+    for s in ("#usaOsc", "#usaFte", "#usaTemp", "#usaSpd", "#usaDaq"):
         P.js(f"T.marcar('{s}', true)")
     time.sleep(0.5)
     chk(G, "se recuerda en el navegador (enUso)", P.js("JSON.parse(localStorage.getItem('enUso')).osc === true"))
@@ -309,6 +420,7 @@ def pruebas(P, url, EQ, carpeta):
             P.js(f"T.q('#guardarModos button[data-g={hab_esp}]').classList.contains('recomendado')"), f"sale {habitual}")
     for s in ("#usaOsc", "#usaFte", "#usaTemp"):
         P.js(f"T.marcar('{s}', true)")
+    P.js("T.usoReal()")       # 9-nov: vuelve a mandar lo que está conectado
     time.sleep(0.4)
     # con los tres: gráfica dentro (vivo.html incrustado) y la fuente en la columna derecha
     ok = P.esperar("T.vis('#vivoIfr') && T.idoc() && T.idoc().readyState === 'complete' && "
@@ -355,14 +467,14 @@ def pruebas(P, url, EQ, carpeta):
         P.js("T.clic('#bSacarVivo')")
         chk(G, "«⇲ Traer la gráfica» de la barra la devuelve", P.esperar("!vivoFuera && T.vis('#vivoIfr')", 6))
         # sin osciloscopio la zona grande es la gráfica: estando fuera, aviso con «⇲ Traer la gráfica al panel»
-        P.js("T.marcar('#usaOsc', false)")
+        P.js("T.usoSimulado(); T.marcar('#usaOsc', false)")   # 9-nov: como si no estuviera conectado
         time.sleep(0.4)
         P.js("T.clic('#bSacarVivo')")
         P.esperar("vivoFuera && vivoVentana && !vivoVentana.closed", 6)
         chk(G, "sin osciloscopio y la gráfica fuera: aviso en la zona grande", P.esperar("T.vis('#vivoFuera') && T.vis('#bTraerVivo')", 4))
         P.js("T.clic('#bTraerVivo')")
         chk(G, "«⇲ Traer la gráfica al panel» la devuelve", P.esperar("!vivoFuera && T.vis('#vivoIfr')", 6))
-        P.js("T.marcar('#usaOsc', true)")
+        P.js("T.marcar('#usaOsc', true); T.usoReal()")
         P.esperar("T.vis('#vivoIfr')", 5)
         P.js("T.clic('#bSacarVivo')")
         P.esperar("vivoFuera && vivoVentana && !vivoVentana.closed", 6)
@@ -416,7 +528,8 @@ def pruebas(P, url, EQ, carpeta):
         r = P.js("(() => { const r = T.q('#cabOff').getBoundingClientRect(); return [r.top, r.bottom, innerHeight]; })()")
         chk(G, "APAGAR a la vista sin desplazar", r[0] >= 0 and r[1] <= r[2], r)
     else:
-        chk(G, "sin fuente conectada: la cabecera no muestra Encender/APAGAR", not P.js("T.vis('#cabFte')"))
+        chk(G, "sin la EA: la cabecera solo muestra APAGAR si la Siglent está conectada (apaga todas las fuentes)",
+            P.js("T.vis('#cabFte') === ((E.siglent || {}).estado === 'conectada') && !T.vis('#cabOn')"))
         chk(G, "Encender/APAGAR de la cabecera con la fuente", None, "fuente no conectada")
     # las píldoras dicen el estado real de cada equipo (el que da el servidor), entero
     eo = {"conectado": "listo", "desconectado": "listo", "manual": "modo manual", "datalogger": "registrando",
@@ -658,6 +771,9 @@ def pruebas(P, url, EQ, carpeta):
     P.js("__vt.close()")
     P.js("T.clic('#selPrincipal button[data-p=grafica]')")
     time.sleep(0.5)
+
+    # ---------------------------------------------------------- V4 · disposición de la propuesta v4 (9-nov)
+    disposicion_v4(P, EQ, foto)
 
     # ---------------------------------------------------------- tamaños de ventana
     G = "Tamaños"

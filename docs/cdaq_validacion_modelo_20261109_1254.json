@@ -1,0 +1,275 @@
+{
+ "resultados": [
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 modo_adc=alta_resolucion",
+   "driver HIGH_RESOLUTION, lee 24.56 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 modo_adc=alta_velocidad",
+   "driver HIGH_SPEED, lee 24.39 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 modo_adc=automatico",
+   "driver HIGH_RESOLUTION, lee 24.55 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 autozero=cada_muestra",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 autozero=una_vez",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 autozero=no",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 cjc=interna",
+   "lee 24.57 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 cjc=constante",
+   "lee 21.49 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 escala=polinomio",
+   "lee 24.56 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 escala=tabla",
+   "lee 24.58 °C"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 unidades=C",
+   "lee 24.56"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 unidades=F",
+   "lee 76.26"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "°F = °C × 1,8 + 32 (misma temperatura)",
+   "24.56 °C → 76.26 °F"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo J con su rango completo -210..1200 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo K con su rango completo -200..1372 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo N con su rango completo -200..1300 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo R con su rango completo -50..1768 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo S con su rango completo -50..1768 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo T con su rango completo -200..400 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo B con su rango completo 250..1820 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo E con su rango completo -200..1000 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo A con su rango completo 100..2480 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo C con su rango completo 0..2315 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 tipo B con escala tabla: 0..1820 °C",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 desfase de los cables (10 µV)",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 escala propia ×10 (sonda 10:1): lee 10 veces lo mismo",
+   "sin -2727.30 mV · con -27272.8 mV · rango (-100.0, 100.0)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 terminal RSE y rango ±10 V",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 velocidad de conversión 200 kHz",
+   "200000.0"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 muestreo=bajo_demanda",
+   "ON_DEMAND, 1 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 muestreo=bajo_demanda",
+   "ON_DEMAND, 1 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 muestreo=continuo",
+   "SAMPLE_CLOCK, 5 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 muestreo=continuo",
+   "SAMPLE_CLOCK, 5 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 muestreo=finito",
+   "SAMPLE_CLOCK, 5 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 muestreo=finito",
+   "SAMPLE_CLOCK, 5 muestra(s)"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 reloj externo PFI0 (configurado; sin señal no avanza)",
+   "/cDAQ1/PFI0"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 reloj externo PFI1 (configurado; sin señal no avanza)",
+   "/cDAQ1/PFI1"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 búfer 50000 y sobrescribir",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 disparo inicio por PFI0 ({'disparo_flanco': 'bajada'})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 disparo inicio por PFI0 ({'disparo_flanco': 'bajada'})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 disparo referencia por PFI0 ({'pre_muestras': 50})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 disparo referencia por PFI0 ({'pre_muestras': 50})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9213 disparo pausa por PFI0 ({'pausa_cuando': 'bajo'})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 disparo pausa por PFI0 ({'pausa_cuando': 'bajo'})",
+   ""
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 registro del driver «registrar» (TDMS)",
+   "6489 bytes, 500 muestras al releerlo"
+  ],
+  [
+   "OK",
+   "1 opción → driver",
+   "9201 registro del driver «registrar_y_leer» (TDMS)",
+   "6489 bytes, 500 muestras al releerlo"
+  ]
+ ],
+ "velocidad_9213": null
+}

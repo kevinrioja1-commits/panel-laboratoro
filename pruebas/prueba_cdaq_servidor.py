@@ -45,6 +45,8 @@ def hijo(escenario, codigo, salida):
 
     def load(f, *a, **k):
         d = _load(f, *a, **k)
+        if str(getattr(f, "name", "")).endswith("config.json") and escenario == "desactivado":
+            d["cdaq"]["habilitado"] = False     # 9-nov: el config.json real ya lo tiene habilitado
         if str(getattr(f, "name", "")).endswith("config.json") and escenario in ("sin_chasis", "simulado"):
             d["cdaq"]["habilitado"] = True
             d["cdaq"]["simulado"] = escenario == "simulado"
@@ -167,13 +169,23 @@ def main():
         if antes:
             nuevas = sorted(set(des["rutas"]) - set(antes["rutas"]))
             ok("igual que antes: todas las rutas de main siguen", set(antes["rutas"]) <= set(des["rutas"]), res=res)
-            ok("igual que antes: solo se añaden rutas /api/cdaq", all("/api/cdaq/" in r for r in nuevas), str(nuevas), res)
-            ok("igual que antes: /api/estado = las mismas claves + «cdaq»",
-               set(des["claves_estado"]) == set(antes["claves_estado"]) | {"cdaq"}, str(des["claves_estado"]), res)
+            # 9-nov: además del cDAQ, la Siglent (rutas /api/siglent y APAGAR TODO de todas las fuentes)
+            ok("igual que antes: solo se añaden rutas /api/cdaq, /api/siglent y /api/apagar_todo",
+               all("/api/cdaq/" in r or "/api/siglent/" in r or r.endswith("/api/apagar_todo") for r in nuevas), str(nuevas), res)
+            ok("igual que antes: /api/estado = las mismas claves + «cdaq» y «siglent»",
+               set(des["claves_estado"]) == set(antes["claves_estado"]) | {"cdaq", "siglent"}, str(des["claves_estado"]), res)
             iguales = all(des["claves_secciones"].get(k) == v for k, v in antes["claves_secciones"].items())
             ok("igual que antes: cada sección de /api/estado con las mismas claves", iguales, res=res)
-    sin = lanzar("sin_chasis", PANEL, tmp)
-    ok("sin chasis (habilitado): el servidor arranca", sin and sin["estado_http"] == 200, res=res)
+    try:
+        import nidaqmx.system
+        chasis = bool(list(nidaqmx.system.System.local().devices))
+    except Exception:
+        chasis = False
+    sin = None if chasis else lanzar("sin_chasis", PANEL, tmp)
+    if chasis:
+        print("OMITIDA sin chasis: el chasis está conectado (se prueba con validar_cdaq_panel.py)", flush=True)
+    else:
+        ok("sin chasis (habilitado): el servidor arranca", sin and sin["estado_http"] == 200, res=res)
     if sin:
         ok("sin chasis: el cDAQ aparece «no_disponible»", sin["cdaq_detectado"] == "no_disponible", sin["cdaq_detectado"], res)
         st, r = sin["pasos"]["tomar"]

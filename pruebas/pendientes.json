@@ -13,7 +13,51 @@
         "prueba_seguridad_simulada.py"
       ],
       "estado": "siempre",
-      "historial": []
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:11",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 34,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 08:32",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 34,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:00",
+          "equipos": [
+            "osc",
+            "fuente",
+            "cdaq",
+            "siglent"
+          ],
+          "OK": 34,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:50",
+          "equipos": [],
+          "resultado": "34 OK con plan.py de la fase 4"
+        }
+      ]
     },
     {
       "id": "como_antes_panel_equipos",
@@ -30,8 +74,21 @@
       "comando": [
         "validar_panel.py"
       ],
-      "estado": "pendiente",
-      "historial": []
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:12",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 37,
+          "FALLO": 0,
+          "AVISO": 1,
+          "OMITIDA": 0,
+          "fallos": []
+        }
+      ]
     },
     {
       "id": "como_antes_panel_salida",
@@ -50,14 +107,27 @@
         "validar_panel.py",
         "--salida"
       ],
-      "estado": "pendiente",
-      "historial": []
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:21",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 43,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        }
+      ]
     },
     {
       "id": "rediseno_v4",
       "tipo": "automatica",
       "titulo": "Rediseño v4 (fases A-E), colores, aspecto B y lectura del ratón, con los equipos reales",
-      "cambio": "4-nov: equipos en uso, zona principal, sacar/traer la gráfica, termopares, fichas del osciloscopio, Encender/APAGAR en la cabecera, barra de estado, Guardar con 4 modos, ensayo en 3 pasos, espacios de trabajo, Solo mirar, colores, aspecto B, lectura del ratón con temperaturas. Validado con el banco sin equipos el 4-nov (149 OK). También: Esc en Solo mirar tras tocar la gráfica y cabecera en una línea con los estados de los equipos (arreglados 4-nov 16:45).",
+      "cambio": "4-nov: equipos en uso, zona principal, sacar/traer la gráfica, termopares, fichas del osciloscopio, Encender/APAGAR en la cabecera, barra de estado, Guardar con 4 modos, ensayo en 3 pasos, espacios de trabajo, Solo mirar, colores, aspecto B, lectura del ratón con temperaturas. Validado con el banco sin equipos el 4-nov (149 OK). También: Esc en Solo mirar tras tocar la gráfica y cabecera en una línea con los estados de los equipos (arreglados 4-nov 16:45). 9-nov: disposición alineada con la propuesta v4 (sección «V4 disposición»): equipo conectado = en uso y no se desmarca; Encender/APAGAR siempre con la fuente conectada; fuente arriba a la derecha en ventana ancha; pantalla pequeña con la gráfica en grande (clic = grande); fichas bajo la pantalla (canales arriba; Leer, horizontal y disparo abajo; «apagado» se quita si no cabe); hueco de la tarjeta de la fuente en ventana estrecha; ancho del divisor guardado por zona grande; arrastrando el divisor la pantalla pasa del ajuste automático (sin tope por el alto; doble clic = automático). 169 OK con equipos reales (la «lectura del ratón» necesita datos recientes en la gráfica).",
       "desde": "2026-11-04",
       "necesita": [
         "osc",
@@ -70,14 +140,73 @@
       "comando": [
         "validar_rediseno.py"
       ],
-      "estado": "pendiente",
-      "historial": []
+      "estado": "validada_parcial",
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:13",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 150,
+          "FALLO": 0,
+          "AVISO": 1,
+          "OMITIDA": 1,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 08:50",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 169,
+          "FALLO": 0,
+          "AVISO": 1,
+          "OMITIDA": 1,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:03",
+          "equipos": [
+            "osc",
+            "fuente",
+            "cdaq",
+            "siglent"
+          ],
+          "OK": 170,
+          "FALLO": 3,
+          "AVISO": 1,
+          "OMITIDA": 1,
+          "fallos": [
+            "[Lectura ratón] al pasar el ratón sale la lectura con un cuadradito del color de cada curva",
+            "[Tamaños] 1920×1080: cabecera en una línea también en el peor caso (sin comunicación, alarma, salida ON, modo manual)  [se parte en 2 líneas (no se pierde nada)]",
+            "[Tamaños] 1366×768: cabecera en una línea también en el peor caso (sin comunicación, alarma, salida ON, modo manual)  [se parte en 2 líneas (no se pierde nada)]"
+          ]
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "resultado": "173 OK · 0 FALLO · 1 AVISO (1100 px) · 1 OMITIDA (sin PicoLog/TC-08)"
+        },
+        {
+          "fecha": "2026-11-09 16:03",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "resultado": "173 OK · 0 FALLO · 1 AVISO (1100 px) · 1 OMITIDA (sin PicoLog) tras el editor de la fase 4"
+        }
+      ]
     },
     {
       "id": "osc_muestreos_vista_tramo",
       "tipo": "automatica",
-      "titulo": "Osciloscopio: muestreos bajos (50→1 kSa/s) y mínimo real del Roll, vista en vivo + ✂ Tramo pendiente + puntos reales, configuración igual al final",
-      "cambio": "4-nov: muestreos bajos del registro, vista en vivo sin registro, ✂ Tramo, puntos reales (detalle_osc.py).",
+      "titulo": "Osciloscopio: muestreos bajos (50→5 kSa/s; 2 y 1 kSa/s rechazados) y mínimo real del Roll, vista en vivo + ✂ Tramo pendiente + puntos reales, configuración igual al final",
+      "cambio": "4-nov: muestreos bajos del registro, vista en vivo sin registro, ✂ Tramo, puntos reales (detalle_osc.py). 9-nov: mínimo 5 kSa/s (panel y datalogger rechazan menos; desplegable sin 1 y 2 kSa/s) y ✂ Tramo con el registro abierto decidido con t_inicio (tramo.py).",
       "desde": "2026-11-04",
       "necesita": [
         "osc"
@@ -89,9 +218,53 @@
         "--solo",
         "osc"
       ],
-      "despues": "Dejar en el desplegable de muestreos solo los que el MXO respeta (resultado A1).",
-      "estado": "pendiente",
-      "historial": []
+      "despues": "Hecho el 9-nov: desplegable desde 5 kSa/s.",
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:19",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 11,
+          "FALLO": 4,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": [
+            "[A1] 2 kSa/s: fichero  [[Errno 2] Unable to synchronously open file (unable to open file: name = 'C:\\Proyectos\\Osciloscopio\\PR00737-ECOCOOK\\registros\\_validacion_laboratorio\\20261109_0815_sr_2000\\osc.h5', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)]",
+            "[A1] 1 kSa/s: fichero  [[Errno 2] Unable to synchronously open file (unable to open file: name = 'C:\\Proyectos\\Osciloscopio\\PR00737-ECOCOOK\\registros\\_validacion_laboratorio\\20261109_0816_sr_1000\\osc.h5', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)]",
+            "[A2] ✂ Tramo durante la vista queda PENDIENTE  [{'ruta': 'PR00737-ECOCOOK\\\\tramos\\\\_validacion_laboratorio\\\\20261109_0818_tramo_vista', 'carpeta': 'C:\\\\Proyectos\\\\Osciloscopio\\\\PR00737-ECOCOOK\\\\tramos\\\\_validacion_laboratorio\\\\20261109_0818_tramo_vista', 'ficheros': {'osc.h5': 'solo resumen en vivo (osc_resumen.csv): no hay osc.h5 que cubra el tramo'}}]",
+            "[A2] el tramo se recorta al parar (≈ 3 s a 100 kSa/s)  [None muestras]"
+          ]
+        },
+        {
+          "fecha": "2026-11-09 08:29",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 14,
+          "FALLO": 1,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": [
+            "[A2] el tramo se recorta al parar (≈ 3 s a 100 kSa/s)  [251709 muestras]"
+          ]
+        },
+        {
+          "fecha": "2026-11-09 08:31",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 15,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        }
+      ]
     },
     {
       "id": "seguridad_fuente_real",
@@ -110,8 +283,21 @@
         "--proyecto",
         "PR00737-ECOCOOK"
       ],
-      "estado": "pendiente",
-      "historial": []
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:21",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 15,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        }
+      ]
     },
     {
       "id": "manual_reinicio_mxo",
@@ -165,7 +351,39 @@
         "prueba_cdaq_sin_hardware.py"
       ],
       "estado": "siempre",
-      "historial": []
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:19",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 95,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:04",
+          "equipos": [
+            "osc",
+            "fuente",
+            "cdaq",
+            "siglent"
+          ],
+          "OK": 91,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 2,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [],
+          "resultado": "91 OK · 0 FALLO"
+        }
+      ]
     },
     {
       "id": "regresion_cdaq_servidor",
@@ -179,17 +397,418 @@
         "prueba_cdaq_servidor.py"
       ],
       "estado": "siempre",
-      "historial": []
+      "historial": [
+        {
+          "fecha": "2026-11-09 08:19",
+          "equipos": [
+            "osc",
+            "fuente"
+          ],
+          "OK": 27,
+          "FALLO": 0,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": []
+        },
+        {
+          "fecha": "2026-11-09 15:04",
+          "equipos": [
+            "osc",
+            "fuente",
+            "cdaq",
+            "siglent"
+          ],
+          "OK": 19,
+          "FALLO": 2,
+          "AVISO": 0,
+          "OMITIDA": 1,
+          "fallos": [
+            "igual que antes: solo se añaden rutas /api/cdaq  [['GET /api/cdaq/historia', 'GET /api/siglent/historia', 'POST /api/apagar_todo', 'POST /api/cdaq/configurar', 'POST /api/cdaq/registro/iniciar', 'POST /api/cdaq/registro/parar', 'POST /api/cdaq/soltar', 'POST /api/cdaq/tomar', 'POST /api/siglent/apagar', 'POST /api/siglent/conectar', 'POST /api/siglent/desconectar', 'POST /api/siglent/fijar', 'POST /api/siglent/modo', 'POST /api/siglent/opciones', 'POST /api/siglent/registro/iniciar', 'POST /api/siglent/registro/parar', 'POST /api/siglent/salida']]",
+            "igual que antes: /api/estado = las mismas claves + «cdaq»  [['cdaq', 'ensayo', 'fuente', 'osciloscopio', 'picolog', 'preparado', 'registro', 'siglent', 'tc08', 'temperaturas']]"
+          ]
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [],
+          "resultado": "21 OK · 0 FALLO (ahora admite las rutas de la Siglent)"
+        }
+      ]
     },
     {
       "id": "manual_cdaq_laboratorio",
       "tipo": "manual",
-      "titulo": "cDAQ-9178 (NI 9213 + NI 9201) con el chasis conectado: fase 2B (NO PROBADO CON HARDWARE hasta entonces)",
+      "titulo": "cDAQ-9178: lo que queda del plan de laboratorio (paso 7 exactitud del 9201 con multímetro; paso 10 registro de 10 min)",
       "desde": "2026-11-05",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "9-nov: hechos con el hardware los pasos 0-6 y 7.3-7.4 (cdaq_panel, cdaq_modelo). Faltan: 7.1 (la tensión de AI0 contra un multímetro: dentro de ±26 mV) y 10.1 (registro de 10 min con los canales previstos).",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "cdaq_modelo",
+      "tipo": "automatica",
+      "titulo": "cDAQ: modelo de opciones y traductor contra el driver (45 opciones, 7 guardas, 32 velocidades, a la vez)",
+      "cambio": "9-nov: cdaq_modelo.py (opciones del panel = traducción 1:1 de NI-DAQmx) validado con el hardware: 85 OK.",
+      "desde": "2026-11-09",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "..\\herramientas\\cdaq_validar_modelo.py"
+      ],
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 12:11",
+          "equipos": [
+            "cdaq"
+          ],
+          "resultado": "85 OK · 0 FALLO"
+        }
+      ]
+    },
+    {
+      "id": "cdaq_panel",
+      "tipo": "automatica",
+      "titulo": "cDAQ a través del panel: fases 1-4 (opciones → driver con lectura de vuelta, guardas, reloj de hardware, En vivo, ✂ Tramo, CSV, TDMS, disparos y reloj externo sin señal)",
+      "cambio": "9-nov: integración del cDAQ en el panel con el modelo validado. Montaje: termopar en TC0, una tensión fija en AI0 (masa en el borne 9).",
+      "desde": "2026-11-09",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "comando": [
+        "validar_cdaq_panel.py"
+      ],
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 13:12",
+          "equipos": [
+            "cdaq"
+          ],
+          "resultado": "42 OK · 0 FALLO · 1 OMITIDA (PFI0 con señal)"
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [
+            "cdaq"
+          ],
+          "resultado": "41 OK · 0 FALLO · 3 OMITIDA (sin tensión fija en AI0 ni señal en PFI0)"
+        }
+      ]
+    },
+    {
+      "id": "manual_cdaq_pfi0",
+      "tipo": "manual",
+      "titulo": "cDAQ: disparo, pausa y reloj externo CON una señal digital real en PFI0 (0-5 V) (sigue pendiente: hace falta una señal en PFI0)",
+      "desde": "2026-11-09",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Lleva una señal digital (0/5 V, p. ej. un pulso o una onda cuadrada) a PFI0 del chasis. En la tarjeta del cDAQ → Avanzado: disparo «Inicio» por PFI0 y comprueba que empieza a medir con el flanco; luego «Pausa» y «Reloj externo PFI0». Dímelo y lo compruebo por la API.",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_cdaq_usb_ranura",
+      "tipo": "manual",
+      "titulo": "cDAQ: cambiar un módulo de ranura (lo del USB en marcha ya está validado el 9-nov)",
+      "desde": "2026-11-09",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Con el cDAQ midiendo (y un registro en marcha): desenchufa el USB 5 s y vuelve a enchufarlo; debe salir «desconectado», el resto del panel seguir y volver a «midiendo» solo. Luego, con el cDAQ suelto, cambia un módulo de ranura y pulsa Tomar: debe encontrarlo en la nueva.",
+      "estado": "pendiente",
+      "historial": [
+        {
+          "fecha": "2026-11-09 15:12",
+          "equipos": [
+            "cdaq"
+          ],
+          "resultado": "USB: OK (error -50808 → «sin USB» en 10 s, hueco en el CSV, vuelve solo a midiendo a los ~40 s y el registro sigue). Falta: cambiar un módulo de ranura"
+        }
+      ]
+    },
+    {
+      "id": "siglent_panel",
+      "tipo": "automatica",
+      "titulo": "Siglent SPD3303X a través del panel: consignas leídas de vuelta, guardas (negativas, >32 V, >3,2 A, topes), ON/OFF medido, modos, APAGAR TODO, historia, registro y ✂ Tramo",
+      "cambio": "9-nov: integración de la Siglent con el modelo validado (siglent_modelo.py). SIN CARGA: enciende solo ≤5 V / 0,1 A.",
+      "desde": "2026-11-09",
+      "necesita": [
+        "siglent"
+      ],
+      "aprovecha": [],
+      "enciende_salida": true,
+      "comando": [
+        "validar_siglent_panel.py"
+      ],
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 14:20",
+          "equipos": [
+            "siglent"
+          ],
+          "resultado": "23 OK · 0 FALLO"
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [
+            "siglent"
+          ],
+          "resultado": "23 OK · 0 FALLO (tras reiniciar el panel: device clear al abrir)"
+        },
+        {
+          "fecha": "2026-11-09 15:42",
+          "equipos": [
+            "siglent"
+          ],
+          "resultado": "23 OK · 0 FALLO (a través del proceso aparte)"
+        }
+      ]
+    },
+    {
+      "id": "ensayo_por_equipos",
+      "tipo": "automatica",
+      "titulo": "Ensayo según los equipos conectados y marcados (sin EA obligatoria): siglent.csv, cdaq.csv, fuente.csv, ensayo.json con los equipos; apagar al terminar solo lo que participa",
+      "cambio": "9-nov (fase 3 de la coherencia): el ensayo ya no exige la fuente EA. Falta la parte con la EA conectada.",
+      "desde": "2026-11-09",
+      "necesita": [
+        "siglent",
+        "cdaq"
+      ],
+      "aprovecha": [
+        "fuente"
+      ],
+      "enciende_salida": true,
+      "comando": [
+        "validar_ensayo_equipos.py"
+      ],
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 14:42",
+          "equipos": [
+            "siglent",
+            "cdaq"
+          ],
+          "resultado": "13 OK · 0 FALLO · 1 OMITIDA (EA no conectada: COM7 en error código 10)"
+        },
+        {
+          "fecha": "2026-11-09 15:04",
+          "equipos": [
+            "osc",
+            "fuente",
+            "cdaq",
+            "siglent"
+          ],
+          "OK": 2,
+          "FALLO": 6,
+          "AVISO": 0,
+          "OMITIDA": 0,
+          "fallos": [
+            "[solo Siglent + cDAQ] inicia sin la fuente EA  [No se encuentra el TC-08 (¿conectado por USB?)]",
+            "[la Siglent que NO participa no se toca] ensayo solo cDAQ  [No se encuentra el TC-08 (¿conectado por USB?)]",
+            "[la Siglent que NO participa no se toca] sin siglent.csv",
+            "[sin equipos] sin ningún equipo marcado: rechazado con motivo  [409 No se encuentra el TC-08 (¿conectado por USB?)]",
+            "[fuente EA] por defecto entran todos los conectados  [No se encuentra el TC-08 (¿conectado por USB?)]",
+            "[fuente EA] fuente.csv y siglent.csv con filas"
+          ]
+        },
+        {
+          "fecha": "2026-11-09 15:22",
+          "equipos": [
+            "siglent",
+            "cdaq",
+            "fuente"
+          ],
+          "resultado": "16 OK · 0 FALLO (EA sin encender; cDAQ termopares/tensiones por separado)"
+        },
+        {
+          "fecha": "2026-11-09 15:46",
+          "equipos": [
+            "siglent",
+            "cdaq",
+            "fuente"
+          ],
+          "resultado": "16 OK · 0 FALLO"
+        }
+      ]
+    },
+    {
+      "id": "manual_siglent_vigilante",
+      "tipo": "manual",
+      "titulo": "Siglent: el panel la apaga al perder la comunicación (desenchufar su USB) y al cerrar el panel",
+      "desde": "2026-11-09",
+      "necesita": [
+        "siglent"
+      ],
+      "aprovecha": [],
+      "enciende_salida": true,
+      "instrucciones": "SIN CARGA. En la tarjeta de la Siglent, CH1 a 2 V / 0,1 A y Encender. Desenchufa el USB de la Siglent: en ≤3 s el panel debe poner «sin comunicación» y avisar; la salida sigue encendida en el equipo (no se le puede hablar): apágala en el frontal. Vuelve a enchufar y pulsa Conectar. Luego enciende CH1 otra vez y cierra el panel (⋯ → Cerrar panel): la salida debe quedar apagada.",
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 15:24",
+          "equipos": [
+            "siglent"
+          ],
+          "resultado": "desenchufado: el vigilante avisó a los 3 s («NO se ha podido mandar apagar») pero el reintento borró el aviso en 1 s → ARREGLADO (siglent.py) y cubierto por regresion_siglent_sin_hardware; falta repetirlo con el equipo y el cierre del panel"
+        },
+        {
+          "fecha": "2026-11-09 15:45",
+          "equipos": [
+            "siglent"
+          ],
+          "resultado": "OK con el equipo real: desenchufar con CH1 ON → aviso a los 3 s que se mantiene; al reenchufar espera 8 s, reconecta sin bloquearse y APAGA CH1 (0 V medidos); cerrar el panel con CH1 ON → apagada al reabrir; panel siempre respondiendo (NI-VISA en proceso aparte)"
+        }
+      ]
+    },
+    {
+      "id": "regresion_siglent_sin_hardware",
+      "tipo": "regresion",
+      "titulo": "Siglent sin equipo: vigilante con USB desenchufado (aviso que se mantiene, apagado al volver), desconectar y cerrar apagan + driver USB colgado simulado (proceso hijo abandonado a los 5 s)",
+      "cambio": "9-nov: en la prueba real el reintento borraba el aviso del vigilante al segundo",
+      "desde": "2026-11-09",
       "necesita": [],
       "aprovecha": [],
       "enciende_salida": false,
-      "instrucciones": "Con el cDAQ-9178 conectado por USB a este PC y el VI de LabVIEW del compañero CERRADO: seguir docs/PLAN_PRUEBAS_LABORATORIO.md en orden y avisarme en cada paso marcado.",
+      "comando": [
+        "prueba_siglent_sin_hardware.py"
+      ],
+      "estado": "siempre",
+      "historial": [
+        {
+          "fecha": "2026-11-09 15:30",
+          "equipos": [],
+          "resultado": "13 OK · 0 FALLO"
+        },
+        {
+          "fecha": "2026-11-09 15:40",
+          "equipos": [],
+          "resultado": "17 OK · 0 FALLO"
+        }
+      ]
+    },
+    {
+      "id": "plan_fase4",
+      "tipo": "automatica",
+      "titulo": "Ensayo programado con varias fuentes (EA + Siglent), «esperar» condiciones y guardas (apagar todo), comprobación del plan, plan solo Siglent",
+      "cambio": "9-nov (fase 4 de la coherencia). Montaje: EA con resistencia de 1 Ω (C1 del osciloscopio en bornas), Siglent sin carga, termopar en TC0. EA ≤ 0,8 A.",
+      "desde": "2026-11-09",
+      "necesita": [
+        "fuente",
+        "siglent",
+        "cdaq"
+      ],
+      "aprovecha": [
+        "osc"
+      ],
+      "enciende_salida": true,
+      "comando": [
+        "validar_plan_fase4.py"
+      ],
+      "estado": "validada",
+      "historial": [
+        {
+          "fecha": "2026-11-09 15:56",
+          "equipos": [
+            "fuente",
+            "siglent",
+            "cdaq",
+            "osc"
+          ],
+          "resultado": "33 OK · 0 FALLO"
+        },
+        {
+          "fecha": "2026-11-09 15:59",
+          "equipos": [
+            "fuente",
+            "siglent",
+            "cdaq",
+            "osc"
+          ],
+          "resultado": "desde la PÁGINA (Chrome): plan de 10 etapas montado con el editor, guardado como «Demo fase 4 EA y Siglent» y ejecutado: terminado, todo apagado; PR00737-ECOCOOK\\ensayos\\20261109_1558_demo_fase4_pagina"
+        }
+      ]
+    },
+    {
+      "id": "manual_apagar_cabecera_ea",
+      "tipo": "manual",
+      "titulo": "APAGAR de la cabecera con la EA y la Siglent encendidas (apaga TODAS las fuentes)",
+      "desde": "2026-11-09",
+      "necesita": [
+        "fuente",
+        "siglent"
+      ],
+      "aprovecha": [],
+      "enciende_salida": true,
+      "instrucciones": "Con la EA sobre la resistencia de 1 Ω (≤ 1 A) y la Siglent SIN carga: enciende las dos desde sus tarjetas (EA 2 V / 0,5 A; Siglent CH1 2 V / 0,1 A). Pulsa APAGAR en la cabecera (arriba a la derecha): las dos deben quedar apagadas (0 V medidos en las tarjetas) y el aviso debe decir «EA apagada · Siglent apagada». Las guardas de los planes ya apagan las dos (validado en plan_fase4); falta el botón.",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_osc_m_equipos_nuevos",
+      "tipo": "manual",
+      "titulo": "osc.m (MATLAB): abrir siglent.csv y cdaq.csv y verlos en el árbol y en «Todo junto»",
+      "desde": "2026-11-09",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "En MATLAB: cd('C:\\Proyectos\\Osciloscopio\\Visor_osciloscopio'); osc  → en el árbol, Ensayos → «demo_fase4_pagina» (09/11 15:58) debe mostrar Fuente, Fuente Siglent, cDAQ y Osciloscopio; «▶ Todo el ensayo junto» los dibuja juntos en hora real (EA 0,2→0,8 A, Siglent CH1 3→5 V, T0/T1 ≈ 25 °C, C1 0,2→0,8 V). Y d = osc('C:\\Proyectos\\Osciloscopio\\PR00737-ECOCOOK\\ensayos\\20261109_1558_demo_fase4_pagina\\siglent.csv'); {d.canales.nombre} → CH1 V, CH1 I, CH1 P, CH2 V, CH2 I, CH2 P. Copia de antes: osc.m.antes_equipos_20261109.",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_cdaq_tension_ai0",
+      "tipo": "manual",
+      "titulo": "cDAQ: una tensión fija en AI0 del NI 9201 (medida y escala ×10 de la sonda)",
+      "desde": "2026-11-09",
+      "necesita": [
+        "cdaq"
+      ],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Pon una tensión fija conocida (1-9 V) en AI0 del NI 9201 (masa en el borne 9 = COM) y dímelo: lanzo validar_cdaq_panel.py (sus 2 comprobaciones OMITIDAS «V0 se mide» y «escala ×10 lee 10 veces lo mismo» pasan a probarse). Si tienes multímetro, anota su lectura (paso 7.1 del plan: ±26 mV).",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "manual_carpeta_nueva_ensayo",
+      "tipo": "manual",
+      "titulo": "Ensayo desde la página con «carpeta nueva» en el destino",
+      "desde": "2026-11-09",
+      "necesita": [],
+      "aprovecha": [
+        "fuente"
+      ],
+      "enciende_salida": false,
+      "instrucciones": "Visto el 9-nov al lanzar el ensayo programado desde la página por script: el ensayo se guardó en la raíz de ensayos\\ y no en la carpeta nueva escrita. Hazlo a mano: Ensayo… → Dónde → Carpeta «+ nueva…», escribe un nombre, un ensayo manual corto y Terminar. Comprueba que la carpeta se crea y el ensayo queda dentro (si no, es un fallo de la página).",
+      "estado": "pendiente",
+      "historial": []
+    },
+    {
+      "id": "auditoria_independiente_20261109",
+      "tipo": "manual",
+      "titulo": "AUDITORÍA INDEPENDIENTE de la coherencia y la congruencia del panel (como la del 4-nov, sin el sesgo de quien lo construye)",
+      "desde": "2026-11-09",
+      "necesita": [],
+      "aprovecha": [],
+      "enciende_salida": false,
+      "instrucciones": "Encargo completo en C:\\Proyectos\\Osciloscopio\\Contexto Claude\\http\\AUDITORIA_PENDIENTE_20261109.md. La hace un revisor que no haya participado (otra sesión u otro agente) con SOLO ese documento y acceso de lectura; entrega REVISION_EXTERNA_AAAAMMDD.md en la misma carpeta (ALTA/MEDIA/BAJA con fichero:línea). Pídelo con: «lanza la auditoría independiente pendiente».",
       "estado": "pendiente",
       "historial": []
     }

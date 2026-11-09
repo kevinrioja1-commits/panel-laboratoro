@@ -29,7 +29,7 @@
   "temperaturas": {
     "intervalo_ms": 200,
     "red_hz": 50,
-    "en_uso": false,
+    "en_uso": true,
     "canales": {
       "1": {
         "activo": true,
@@ -82,9 +82,9 @@
     }
   },
   "cdaq": {
-    "habilitado": false,
+    "habilitado": true,
     "simulado": false,
-    "en_uso": false,
+    "en_uso": true,
     "chasis": "",
     "periodo_s": 1.0,
     "reintento_s": 10.0,
@@ -107,15 +107,17 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "1": {
-          "activo": false,
+          "activo": true,
           "nombre": "T1",
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "2": {
           "activo": false,
@@ -123,7 +125,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "3": {
           "activo": false,
@@ -131,7 +134,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "4": {
           "activo": false,
@@ -139,7 +143,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "5": {
           "activo": false,
@@ -147,7 +152,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "6": {
           "activo": false,
@@ -155,7 +161,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "7": {
           "activo": false,
@@ -163,7 +170,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "8": {
           "activo": false,
@@ -171,7 +179,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "9": {
           "activo": false,
@@ -179,7 +188,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "10": {
           "activo": false,
@@ -187,7 +197,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "11": {
           "activo": false,
@@ -195,7 +206,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "12": {
           "activo": false,
@@ -203,7 +215,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "13": {
           "activo": false,
@@ -211,7 +224,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "14": {
           "activo": false,
@@ -219,7 +233,8 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         },
         "15": {
           "activo": false,
@@ -227,9 +242,22 @@
           "tipo": "K",
           "min_C": -20.0,
           "max_C": 400.0,
-          "limite_C": null
+          "limite_C": null,
+          "desfase_cables_V": 0.0
         }
-      }
+      },
+      "escala": "polinomio",
+      "unidades": "C",
+      "muestreo": "continuo",
+      "tasa_S_s": null,
+      "muestras": 1000,
+      "reloj": "interno",
+      "disparo": "ninguno",
+      "disparo_fuente": "PFI0",
+      "disparo_flanco": "subida",
+      "pre_muestras": 100,
+      "pausa_cuando": "alto",
+      "bufer_muestras": null
     },
     "tensiones": {
       "modulo": "",
@@ -322,7 +350,34 @@
           "desplazamiento": 0.0,
           "limite": null
         }
-      }
+      },
+      "conversion_Hz": null,
+      "tdms": "auto",
+      "muestreo": "continuo",
+      "tasa_S_s": null,
+      "muestras": 1000,
+      "reloj": "interno",
+      "disparo": "ninguno",
+      "disparo_fuente": "PFI0",
+      "disparo_flanco": "subida",
+      "pre_muestras": 100,
+      "pausa_cuando": "alto",
+      "bufer_muestras": null
+    }
+  },
+  "siglent": {
+    "habilitado": true,
+    "simulado": false,
+    "recurso": "",
+    "periodo_s": 0.5,
+    "topes": {
+      "V": 32.0,
+      "I": 3.2
+    },
+    "nombres": {
+      "CH1": "CH1",
+      "CH2": "CH2",
+      "CH3": "CH3"
     }
   }
 }

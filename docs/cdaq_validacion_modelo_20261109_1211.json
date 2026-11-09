@@ -1,0 +1,384 @@
+{
+ "resultados": [
+  [
+   "OK",
+   "3 velocidad 9201",
+   "1 canal(es): máx 800 kS/s (cada 1.25 µs)",
+   "driver 800 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 160000 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "2 canal(es): máx 250 kS/s (cada 4 µs)",
+   "driver 250 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 50000 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "3 canal(es): máx 166.667 kS/s (cada 6 µs)",
+   "driver 166.667 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 33333 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "4 canal(es): máx 125 kS/s (cada 8 µs)",
+   "driver 125 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 25000 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "5 canal(es): máx 100 kS/s (cada 10 µs)",
+   "driver 100 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 20000 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "6 canal(es): máx 83.3333 kS/s (cada 12 µs)",
+   "driver 83.3333 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 16666 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "7 canal(es): máx 71.4286 kS/s (cada 14 µs)",
+   "driver 71.4286 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 14285 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9201",
+   "8 canal(es): máx 62.5 kS/s (cada 16 µs)",
+   "driver 62.5 kS/s · al 102 %: -200332 · 0,2 s a la máxima: 12500 muestras"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 1 canales: máx 6.06 S/s (cada 165 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 6 repetidas de 13"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 2 canales: máx 4.55 S/s (cada 220 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 5 repetidas de 11"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 3 canales: máx 3.64 S/s (cada 275 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 6 repetidas de 12"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 4 canales: máx 3.03 S/s (cada 330 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 5 repetidas de 11"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 6 canales: máx 2.27 S/s (cada 440 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 5 repetidas de 11"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 8 canales: máx 1.82 S/s (cada 550 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 5 repetidas de 11"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 12 canales: máx 1.3 S/s (cada 770 ms)",
+   "al 97 %: 0 repetidas de 9 · al 112 %: 5 repetidas de 11"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero cada_muestra · 16 canales: máx 1.01 S/s (cada 990 ms)",
+   "al 97 %: 0 repetidas de 9 · al 112 %: 5 repetidas de 10"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero no · 1 canales: máx 9.09 S/s (cada 110 ms)",
+   "al 97 %: 0 repetidas de 15 · al 112 %: 9 repetidas de 19"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero no · 2 canales: máx 6.06 S/s (cada 165 ms)",
+   "al 97 %: 0 repetidas de 10 · al 112 %: 6 repetidas de 13"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_resolucion · autocero no · 16 canales: máx 1.07 S/s (cada 935 ms)",
+   "al 97 %: 0 repetidas de 9 · al 112 %: 5 repetidas de 10"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 1 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 2 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 3 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 4 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 6 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 8 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 12 canales: máx 96.5 S/s (cada 10.36 ms)",
+   "al 97 %: 0 repetidas de 169 · al 112 %: 98 repetidas de 196"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero cada_muestra · 16 canales: máx 75.1 S/s (cada 13.32 ms)",
+   "al 97 %: 0 repetidas de 131 · al 112 %: 76 repetidas de 153"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero no · 1 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero no · 2 canales: máx 100 S/s (cada 10 ms)",
+   "al 97 %: 0 repetidas de 175 · al 112 %: 101 repetidas de 203"
+  ],
+  [
+   "OK",
+   "3 velocidad 9213",
+   "alta_velocidad · autocero no · 16 canales: máx 79.5 S/s (cada 12.58 ms)",
+   "al 97 %: 0 repetidas de 139 · al 112 %: 81 repetidas de 162"
+  ]
+ ],
+ "velocidad_9213": [
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 1,
+   "prevista_S_s": 6.061,
+   "periodo_ms": 165.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "13 muestras, 6 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 2,
+   "prevista_S_s": 4.545,
+   "periodo_ms": 220.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "11 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 3,
+   "prevista_S_s": 3.636,
+   "periodo_ms": 275.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "12 muestras, 6 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 4,
+   "prevista_S_s": 3.03,
+   "periodo_ms": 330.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "11 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 6,
+   "prevista_S_s": 2.273,
+   "periodo_ms": 440.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "11 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 8,
+   "prevista_S_s": 1.818,
+   "periodo_ms": 550.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "11 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 12,
+   "prevista_S_s": 1.299,
+   "periodo_ms": 770.0,
+   "al_97": "9 muestras, 0 repetidas",
+   "al_112": "11 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "cada_muestra",
+   "canales": 16,
+   "prevista_S_s": 1.01,
+   "periodo_ms": 990.0,
+   "al_97": "9 muestras, 0 repetidas",
+   "al_112": "10 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "no",
+   "canales": 1,
+   "prevista_S_s": 9.091,
+   "periodo_ms": 110.0,
+   "al_97": "15 muestras, 0 repetidas",
+   "al_112": "19 muestras, 9 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "no",
+   "canales": 2,
+   "prevista_S_s": 6.061,
+   "periodo_ms": 165.0,
+   "al_97": "10 muestras, 0 repetidas",
+   "al_112": "13 muestras, 6 repetidas"
+  },
+  {
+   "modo": "alta_resolucion",
+   "autocero": "no",
+   "canales": 16,
+   "prevista_S_s": 1.07,
+   "periodo_ms": 935.0,
+   "al_97": "9 muestras, 0 repetidas",
+   "al_112": "10 muestras, 5 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 1,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 2,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 3,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 4,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 6,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 8,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 12,
+   "prevista_S_s": 96.525,
+   "periodo_ms": 10.36,
+   "al_97": "169 muestras, 0 repetidas",
+   "al_112": "196 muestras, 98 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "cada_muestra",
+   "canales": 16,
+   "prevista_S_s": 75.075,
+   "periodo_ms": 13.32,
+   "al_97": "131 muestras, 0 repetidas",
+   "al_112": "153 muestras, 76 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "no",
+   "canales": 1,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "no",
+   "canales": 2,
+   "prevista_S_s": 100.0,
+   "periodo_ms": 10.0,
+   "al_97": "175 muestras, 0 repetidas",
+   "al_112": "203 muestras, 101 repetidas"
+  },
+  {
+   "modo": "alta_velocidad",
+   "autocero": "no",
+   "canales": 16,
+   "prevista_S_s": 79.491,
+   "periodo_ms": 12.58,
+   "al_97": "139 muestras, 0 repetidas",
+   "al_112": "162 muestras, 81 repetidas"
+  }
+ ]
+}

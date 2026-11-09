@@ -13,3 +13,5 @@ pruebas/informes/
 
 # Descubrimiento del cDAQ (herramientas/cdaq_descubrir.py): lleva numeros de serie
 docs/cdaq_descubrimiento_*
+# Descubrimiento de la Siglent (herramientas/siglent_descubrir.py): lleva el número de serie
+docs/siglent_descubrimiento_*

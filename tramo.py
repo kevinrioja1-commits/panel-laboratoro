@@ -13,6 +13,7 @@ import datetime as dt
 import glob
 import json
 import os
+import re
 import threading
 import time
 
@@ -113,6 +114,22 @@ class Tramos:
                     os.remove(os.path.join(ruta, "fuente.csv"))
             except Exception as e:
                 ficha["ficheros"]["fuente.csv"] = f"NO: {e}"
+        # Siglent (9-nov): segunda fuente, su siglent.csv (V, I, P, salida y CV/CC de cada canal)
+        spd = getattr(self, "spd", None)
+        if que.get("siglent", que.get("fuente")) and spd is not None and spd.estado == "conectada":
+            try:
+                n = spd.exportar_csv(os.path.join(ruta, "siglent.csv"), t0, t1, cab)
+                ficha["ficheros"]["siglent.csv"] = f"{n} filas" if n else "sin datos en ese tramo"
+            except Exception as e:
+                ficha["ficheros"]["siglent.csv"] = f"NO: {e}"
+        # cDAQ (9-nov): equipo aparte, puede medir a la vez que PicoLog o el TC-08; su cdaq.csv
+        daq = getattr(self, "daq", None)
+        if que.get("cdaq", que.get("temp")) and daq is not None and daq.estado == "midiendo":
+            try:
+                n = self._temperaturas(os.path.join(ruta, "cdaq.csv"), t0, t1, cab, fuente=daq)
+                ficha["ficheros"]["cdaq.csv"] = f"{n} filas" if n else "sin datos en ese tramo"
+            except Exception as e:
+                ficha["ficheros"]["cdaq.csv"] = f"NO: {e}"
         # temperaturas
         if que.get("temp"):
             try:
@@ -128,8 +145,8 @@ class Tramos:
         return {"ruta": rel, "carpeta": ruta, "ficheros": ficha["ficheros"]}
 
     # ---------------------------------------------------------------- partes
-    def _temperaturas(self, fichero, t0, t1, cab):
-        h = self.temps.historia_desde(t0 - 1e-6)
+    def _temperaturas(self, fichero, t0, t1, cab, fuente=None):
+        h = (fuente or self.temps).historia_desde(t0 - 1e-6)
         canales = [c for c in h.get("canales", []) if h["datos"].get(c["id"])]
         filas = {}
         for c in canales:
@@ -144,7 +161,7 @@ class Tramos:
                          ("t_rel_s", "segundos desde el inicio del tramo"),
                          ("hora", "reloj del PC (hora local) al medir; t_unix_s en segundos Unix")] + list(cab.items()):
                 f.write(f"# {k}: {v}\n")
-            f.write(",".join(["fecha_hora", "t_unix_s", "t_rel_s"] + [f"{c['nombre']}_C" for c in canales]) + "\n")
+            f.write(",".join(["fecha_hora", "t_unix_s", "t_rel_s"] + [f"{c['nombre']}_" + (re.sub(r"[^A-Za-z0-9]+", "", (c.get("unidad") or "°C").replace("°", "")) or "u") for c in canales]) + "\n")
             for ms in sorted(filas):
                 t = ms / 1000
                 fila = filas[ms]
@@ -154,8 +171,12 @@ class Tramos:
 
     def _osciloscopio(self, ruta, t0, t1, autor):
         src = self.osc.dl.get("fichero")
-        if src and os.path.exists(src) and cubre(src, t0, t1):
-            escribiendo = self.osc._datalogger_vivo() or self.osc.dl.get("fin") is None
+        escribiendo = bool(src) and (self.osc._datalogger_vivo() or self.osc.dl.get("fin") is None)
+        # 9-nov (fallo con el MXO real): con el registro aún abierto, cubre() no sirve: el datalogger escribe
+        # inicio_unix en el .h5 solo al cerrar y, mientras, el fichero puede ni abrirse. Se decide con la hora a la
+        # que el panel lanzó el datalogger (t_inicio, algo antes de la primera muestra; recortar_h5 ajusta al cerrar)
+        abierto_cubre = escribiendo and t1 > float(self.osc.dl.get("t_inicio") or 0)
+        if src and os.path.exists(src) and (abierto_cubre or (not escribiendo and cubre(src, t0, t1))):
             if escribiendo:
                 pend = {"src": src, "ruta": ruta, "t0": t0, "t1": t1, "autor": autor}
                 self.pendientes.append(pend)

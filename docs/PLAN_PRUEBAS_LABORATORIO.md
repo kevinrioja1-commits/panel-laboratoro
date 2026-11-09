@@ -1,6 +1,13 @@
 # Plan de pruebas en el laboratorio: cDAQ-9178 (NI 9213 + NI 9201). Fase 2B
 
-**No se ha ejecutado.** Se hará el día que el chasis esté conectado a este PC y Kevin lo indique. Hasta entonces, todo el código del cDAQ está **NO PROBADO CON HARDWARE** (`cdaq.py`, `herramientas/cdaq_descubrir.py`).
+**EJECUTADO el 9-nov-2026** con el chasis real (cDAQ1: NI 9213 en la ranura 5, NI 9201 en la ranura 6; NI-DAQmx 26.8.0).
+
+Resultado:
+- Pasos 0-6, 7.3, 7.4 y 9 (sin LabVIEW): hechos. Velocidad real del 9213 (D3) CERRADA: máx = mín(100, 1/(t_conv·(canales + internos))), t_conv 55 ms / 0,74 ms, internos 2 con autocero «cada muestra» y 1 con «una vez»/«no» (24 combinaciones medidas). Tipos C y A (D4): admitidos, con sus rangos.
+- Toda opción del panel es una traducción 1:1 de NI-DAQmx: `cdaq_modelo.py` (raíz del panel) validado con `herramientas/cdaq_validar_modelo.py` (85 OK) y, a través del panel, `pruebas/validar_cdaq_panel.py` (42 OK). Qué admite el driver: `docs/cdaq_opciones_20261109_1202.md`. Propuesta: https://claude.ai/artifact/F13aq1yqUkhXbTvVsaKLEZ
+- Pendiente: 7.1 (tensión contra un multímetro), 8 (USB fuera en marcha), 10.1 (registro de 10 min) y disparos/reloj externo con señal real en PFI0 (pendientes.json: manual_cdaq_*).
+
+(Texto original del plan, antes de ejecutarlo:) No se había ejecutado; todo el código del cDAQ estaba NO PROBADO CON HARDWARE.
 
 **Referencias:**
 - Estudio y fuentes: `docs/ESTUDIO_cDAQ.md`.

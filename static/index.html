@@ -60,7 +60,8 @@ header h1 { font-size: 15px; margin: 0 8px 0 0; font-weight: 650; letter-spacing
 /* cabecera en una línea (2026-11-04): sin título por debajo de 1800 px y con nombres cortos por debajo de 1640 px;
    el estado de cada equipo (listo, sin comunicación, SIMULADA…) se ve siempre entero */
 header .nc { display: none; }
-@media (max-width: 1800px) { header h1 { display: none; } }
+@media (max-width: 2000px) { header h1 { display: none; } }   /* 9-nov: con Siglent y cDAQ en la barra no cabe antes */
+@media (max-width: 1400px) { header .pill .est { display: none; } }   /* solo el nombre y el color; el detalle, abajo */
 @media (max-width: 1640px) { header .nl { display: none; } header .nc { display: inline; } header { gap: 8px; } header .pill { padding: 3px 8px; } }
 .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--suave); }
 .pill.ok::before { background: var(--ok); } .pill.mal::before { background: var(--mal); }
@@ -95,7 +96,12 @@ main.solo-panel #izq { position: static; }
 @media (max-width: 1150px) and (min-width: 700px) {
   #izq { display: grid; grid-template-columns: minmax(0, 1fr) 380px; align-items: start; }
   #cajaFte .consignas, #cajaFte .digitos { grid-template-columns: 1fr 1fr 1fr; }
-  #cajaFte .mandos { flex-direction: column; align-items: stretch; } #cajaFte .consignas { flex: none; } }
+  /* 9-nov: «main» delante para ganar a la regla general de más abajo (flex: 1 1 340px): con la tarjeta en columna
+     esos 340 px eran ALTO y dejaban un hueco grande entre V/I/P y las consignas */
+  #cajaFte .mandos { flex-direction: column; align-items: stretch; } main #cajaFte .consignas { flex: none; }
+  /* 9-nov: pantalla y sus fichas a la izquierda, fuente a la derecha ocupando las dos filas */
+  #izq > #cajaFuentes { grid-column: 2; grid-row: 1 / span 2; }
+  #izq > #cajaVivo, #izq > #cajaVista, #izq > #cajaLeer, #izq > #lateral { grid-column: 1; } }
 .tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; box-shadow: var(--sombra); }
 #cajaVista { padding: 10px; }
 #cajaVista .cab, #cajaFte .cab { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -131,7 +137,17 @@ body.rs-completo .solo-rs { display: grid; gap: 6px; margin-top: 10px; padding-t
 #barraVista { display: none; }
 
 /* tarjeta de la fuente, siempre a la vista */
-#cajaFte { padding: 10px 12px; }
+#cajaFuentes { padding: 8px 12px 10px; }
+#cajaFuentes.vacia { display: none !important; }
+.fuentes-tit { display: flex; gap: 8px; align-items: baseline; font-size: 13px; margin-bottom: 6px; }
+.fuentes-tit b { text-transform: uppercase; letter-spacing: .06em; font-size: 12px; color: var(--suave, #667085); }
+/* cada fuente, una extensión con su franja de color */
+.fuente-ext { border-left: 4px solid var(--franja); padding: 2px 0 2px 10px; }
+.fuente-ext[data-fuente="ea"] { --franja: #2f6fdd; }
+.fuente-ext[data-fuente="spd"] { --franja: #0f8b8d; }
+.fuente-ext + .fuente-ext { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--borde); }
+.fuente-ext > .cab b { color: var(--franja); }
+#cajaSpd .cab { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
 #cajaFte .digitos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 #cajaFte .medida { margin-bottom: 0; padding: 6px 10px; }
 #cajaFte .medida .v { font-size: 22px; }
@@ -141,7 +157,7 @@ body.rs-completo .solo-rs { display: grid; gap: 6px; margin-top: 10px; padding-t
 #cajaFte .salida { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 #cajaFte button.peligro { font-weight: 700; }
 /* tarjeta de la fuente arriba de la columna derecha (ventana baja): fija al desplazar los ajustes */
-#lado > #cajaFte { position: sticky; top: 62px; z-index: 15; box-shadow: 0 4px 10px rgba(16,24,40,.12); }
+#lado > #cajaFuentes:not(.con-spd) { position: sticky; top: 62px; z-index: 15; box-shadow: 0 4px 10px rgba(16,24,40,.12); }
 .mini { display: inline-flex; gap: 4px; }
 .mini span { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--borde); color: var(--suave); }
 .mini span.activa { border-color: var(--mal); background: var(--rojo-suave); color: var(--mal); }
@@ -362,7 +378,31 @@ body.sin-osc #cajaVista, body.sin-osc #tOsc, body.sin-osc #modosVista, body.sin-
 body.sin-osc #barraAdq .segmentado:has([data-acc]) { display: none !important; }
 body.sin-fte #cajaFte { display: none !important; }
 body.sin-temp #cajaTemp, body.sin-temp #bTemp { display: none !important; }
-body.principal-grafica #cajaVista { display: none !important; }
+body.principal-grafica:not(.vista-mini) #cajaVista { display: none !important; }
+/* 9-nov (propuesta v4): las fichas del osciloscopio van bajo su pantalla (grande o pequeña) */
+body.sin-osc #cajaLeer, body.solo-mirar #cajaLeer { display: none !important; }
+/* Fichas en dos filas (9-nov, pedido del usuario): arriba los canales C1-C4; abajo ↻ Leer, lectura continua, el
+   horizontal, el disparo y «leído hace». Cuando no caben, los canales apagados pierden «apagado» y quedan como una
+   ficha «C2» atenuada. Bajo la pantalla (o la pequeña) va compacta: cuanto menos alto, más grande la pantalla. */
+#cajaLeer { container-type: inline-size; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 10px !important; }
+#cajaLeer > .fila { display: contents; }
+#cajaLeer #fichasOsc { display: contents; }
+#cajaLeer .espacio { display: none; }
+#fichasOsc .fichas-can { order: -1; flex-basis: 100%; display: flex; gap: 6px; flex-wrap: nowrap; min-width: 0; }
+#fichasOsc .fichas-can .ficha { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#fichasOsc .fichas-otras { display: contents; }
+#cajaLeer #oscHora { order: 9; margin-left: auto; font-size: 12px; }
+#cajaLeer > :not(.fila):not(#fichasOsc) { flex-basis: 100%; }
+#cajaLeer #bLeer { padding: 4px 10px; }
+@container (max-width: 560px) { #fichasOsc .fichas-can .ficha.off span { display: none; } }
+@container (max-width: 380px) { #cajaLeer .fila > label { font-size: 0; gap: 0; } }   /* solo el interruptor */
+/* 9-nov (propuesta v4, los tres equipos): con la gráfica en la zona grande, la pantalla del osciloscopio pequeña arriba
+   de la columna derecha; un clic la vuelve a poner en grande. Solo la pantalla, sin los mandos de la vista */
+body.vista-mini #cajaVista .cab > :not(b):not(.mini-nota) { display: none !important; }
+#cajaVista .mini-nota { display: none; }
+body.vista-mini #cajaVista .mini-nota { display: inline; }
+body.vista-mini #cajaVista #tapa { display: block !important; cursor: zoom-in; }
+body.vista-mini #cajaVista #tapaMax { display: none !important; }
 [hidden] { display: none !important; }
 #cajaVivo { padding: 8px; }
 #vivoIfr { position: static; transform: none; width: 100%; height: 520px; border: 0; display: block; border-radius: 8px; background: var(--bg); }   /* la regla general de iframe es para el encuadre de R&S */
@@ -372,6 +412,11 @@ body.principal-grafica #cajaVista { display: none !important; }
 #tablaTemp { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 12px; font-variant-numeric: tabular-nums; }
 #tablaTemp .v { text-align: right; font-weight: 700; }
 #tablaTemp .al { color: var(--mal); }
+#tablaTemp .temp-eq { grid-column: 1 / -1; font: 600 11px Consolas, monospace; color: var(--suave); text-transform: uppercase;
+  letter-spacing: .05em; border-top: 1px solid var(--borde); padding-top: 4px; margin-top: 2px; }
+#tablaTemp .temp-eq:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+.cdaq-tabla tr.inactivo { display: none; } .cdaq-mod.todos .cdaq-tabla tr.inactivo { display: table-row; }
+.cdaq-todos { font-size: 11px; padding: 1px 8px; margin-left: auto; }
 #fichasOsc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .ficha { display: inline-flex; gap: 6px; align-items: baseline; padding: 4px 10px; border-radius: 7px; border: 1.5px solid var(--color, var(--borde));
   background: var(--panel); font-size: 12.5px; font-weight: 650; cursor: pointer; }
@@ -384,7 +429,9 @@ body.principal-grafica #cajaVista { display: none !important; }
 #cabFte { display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px 2px 10px; border: 1px solid var(--borde); border-radius: 10px; }
 #cabFte .salida-on { color: var(--ok); font-weight: 700; } #cabFte .salida-off { color: var(--suave); font-weight: 700; }
 #cabFte button { padding: 4px 10px; }
-body.sin-fte #cabFte { display: none !important; }
+/* 9-nov: Encender/APAGAR en la cabecera siempre que la fuente esté conectada (ya no depende de «en uso»).
+   Antes: body.sin-fte #cabFte { display: none } */
+label.uso input:disabled { cursor: not-allowed; }
 #pDl { display: none; }   /* «Registro · …»: ahora lo dice la barra de estado de abajo (● GRABANDO …) */
 #bHist { align-items: center; flex-wrap: wrap; row-gap: 4px; }
 #estadoBarra { display: inline-flex; flex-wrap: wrap; gap: 6px; }
@@ -418,6 +465,49 @@ body.solo-mirar #barraAdq { justify-content: flex-end; }
 header, #barraAdq, #bHist { background: var(--marco); color: var(--marco-txt); border-color: var(--marco-borde); }
 #barraAdq { box-shadow: none; }
 #historial { background: var(--marco); border-color: var(--marco-borde); }
+/* ---- cDAQ (9-nov-2026) ---- */
+@media (max-width: 1300px) { header #pCdaq, header #pSpd, header label.uso:has(#usaSpd), header label.uso:has(#usaDaq) { display: none !important; } }
+/* Siglent (9-nov): dos canales lado a lado dentro de su tarjeta, como la EA */
+.spd-canales { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 8px; }
+.spd-ch { border: 1px solid var(--borde, #d0d7de); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.spd-cab, .spd-ch3 { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.spd-ch3 { margin-top: 8px; }
+.spd-dig { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0; }
+.spd-cons { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; align-items: end; }
+.spd-cons input { width: 100%; min-width: 0; }
+/* compacta en columna estrecha: botones pequeños y el display sin partir la unidad */
+.spd-cab button, .spd-ch3 button { padding: 3px 10px; font-size: 13px; }
+.spd-dig .medida { padding: 4px 8px; min-width: 0; white-space: nowrap; }
+.spd-dig .medida .v { font-size: clamp(14px, 1.3vw, 20px); }
+#cajaSpd > .cab { row-gap: 4px; }
+#cajaSpd > .cab #spdApagar { margin-left: 0; }
+body.sin-spd #cajaSpd, body.sin-daq #cajaCdaq { display: none !important; }   /* el cDAQ sigue en la barra de estado y su tarjeta */
+#cajaCdaq { padding: 10px 14px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
+#cajaCdaq .cdaq-mod { overflow-x: auto; }      /* en la columna estrecha (gráfica en grande) la tabla se desplaza dentro */
+#cajaCdaq .cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cdaq-mod { border: 1px solid var(--borde); border-radius: 10px; padding: 8px 10px; display: grid; gap: 7px; min-width: 0; }
+.cdaq-mod .t { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.cdaq-mod .t b { font-size: 13px; }
+.cdaq-chip { font: 600 11px Consolas, monospace; padding: 1px 7px; border-radius: 99px; border: 1px solid currentColor; }
+.cdaq-chip.tc { color: #d95926; } .cdaq-chip.v { color: #2a78d6; }
+.cdaq-fila { display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: end; }
+.cdaq-fila label { display: grid; gap: 2px; font-size: 11px; color: var(--suave); }
+.cdaq-fila select, .cdaq-fila input { font-size: 12.5px; padding: 3px 5px; }
+.cdaq-fila input[type=number] { width: 86px; }
+.cdaq-max { background: var(--display, #0e1217); color: #e7ebf0; border-radius: 6px; padding: 4px 8px; font: 600 12px Consolas, monospace; }
+.cdaq-max.mal { background: var(--mal); color: #fff; }
+.cdaq-drv { font: 11px Consolas, monospace; color: var(--suave); overflow-wrap: anywhere; }
+.cdaq-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
+.cdaq-tabla th { font-size: 10.5px; color: var(--suave); text-align: left; font-weight: 600; padding: 2px 4px; }
+.cdaq-tabla td { padding: 2px 4px; border-top: 1px solid var(--borde); white-space: nowrap; }
+.cdaq-tabla input[type=text] { width: 90px; } .cdaq-tabla input[type=number] { width: 66px; }
+.cdaq-tabla tr.off td:not(:first-child) { opacity: .45; }
+.cdaq-tabla .ahora { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cdaq-tabla .abierto { color: var(--mal); }
+.cdaq-pie { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cdaq-pie input { width: 70px; }
+/* 9-nov: abierto, sus entradas sobre el fondo de panel (en tema claro salían en texto oscuro sobre el marco grafito) */
+#histCuerpo { background: var(--panel); color: var(--texto); }
 header h1, #bHist b { color: var(--marco-txt); }
 header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--marco-suave); }
 :is(header, #barraAdq) button:not(#menuMas button):not(.exito):not(.peligro) { background: var(--marco3); color: var(--marco-txt); border-color: var(--marco-borde); }
@@ -449,8 +539,12 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
   <label class="uso" title="Fuente en uso: si la desmarcas, su tarjeta deja de verse (no se desconecta)"><input type="checkbox" id="usaFte" data-eq="fte" checked></label>
   <span id="pFte" class="pill">Fuente</span>
   <span id="pDl" class="pill">Registro · parado</span>
-  <label class="uso" title="Temperaturas en uso: tarjeta de termopares en la columna derecha"><input type="checkbox" id="usaTemp" data-eq="temp" checked></label>
+  <label class="uso" title="PicoLog / TC-08 en uso: su tarjeta de termopares en la columna derecha"><input type="checkbox" id="usaTemp" data-eq="temp" checked></label>
   <span id="pPl" class="pill" style="cursor:pointer" title="Temperaturas de PicoLog: el panel lee lo que PicoLog va capturando (no lo controla). Clic: ventana de temperaturas">PicoLog</span>
+  <label class="uso" title="Siglent SPD3303X en uso: su tarjeta en el apartado de fuentes (si la desmarcas no se desconecta ni se apaga)"><input type="checkbox" id="usaSpd" data-eq="spd" checked></label>
+  <span id="pSpd" class="pill" hidden>Siglent</span>
+  <label class="uso" title="cDAQ en uso: su tarjeta en la columna derecha (si lo desmarcas sigue midiendo)"><input type="checkbox" id="usaDaq" data-eq="daq" checked></label>
+  <span id="pCdaq" class="pill" hidden title="cDAQ-9178 (NI 9213 termopares + NI 9201 tensión): equipo aparte, su tarjeta en la columna derecha">cDAQ</span>
   <span class="espacio"></span>
   <span id="cabFte" hidden title="La salida de la fuente, siempre a la vista: los mismos botones que la tarjeta de la fuente (con su confirmación)">
     <span class="nl">Salida</span> <span id="cabSal" class="salida-off">—</span>
@@ -512,7 +606,7 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
   </section>
   <section class="tarjeta" id="cajaVista">
     <button id="bReVistaRs" title="Si la imagen se ha descolocado: recarga la web de R&amp;S y la abre entera («Web R&amp;S») para arreglarla">↺ Restablecer vista</button>
-    <div class="cab"><b>Osciloscopio en directo</b>
+    <div class="cab"><b>Osciloscopio en directo</b><span class="mini-nota suave">· clic = en grande</span>
       <span class="espacio"></span>
       <div class="segmentado" id="modoImagen" title="Qué parte del control web de R&amp;S se ve">
         <button data-img="pantalla" class="activo" title="Solo la pantalla del osciloscopio, para mirar (no se puede tocar sin querer)">Pantalla</button>
@@ -526,8 +620,11 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
     <div class="marco"><div id="recorte"><iframe id="vista" title="Control web R&S"></iframe><div id="tapaMax" title="El «pantalla completa» de la web de R&amp;S descoloca la vista del panel. Usa «Control R&amp;S completo» o el ⛶ del panel"></div></div><div id="tapa" title="Solo para mirar. Para tocar el osciloscopio: «+ Botones» o «Control R&amp;S completo»"></div></div>
   </section>
 
-  <section class="tarjeta" id="cajaFte">
-    <div class="cab"><b>Fuente</b><span id="fteResumen" class="suave"></span><span id="fCons" class="suave"></span><span class="espacio"></span>
+  <!-- 9-nov (pedido del usuario): un solo apartado «Fuentes»; cada fuente es una extensión dentro, diferenciada -->
+  <section class="tarjeta" id="cajaFuentes">
+  <div class="fuentes-tit"><b>Fuentes</b><span class="suave" id="fuentesTxt"></span></div>
+  <section class="fuente-ext" id="cajaFte" data-fuente="ea">
+    <div class="cab"><b>EA PS 9000</b><span id="fteResumen" class="suave"></span><span id="fCons" class="suave"></span><span class="espacio"></span>
       <span class="mini" id="fProtMini"><span data-p="OV">OV</span><span data-p="OC">OC</span><span data-p="OP">OP</span></span></div>
     <div class="digitos">
       <div class="medida"><span>V</span><span><span class="v" id="mV">—</span> <span class="u">V</span></span></div>
@@ -618,21 +715,63 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
       <span class="suave">El panel no lee el osciloscopio mientras lo usas aquí; al volver al Banco de trabajo relee y te dice qué cambiaste.</span>
     </div>
   </section>
+  <!-- ======================= Siglent SPD3303X (9-nov-2026): segunda fuente; traducción 1:1 de sus órdenes SCPI ======================= -->
+  <section class="fuente-ext" id="cajaSpd" data-fuente="spd" hidden>
+    <div class="cab"><b>Siglent SPD3303X</b><span id="spdEstado" class="pill"></span>
+      <span id="spdMsg" class="suave"></span><span class="espacio"></span>
+      <select id="spdModo" title="Cómo trabajan CH1 y CH2 (OUTPut:TRACK). Solo con las salidas apagadas. Serie: hasta 60 V, manda CH1. Paralelo: hasta 6,4 A, manda CH1">
+        <option value="independiente">Independientes</option><option value="serie">Serie (60 V)</option><option value="paralelo">Paralelo (6,4 A)</option></select>
+      <button id="spdCon" class="primario">Conectar</button><button id="spdDes" title="Apaga sus salidas y la suelta">Desconectar</button>
+      <button id="spdApagar" class="peligro" title="Apaga CH1, CH2 y CH3 y lo comprueba midiendo">APAGAR</button></div>
+    <div id="spdCanales" class="spd-canales"></div>
+    <div class="spd-ch3"><b>CH3</b> <span id="spdCh3" class="salida-off">—</span>
+      <span class="suave">2,5 / 3,3 / 5 V según el conmutador del frontal (por USB solo se enciende y apaga; no se mide)</span>
+      <span class="espacio"></span><button data-spd-on="CH3" class="exito">Encender</button><button data-spd-off="CH3" class="peligro">Apagar</button></div>
+    <details class="sub" id="spdDetalle">
+      <summary>Topes de seguridad, lectura y vigilancia</summary>
+      <div class="rejilla" style="margin-top:6px">
+        <label class="campo">Tope V por canal (V)<input id="spdTopeV" type="number" step="0.1" min="0" max="32"></label>
+        <label class="campo">Tope I por canal (A)<input id="spdTopeI" type="number" step="0.01" min="0" max="3.2"></label>
+        <label class="campo">Leer cada<select id="spdPeriodo"><option value="0.3">0,3 s</option><option value="0.5">0,5 s</option>
+          <option value="1">1 s</option><option value="2">2 s</option></select></label>
+      </div>
+      <div class="fila" style="margin-top:6px"><button id="spdTopes">Guardar topes</button><span id="spdTopesTxt" class="suave"></span></div>
+      <div class="suave" style="margin-top:6px">El equipo: 0–32 V y 0–3,2 A por canal. No avisa si se le pide de más (se queda en el máximo) y acepta
+        negativos: lo frena el panel. No tiene vigilante propio ni OCP por USB: <b>el panel la apaga</b> si se cierra o si pierde la
+        comunicación más de 3 s. Tampoco se usan su temporizador (mientras corre no contesta) ni sus memorias *SAV/*RCL.</div>
+    </details>
+  </section>
+  </section>
   </div>
 
   <div id="divisor" title="Arrastra para repartir el ancho entre el osciloscopio y la fuente/ajustes"></div>
 
   <section id="lado">
     <section class="tarjeta" id="cajaTemp">
-      <div class="cab"><b>Termopares</b><span id="tempOrigen" class="suave"></span><span class="espacio"></span>
+      <div class="cab"><b id="tempTitulo">PicoLog</b><span class="suave">· termopares</span><span id="tempOrigen" class="suave"></span><span class="espacio"></span>
         <button id="bTempCfg" class="fantasma" title="Configuración del TC-08 y gráfica de temperaturas en su ventana">Configurar ↗</button></div>
       <div id="tablaTemp"></div>
       <div id="tempNada" class="suave" hidden>Sin medir. <button id="bTempTomar">Usar el TC-08</button> (con PicoLog cerrado) o empieza una captura en PicoLog.</div>
     </section>
 
+    <!-- ======================= cDAQ-9178 (9-nov-2026: opciones = traducción 1:1 del driver, validadas) ======================= -->
+    <section class="tarjeta" id="cajaCdaq" hidden>
+      <div class="cab"><b>cDAQ-9178</b><span id="cdaqEstado" class="pill"></span>
+        <span id="cdaqMsg" class="suave"></span><span class="espacio"></span>
+        <button id="cdaqTomar" title="El panel toma los módulos (una tarea por módulo)">Tomar</button>
+        <button id="cdaqSoltar" title="Cierra las tareas y deja los módulos libres (p. ej. para NI MAX)">Soltar</button></div>
+      <div id="cdaqMods"></div>
+      <div class="fila cdaq-pie">
+        <label class="campo-linea" title="Para los módulos en «Bajo demanda»: una muestra de cada canal cada tanto">Bajo demanda cada
+          <input id="cdaqPeriodo" type="number" step="0.05" min="0.05" data-cdaq="periodo_s"> s</label>
+        <span class="espacio"></span><span id="cdaqAviso" class="suave"></span>
+        <button id="cdaqDescartar" class="oculto">Descartar</button>
+        <button id="cdaqAplicar" class="primario" disabled>Aplicar</button></div>
+    </section>
+
     <!-- ======================= OSCILOSCOPIO ======================= -->
     <div id="tOsc" style="display:flex;flex-direction:column;gap:12px">
-      <div class="tarjeta" style="padding:10px 14px">
+      <div class="tarjeta" id="cajaLeer" style="padding:10px 14px">
         <div class="fila">
           <button id="bLeer" class="primario" title="Lee toda la configuración actual del osciloscopio">↻ Leer equipo</button>
           <label class="fila suave" title="Apagado (normal): el panel lee el osciloscopio al abrirlo, con «Leer equipo» y antes y después de cada ajuste, y no lo toca mientras trabajas en su pantalla. Encendido: además lo lee cada segundo (cada lectura deja el osciloscopio en remoto un instante y puede cerrar sus menús).">
@@ -753,7 +892,7 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
     <div class="dos">
       <label class="campo">Muestreo por canal
         <select id="dlSr">
-          <option value="1e3">1 kSa/s</option><option value="2e3">2 kSa/s</option><option value="5e3">5 kSa/s</option>
+          <option value="5e3">5 kSa/s</option>
           <option value="10e3">10 kSa/s</option><option value="20e3">20 kSa/s</option><option value="50e3">50 kSa/s</option>
           <option value="100e3">100 kSa/s</option><option value="500e3">500 kSa/s</option>
           <option value="1e6" selected>1 MSa/s</option><option value="2e6">2 MSa/s</option>
@@ -794,7 +933,11 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
       <div id="ensPasos"><button data-paso="1" class="activo">1 · Qué grabar</button><button data-paso="2">2 · La fuente</button><button data-paso="3">3 · Dónde y cómo se llama</button></div>
       <div class="paso" data-paso="1">
       <div class="etq" style="margin-top:10px">Qué registrar</div>
-      <label class="chk"><input type="checkbox" checked disabled> Fuente, siempre <span class="suave">fuente.csv continuo: medidas, consignas, ON/OFF y cambios en el frontal</span></label>
+      <!-- 9-nov: el ensayo usa los equipos CONECTADOS que se marquen (basta uno que mida); antes la EA era obligatoria -->
+      <label class="chk ensEq"><input type="checkbox" id="ensFte" class="ensEqChk" checked> Fuente EA <span class="suave" id="ensFteTxt">fuente.csv continuo: medidas, consignas, ON/OFF y cambios en el frontal</span></label>
+      <label class="chk ensEq"><input type="checkbox" id="ensSpd" class="ensEqChk" checked> Siglent SPD3303X <span class="suave" id="ensSpdTxt">siglent.csv: V e I de CH1 y CH2, consignas, ON/OFF y modo</span></label>
+      <label class="chk ensEq"><input type="checkbox" id="ensDaqT" class="ensEqChk" checked> cDAQ · termopares <span class="suave">NI 9213: sus canales activos en cdaq.csv</span></label>
+      <label class="chk ensEq"><input type="checkbox" id="ensDaqV" class="ensEqChk" checked> cDAQ · tensiones <span class="suave">NI 9201: sus canales activos en cdaq.csv (y cdaq_tensiones.tdms si va rápido)</span></label>
       <label class="chk"><input type="checkbox" id="ensOsc"> Osciloscopio <span class="suave">osc.h5 continuo; opcional (en un ensayo largo ocupa mucho)</span></label>
       <div id="ensOscSec" class="oculto" style="margin-left:24px">
         <div class="fila" style="margin:4px 0" id="ensCanales"></div>
@@ -805,8 +948,8 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
         <div class="suave" id="ensTam"></div>
         <div class="suave">Ajusta antes la escala de cada canal (Canales → «Ajustar a la señal»): durante el ensayo no se puede cambiar.</div>
       </div>
-      <label class="chk"><input type="checkbox" id="ensTemp" checked> Temperaturas <span class="suave">temperaturas.csv y
-        temperaturas.picolog (se abre con PicoLog), con la misma hora que la fuente</span></label>
+      <label class="chk"><input type="checkbox" id="ensTemp" checked> PicoLog / TC-08 · termopares <span class="suave">temperaturas.csv y
+        temperaturas.picolog (se abre con PicoLog), con la misma hora que la fuente; si no está, el ensayo sigue sin él</span></label>
       <div id="ensTempSec" style="margin-left:24px">
         <div class="suave" id="ensTempTxt">—</div>
         <button id="bEnsTempCfg" style="padding:2px 9px;font-size:12px;margin-top:3px"
@@ -844,7 +987,17 @@ header .suave, #barraAdq .suave, #barraAdq .etq, #bHist .suave { color: var(--ma
         <div class="planCampos" style="padding-left:0">
           <label>Tensión máx. <input id="planMaxV" type="number" min="0" step="any" style="width:70px"><b>V</b></label>
           <label>Corriente máx. <input id="planMaxI" type="number" min="0" step="any" style="width:70px"><b>A</b></label>
-          <label>Potencia máx. <input id="planMaxP" type="number" min="0" step="any" style="width:70px"><b>W</b></label></div>
+          <label>Potencia máx. <input id="planMaxP" type="number" min="0" step="any" style="width:70px"><b>W</b></label>
+          <span class="suave">(fuente EA, si el plan la mueve)</span></div>
+        <div class="planCampos" style="padding-left:0">
+          <label>Siglent: tensión máx. <input id="planMaxSV" type="number" min="0" max="32" step="any" style="width:70px"><b>V</b></label>
+          <label>corriente máx. <input id="planMaxSI" type="number" min="0" max="3.2" step="any" style="width:70px"><b>A</b></label>
+          <span class="suave">(por canal, si el plan la mueve)</span></div>
+        <div class="etq" style="margin-top:8px">Guardas <span class="suave" style="text-transform:none">si una se cumple en cualquier
+          momento, se APAGA TODO y se para el plan. Una por línea, p. ej. <code>cdaq.T0 &gt;= 80</code></span></div>
+        <textarea id="planGuardas" rows="2" style="width:100%;font-family:inherit" placeholder="cdaq.T0 >= 80"></textarea>
+        <div class="suave" id="planMedidas" style="font-size:12px"></div>
+        <datalist id="planMedidasLista"></datalist>
         <div class="etq" style="margin-top:8px">Etapas <span class="suave" style="text-transform:none">en orden, de arriba abajo. El desplegable de cada una es su tipo; debajo, sus valores y cuándo pasa a la siguiente</span></div>
         <div id="planEtapas"></div>
         <div class="fila" style="margin-top:4px"><select id="planNuevaTipo"></select><button id="bPlanAnadir">+ Añadir etapa</button></div>
@@ -1160,13 +1313,35 @@ $$("#modoImagen button").forEach(b => b.onclick = () => ponerModoImagen(b.datase
 //  - Banco de trabajo (ventana ancha): bajo la pantalla del osciloscopio (2026-10-30, pedido por el usuario; si no
 //    cabe, se ve desplazando); el panel de Capturar/Datalogger va arriba de la columna derecha (colocarLateral);
 //  - ventana estrecha (700-1150 px) y Control R&S completo: al lado de la vista (CSS);  muy estrecha: apilado.
+// 9-nov (propuesta v4, pedido del usuario): en la ventana ancha la fuente va SIEMPRE arriba de la columna derecha,
+// compacta y fija al desplazar (antes iba bajo la pantalla y con osciloscopio + fuente había que desplazarse para
+// verla, con la columna derecha casi vacía). Orden de la columna derecha: [panel lateral] [pantalla pequeña + fichas]
+// fuente, termopares, ajustes del osciloscopio. Solo se mueve lo que no está en su sitio (moverlo cada vez quitaría el
+// foco a lo que se escribe, y mover la pantalla recarga la web de R&S).
 let fteEnLado = false;
 function colocarFuente(enLado) {
-  const card = $("#cajaFte");
-  if (enLado && card.parentElement !== $("#lado")) $("#lado").prepend(card);
+  const card = $("#cajaFuentes"), lado = $("#lado"), ref = $("#cajaTemp");
+  if (enLado && (card.parentElement !== lado || card.nextElementSibling !== ref)) lado.insertBefore(card, ref);
   if (!enLado && card.parentElement !== $("#izq")) $("#izq").append(card);
   document.body.classList.toggle("fte-lado", enLado);
   fteEnLado = enLado;
+}
+// La pantalla del osciloscopio: en grande en la columna izquierda o, con la gráfica en la zona grande (ventana ancha),
+// pequeña arriba de la columna derecha. Las fichas (↻ Leer y C1-C4, ⟷, Disparo) justo debajo de la pantalla.
+function colocarVista(mini) {
+  const v = $("#cajaVista"), lado = $("#lado");
+  document.body.classList.toggle("vista-mini", mini);
+  if (mini && v.parentElement !== lado) lado.insertBefore(v, $("#cajaFuentes").parentElement === lado ? $("#cajaFuentes") : $("#cajaTemp"));
+  if (!mini && v.parentElement !== $("#izq")) $("#cajaVivo").after(v);
+  colocarFichas();
+}
+function colocarFichas() {
+  const v = $("#cajaVista"), fl = $("#cajaLeer");
+  const vistaVisible = !document.body.classList.contains("sin-osc") && !$("#main").classList.contains("solo-panel") &&
+    !document.body.classList.contains("rs-completo") &&     // Control R&S completo: las fichas, con los ajustes (ocultos)
+    (!document.body.classList.contains("principal-grafica") || document.body.classList.contains("vista-mini"));
+  if (vistaVisible) { if (fl.previousElementSibling !== v) v.after(fl); }
+  else if ($("#tOsc").firstElementChild !== fl) $("#tOsc").prepend(fl);
 }
 $$("#cajaFte details").forEach(d => d.addEventListener("toggle", () => ajustarVista()));
 // Alto del panel lateral cuando va bajo la pantalla: se alarga arrastrando su borde de abajo (no toca la pantalla)
@@ -1175,19 +1350,35 @@ let altoLateral = ALTO_LATERAL_DEFECTO;
 try { const v = +localStorage.getItem("altoLateral"); if (v >= 200 && v <= 3000) altoLateral = v; } catch (e) { }
 // Ancho de la columna de la vista elegido con el divisor (null = automatico, lo mas ancho que quepa)
 let anchoIzq = null;
-try { const v = +localStorage.getItem("anchoIzq"); if (v > 0) anchoIzq = v; } catch (e) { }
+// 9-nov: un ancho guardado para cada cosa en la zona grande (con la gráfica, por defecto lo más ancha posible)
+const claveAncho = () => document.body.classList.contains("principal-grafica") ? "anchoIzq:grafica" : "anchoIzq";
+function leerAnchoIzq() { anchoIzq = null; try { const v = +localStorage.getItem(claveAncho()); if (v > 0) anchoIzq = v; } catch (e) { } }
+leerAnchoIzq();
 function ajustarVista() {
   const caja = $("#cajaVista"), marco = $("#cajaVista .marco"), ifr = $("#vista"), main = $("#main");
   const rs = document.body.classList.contains("rs-completo");
   const solo = main.classList.contains("solo-panel");
   const ancha = innerWidth > 1150 && !rs && !solo;
-  if (!ancha && fteEnLado) colocarFuente(false);
+  const mini = document.body.classList.contains("vista-mini");
+  // ventana estrecha: la fuente al lado de la vista (CSS) o, con la gráfica en grande, en la columna de abajo
+  if (!ancha && fteEnLado && !document.body.classList.contains("principal-grafica")) colocarFuente(false);
+  if (ancha && !fteEnLado) colocarFuente(true);           // 9-nov: ancha = fuente arriba a la derecha (v4)
+  if (!ancha && mini) { colocarVista(false); return mostrarPrincipal(); }   // la pequeña solo con la ventana ancha
+  if (ancha && !mini && document.body.classList.contains("principal-grafica") && uso.osc) return mostrarPrincipal();
   if (!ancha) main.style.gridTemplateColumns = "";
   if (!rs) $("#izq").style.gridTemplateColumns = "";
   const completa = document.fullscreenElement === caja;
   // a pantalla completa la caja va con position: fixed y su offsetParent es null: no es que este oculta
   if (!marco || (!caja.offsetParent && !completa)) return;
-  if (fteEnLado) colocarFuente(false);                    // tambien en «Web R&S» (antes salia antes y la perdia)
+  if (mini && !completa) {
+    // pantalla pequeña (9-nov): todo el ancho de la columna derecha, solo la pantalla (sin botonera)
+    const [x, y, w, hz] = RS_ZONA.pantalla;
+    const pad0 = parseFloat(getComputedStyle(caja).paddingLeft) * 2 + 2;
+    const s = Math.max(0.05, Math.min(caja.clientWidth - pad0 + 2, 400) / w), iw = Math.floor(w * s), ih = Math.floor(hz * s);
+    marco.style.width = $("#recorte").style.width = iw + "px"; marco.style.height = $("#recorte").style.height = ih + "px";
+    Object.assign(ifr.style, { width: RS_FIJO.w + "px", height: RS_FIJO.h + "px", transform: `scale(${s})`, left: -(x * s) + "px", top: -(y * s) + "px" });
+    return;
+  }
   if (completa) {
     // pantalla completa de la vista: todo el ancho y alto de la pantalla, menos la fila de botones de arriba
     const Wf = innerWidth - 24, Hf = innerHeight - caja.querySelector(".cab").offsetHeight - 32;
@@ -1229,19 +1420,24 @@ function ajustarVista() {
   if (ancha) {
     const disp = main.clientWidth - 28 - (document.body.classList.contains("solo-mirar") ? 0 : 12 + 4 + 420);   // ancho maximo para la columna de la vista («Solo mirar»: todo)
     let L = Math.min(disp, anchoIzq || disp);
-    // Una sola disposicion, estable: la fuente SIEMPRE bajo la pantalla. La pantalla puede ocupar todo el alto de
-    // la ventana (como antes); si la fuente queda por debajo, se ve desplazando la pagina (decidido por el usuario
-    // el 2026-10-30). No elegir entre dos disposiciones segun el alto: con unos pocos px de diferencia (p. ej. el
-    // aviso de Chrome «Claude esta controlando») la pagina saltaba de una a otra.
-    if (fteEnLado) colocarFuente(false);
-    const H = libre, minL = 380;
-    // limite: la imagen ocupa todo el ancho de la columna sin pasar del alto disponible (nunca bandas)
+    // Una sola disposicion, estable (no elegir segun el alto: con pocos px de diferencia la pagina saltaba de una a
+    // otra). 9-nov (propuesta v4): la fuente va arriba de la columna derecha y bajo la pantalla van sus fichas; la
+    // pantalla toma el alto que queda sin desplazar la pagina. (Del 30-oct al 9-nov la fuente iba bajo la pantalla.)
+    // reserva FIJA de dos filas de fichas (92 px). Con su alto real (crece al estrechar la columna) el ancho se iba
+    // encogiendo hasta el mínimo: columna estrecha -> fichas en 3 filas -> pantalla menor -> columna más estrecha
+    const fichas = $("#cajaLeer").parentElement === $("#izq") ? 92 : 0;
+    const H = Math.max(180, libre - fichas), minL = 380;
+    // Sin arrastrar el divisor: la imagen ocupa todo el ancho de la columna sin pasar del alto disponible (nunca
+    // bandas) y las fichas se ven sin desplazar. 9-nov (pedido del usuario): si lo ARRASTRAS, manda tu ancho (hasta
+    // dejar 420 px a la columna derecha): la pantalla crece con el ancho y lo de debajo se ve desplazando la página.
+    // Doble clic en el divisor: vuelta al ajuste automático.
     const maxL = Math.floor(H * prop + pad);
-    L = Math.max(minL, Math.min(L, maxL, disp));
+    const manual = !!anchoIzq && anchoIzq > maxL;
+    L = Math.max(minL, Math.min(L, manual ? disp : maxL, disp));
     main.style.gridTemplateColumns = `${L}px 12px minmax(420px, 1fr)`;
     W = L - pad;
     const lat = $("#lateral"), latAbierto = !lat.classList.contains("oculto") && lat.classList.contains("en-columna");
-    s = Math.min(W / w, Math.max(H, 120) / hz);             // la pantalla no cambia aunque el panel lateral este abierto
+    s = manual ? W / w : Math.min(W / w, Math.max(H, 120) / hz);   // la pantalla no cambia aunque el panel lateral este abierto
     if (latAbierto) lat.style.height = altoLateral + "px";
   } else if (rs) {
     // Control R&S completo: la columna de la vista toma justo el ancho de la imagen; el resto, para la fuente
@@ -1251,7 +1447,8 @@ function ajustarVista() {
     W = iw; s = iw / w;
   } else {
     W = Math.floor(caja.clientWidth - pad + 2);
-    const H = Math.max(180, libre - (alLado ? 0 : $("#cajaFte").offsetHeight + 12));
+    const fichas = $("#cajaLeer").parentElement === $("#izq") ? $("#cajaLeer").offsetHeight + 12 : 0;
+    const H = Math.max(180, libre - fichas - (alLado ? 0 : $("#cajaFuentes").offsetHeight + 12));
     s = apilado ? W / w : Math.min(W / w, H / hz);   // muy estrecha: a todo el ancho y la pagina se desplaza
   }
   const iw = Math.floor(w * s), ih = Math.floor(hz * s);
@@ -1325,10 +1522,10 @@ document.addEventListener("fullscreenchange", () => {
     d.releasePointerCapture(ev.pointerId);
     d.classList.remove("arrastrando"); document.body.classList.remove("arrastrando-divisor");
     anchoIzq = Math.round($("#izq").getBoundingClientRect().width);   // lo que de verdad quedo (con limites)
-    try { localStorage.setItem("anchoIzq", anchoIzq); } catch (e) { }
+    try { localStorage.setItem(claveAncho(), anchoIzq); } catch (e) { }
   };
   d.addEventListener("pointerup", soltar); d.addEventListener("pointercancel", soltar);
-  d.addEventListener("dblclick", () => { anchoIzq = null; try { localStorage.removeItem("anchoIzq"); } catch (e) { } ajustarVista(); });
+  d.addEventListener("dblclick", () => { anchoIzq = null; try { localStorage.removeItem(claveAncho()); } catch (e) { } ajustarVista(); });
 })();
 addEventListener("resize", ajustarVista);
 ponerModoImagen(modoImg);
@@ -1743,7 +1940,7 @@ const lateralCargado = { cap: false, dl: false, ens: false };
 //  - Banco de trabajo: en la columna izquierda, bajo la pantalla del osciloscopio (la pantalla se encoge);
 //  - Control R&S completo: flotando a la izquierda de la columna de la fuente.
 function colocarLateral() {
-  const l = $("#lateral"), f = $("#cajaFte");
+  const l = $("#lateral"), f = $("#cajaFuentes");
   if (l.classList.contains("oculto")) return;
   if (document.body.classList.contains("rs-completo") || $("#main").classList.contains("solo-panel")) {
     if (l.parentElement !== document.body) { document.body.append(l); l.style.height = ""; }
@@ -1780,7 +1977,9 @@ function abrirLateral(cual) {
 // picolog\ y ensayo.json (condiciones y notas). Sin duracion: hasta Terminar, que no pregunta nada.
 $("#bEnsayo").onclick = () => { abrirLateral("ens"); if (modoEns() === "plan") cargarPlanes(); };
 function ficherosEnsayo() {
-  return ["ensayo.json", "fuente.csv", $("#ensTemp").checked && "temperaturas.csv · temperaturas.picolog", $("#ensOsc").checked && "osc.h5", "fotos\\", "picolog\\", "capturas\\"].filter(Boolean).join(" · ");
+  const eq = equiposEns();
+  return ["ensayo.json", eq.fuente && "fuente.csv", eq.siglent && "siglent.csv",
+    eq.cdaq && `cdaq.csv (${[eq.cdaq_termopares && "termopares", eq.cdaq_tensiones && "tensiones"].filter(Boolean).join(" y ")})`, $("#ensTemp").checked && "temperaturas.csv · temperaturas.picolog", $("#ensOsc").checked && "osc.h5", "fotos\\", "picolog\\", "capturas\\"].filter(Boolean).join(" · ");
 }
 const enEnsayo = () => !!(E && E.ensayo && E.ensayo.estado === "en marcha") && $("#capEnsayo").checked;
 (function construirEnsayo() {
@@ -1843,6 +2042,7 @@ V = ${k.V_lim_V} V   I = ${k.I_A} A   P = ${k.P_W} W
       osc: osc ? { canales, sr: +$("#ensSr").value } : null, pre_s: Math.max(0, +$("#ensPre").value || 0),
       apagar_al_terminar: $("#ensApagar").checked, cola_s: Math.max(0, +$("#ensCola").value || 0),
       plan, confirmado: programado || encender, temperaturas: $("#ensTemp").checked,
+      equipos: { ...equiposEns(), temperaturas: $("#ensTemp").checked },
       consignas_confirmadas: encender ? (E?.fuente?.consignas || null) : null,
       duracion_s: duracionEnsS() || null, terminar_al_cumplir: $("#ensDurModo").value === "terminar" });
     destinos.ens.guardarUltimo();
@@ -1868,10 +2068,13 @@ $("#bEnsCarpeta").onclick = () => E?.ensayo && abrirEnExplorador(E.ensayo.rel);
 // ensayos\_planes\<nombre>.json. El servidor comprueba el plan entero (máximos, topes, zona de la fuente) antes de
 // empezar; aquí se comprueba mientras se edita para ver los problemas al momento.
 const TIPOS_ETAPA = { consignas: "Fijar consignas", rampa: "Rampa", mantener: "Mantener", pausa: "Pausa con mensaje",
-  captura: "Captura del osciloscopio", marca: "Marca", apagar: "Apagar la salida" };
+  captura: "Captura del osciloscopio", marca: "Marca", apagar: "Apagar", esperar: "Esperar una condición" };
+// fase 4 (9-nov): a qué salida va cada etapa de consignas, rampa o apagar
+const FUENTES_PLAN = [["", "Fuente EA"], ["spd.CH1", "Siglent CH1"], ["spd.CH2", "Siglent CH2"], ["spd.CH3", "Siglent CH3 (on/off)"]];
 const ETAPA_NUEVA = { consignas: { tipo: "consignas", salida: "on" }, rampa: { tipo: "rampa", magnitud: "I" },
   mantener: { tipo: "mantener", duracion_s: 300 }, pausa: { tipo: "pausa", mensaje: "Pulsa Continuar para seguir" },
-  captura: { tipo: "captura", nombre: "captura" }, marca: { tipo: "marca", texto: "" }, apagar: { tipo: "apagar" } };
+  captura: { tipo: "captura", nombre: "captura" }, marca: { tipo: "marca", texto: "" }, apagar: { tipo: "apagar" },
+  esperar: { tipo: "esperar", condicion: "", max_s: 600, si_no: "parar" } };
 let planEd = { nombre: "", maximos: {}, etapas: [] }, planOk = null, tPlan = 0;
 const modoEns = () => $("#ensModo .activo").dataset.v;
 for (const [k, t] of Object.entries(TIPOS_ETAPA)) $("#planNuevaTipo").add(new Option(t, k));
@@ -1897,7 +2100,8 @@ async function cargarPlanes(elegir) {
 async function leerPlan(nombre) {
   try {
     const p = await api(`/api/plan?proyecto=${encodeURIComponent(destinos.ens.valores().proyecto)}&nombre=${encodeURIComponent(nombre)}`);
-    planEd = { nombre, descripcion: p.descripcion || "", maximos: p.maximos || {}, etapas: p.etapas || [] };
+    planEd = { nombre, descripcion: p.descripcion || "", maximos: p.maximos || {}, maximos_spd: p.maximos_spd || {},
+      guardas: p.guardas || [], etapas: p.etapas || [] };
     if (p.ensayo) { ponerOpcionesEnsayo(p.ensayo); toast(`Plan «${nombre}»: también se han puesto sus opciones del ensayo (revísalas)`); }
   } catch (e) { toast(e.message, true); }
   pintarPlan();
@@ -1952,7 +2156,7 @@ function ponerOpcionesEnsayo(o) {
 }
 $("#planSel").onchange = () => {
   if ($("#planSel").value) leerPlan($("#planSel").value);
-  else { planEd = { nombre: "", maximos: {}, etapas: [] }; pintarPlan(); }
+  else { planEd = { nombre: "", maximos: {}, maximos_spd: {}, guardas: [], etapas: [] }; pintarPlan(); }
 };
 async function guardarPlan(nombre) {
   const proy = destinos.ens.valores().proyecto;
@@ -1970,6 +2174,25 @@ $("#bPlanComo").onclick = () => {
 for (const m of ["V", "I", "P"]) $(`#planMax${m}`).addEventListener("input", () => {
   const v = $(`#planMax${m}`).value; planEd.maximos[m] = v === "" ? null : +v; comprobarPronto();
 });
+for (const m of ["V", "I"]) $(`#planMaxS${m}`).addEventListener("input", () => {
+  const v = $(`#planMaxS${m}`).value; (planEd.maximos_spd = planEd.maximos_spd || {})[m] = v === "" ? null : +v; comprobarPronto();
+});
+$("#planGuardas").addEventListener("input", () => {
+  planEd.guardas = $("#planGuardas").value.split(/\n|;/).map(x => x.trim()).filter(Boolean); comprobarPronto();
+});
+// medidas que se pueden usar en «esperar» y en las guardas, con su valor ahora (cada 3 s mientras se ve el editor)
+async function pintarMedidasPlan() {
+  if ($("#ensPlanSec").classList.contains("oculto") || $("#latEnsayo").classList.contains("oculto")) return;
+  try {
+    const m = (await api("/api/plan/medidas")).medidas || {};
+    const ks = Object.keys(m).sort();
+    $("#planMedidas").textContent = ks.length ? "Medidas: " + ks.map(k => `${k} = ${m[k] == null ? "—" : +(+m[k]).toPrecision(4)}`).join(" · ")
+      : "Sin medidas (conecta la EA, la Siglent, el cDAQ o PicoLog)";
+    const dl = $("#planMedidasLista");
+    if (dl.dataset.k !== ks.join()) { dl.innerHTML = ks.map(k => `<option value="${k} >= ">`).join(""); dl.dataset.k = ks.join(); }
+  } catch (e) { }
+}
+setInterval(pintarMedidasPlan, 3000);
 $("#bPlanAnadir").onclick = () => { planEd.etapas.push({ ...ETAPA_NUEVA[$("#planNuevaTipo").value] }); pintarPlan(); };
 // ejemplo para ver cómo se rellena: pausa, encender a 0,1 A, rampa hasta 1 A, mantener y apagar
 $("#bPlanEjemplo").onclick = () => {
@@ -1985,13 +2208,18 @@ $("#bPlanEjemplo").onclick = () => {
   $("#planSel").value = ""; pintarPlan();
 };
 function planParaEnviar() {
+  const msp = Object.fromEntries(Object.entries(planEd.maximos_spd || {}).filter(([, v]) => v !== null && v !== ""));
   return { nombre: planEd.nombre, descripcion: planEd.descripcion || "", maximos: planEd.maximos,
+    ...(Object.keys(msp).length ? { maximos_spd: msp } : {}), guardas: planEd.guardas || [],
     etapas: planEd.etapas.map(e => Object.fromEntries(Object.entries(e).filter(([k, v]) => v !== "" && v !== null && v !== undefined
       && !(e.tipo === "rampa" && k === "desde")))) };
 }
 // una fila por etapa: tipo + sus campos + subir/bajar/quitar
 function pintarPlan() {
   for (const m of ["V", "I", "P"]) $(`#planMax${m}`).value = planEd.maximos[m] ?? "";
+  for (const m of ["V", "I"]) $(`#planMaxS${m}`).value = (planEd.maximos_spd || {})[m] ?? "";
+  if (document.activeElement !== $("#planGuardas")) $("#planGuardas").value = (planEd.guardas || []).join("\n");
+  pintarMedidasPlan();
   const cont = $("#planEtapas"); cont.innerHTML = "";
   planEd.etapas.forEach((e, i) => {
     const f = document.createElement("div"); f.className = "planFila";
@@ -2017,13 +2245,32 @@ function pintarPlan() {
     const tipo = sel("tipo", Object.entries(TIPOS_ETAPA));
     tipo.onchange = () => { planEd.etapas[i] = { ...ETAPA_NUEVA[tipo.value] }; pintarPlan(); };
     cab.append(tipo);
-    if (e.tipo === "consignas") campos.append(num("V", "Tensión", "V", "Consigna de tensión (vacío: no se toca)", 1, "igual"),
-      num("I", "Corriente", "A", "Consigna de corriente (vacío: no se toca)", 1, "igual"),
-      num("P", "Potencia", "W", "Consigna de potencia (vacío: no se toca)", 1, "igual"),
-      sel("salida", [["", "salida: no se toca"], ["on", "salida: ENCENDER"], ["off", "salida: APAGAR"]]));
+    const spd = (e.fuente || "").startsWith("spd."), ch3 = e.fuente === "spd.CH3";
+    if (["consignas", "rampa", "apagar"].includes(e.tipo)) {
+      const fu = sel("fuente", e.tipo === "apagar" ? [...FUENTES_PLAN, ["todo", "TODAS las fuentes"]]
+        : FUENTES_PLAN.filter(([v]) => e.tipo !== "rampa" || v !== "spd.CH3"));
+      fu.title = "A qué salida va esta etapa";
+      fu.addEventListener("change", () => {
+        if ((e.fuente || "").startsWith("spd.")) { delete e.P; if (e.magnitud === "P") e.magnitud = "I"; }
+        if (e.fuente === "spd.CH3") { delete e.V; delete e.I; }
+        pintarPlan();
+      });
+      cab.insertBefore(fu, tipo.nextSibling);
+    }
+    if (e.tipo === "consignas") campos.append(...[
+      !ch3 && num("V", "Tensión", "V", "Consigna de tensión (vacío: no se toca)", 1, "igual"),
+      !ch3 && num("I", "Corriente", "A", "Consigna de corriente (vacío: no se toca)", 1, "igual"),
+      !spd && num("P", "Potencia", "W", "Consigna de potencia (vacío: no se toca)", 1, "igual"),
+      sel("salida", [["", "salida: no se toca"], ["on", "salida: ENCENDER"], ["off", "salida: APAGAR"]])].filter(Boolean));
+    if (e.tipo === "esperar") {
+      const c = txt("condicion", "p. ej. cdaq.T0 >= 60"); c.setAttribute("list", "planMedidasLista");
+      c.title = "Medida, operador (>= <= > <) y número. Las medidas disponibles están debajo de las guardas";
+      campos.append(c, num("max_s", "como mucho", "min", "Vacío: sin límite", 60, "sin límite"),
+        sel("si_no", [["parar", "si no se cumple: PARAR (apaga)"], ["seguir", "si no se cumple: seguir"]]));
+    }
     if (e.tipo === "rampa") {
       const u = () => ({ V: "V", I: "A", P: "W" })[e.magnitud || "I"];
-      campos.append(sel("magnitud", [["I", "de corriente"], ["V", "de tensión"], ["P", "de potencia"]]),
+      campos.append(sel("magnitud", [["I", "de corriente"], ["V", "de tensión"], ...(spd ? [] : [["P", "de potencia"]])]),
         num("hasta", "desde la actual hasta", u(), "Valor final"),
         num("paso", "en pasos de", u(), "Tamaño de cada paso"),
         num("duracion_s", "durante", "min", "Duración total de la rampa (cada paso dura lo mismo)", 60));
@@ -2041,7 +2288,9 @@ function pintarPlan() {
       pausa: "→ te muestra el mensaje y espera a que pulses «Continuar».",
       captura: "→ guarda una captura del osciloscopio en capturas\\ del ensayo y sigue.",
       marca: "→ deja este texto en fuente.csv (para encontrarlo luego) y sigue.",
-      apagar: "→ apaga la salida y sigue (si es la última, termina el ensayo)." }[e.tipo];
+      apagar: e.fuente === "todo" ? "→ apaga TODAS las salidas de todas las fuentes y sigue."
+        : "→ apaga la salida y sigue (si es la última, termina el ensayo).",
+      esperar: `→ espera a que se cumpla la condición${e.max_s ? `; si en ${+(e.max_s / 60).toFixed(2)} min no se cumple, ${e.si_no === "seguir" ? "sigue igualmente" : "PARA el plan y apaga"}` : " (sin límite: también puedes pulsar «Siguiente»)"}.` }[e.tipo];
     campos.append(Object.assign(document.createElement("div"), { className: "cuando", textContent: cuando }));
     const acc = document.createElement("span"); acc.className = "acc";
     for (const [t, tit, fn] of [["↑", "Subir", () => i > 0 && planEd.etapas.splice(i - 1, 0, planEd.etapas.splice(i, 1)[0])],
@@ -2116,8 +2365,11 @@ function pintarEnsayo(en, f, dlE) {
     const ini = new Date(en.inicio * 1000), hh = ini.toTimeString().slice(0, 5);
     const restan = en.cierra_en ? en.cierra_en - Date.now() / 1000 : 0;
     $("#ensInfo").innerHTML = `<b>${esc(en.nombre)}</b> · desde las ${hh} (${duracion(Date.now() / 1000 - en.inicio)})<br>` +
-      `fuente.csv ${en.fuente_registrando ? "● registrando" : "— parado"}` +
-      ` · temperaturas.csv ${en.temperaturas_registrando ? "● registrando" : "— no (PicoLog no capturaba al empezar)"}` +
+      [(en.equipos || ["fuente EA"]).includes("fuente EA") && `fuente.csv ${en.fuente_registrando ? "● registrando" : "— parado"}`,
+       (en.equipos || []).includes("Siglent") && `siglent.csv ${en.siglent_registrando ? "● registrando" : "— parado"}`,
+       (en.equipos || []).some(x => x.startsWith("cDAQ")) && `cdaq.csv ${en.cdaq_registrando ? "● registrando" : "— parado"}`]
+        .filter(Boolean).join(" · ") +
+      ((en.equipos || ["PicoLog / TC-08"]).includes("PicoLog / TC-08") ? ` · temperaturas.csv (PicoLog / TC-08) ${en.temperaturas_registrando ? "● registrando" : "— no (PicoLog no capturaba al empezar)"}` : "") +
       (en.osc ? ` · osc.h5 ${en.osc_registrando ? "● registrando" : "— parado (mira la consola de Registrar)"}` : "") +
       ` · capturas: ${en.capturas}` +
       (en.encender ? `<br>Encender al iniciar: ${en.encender === "pendiente" ? "en cuanto todo esté grabando…" : esc(en.encender)}` : "") +
@@ -2132,10 +2384,19 @@ function pintarEnsayo(en, f, dlE) {
   // Registrar no puede usar la fuente (ni el osciloscopio si lo usa el ensayo) mientras hay un ensayo
   if (activo) { $("#bDlIni").disabled = true; $("#bDlIni").title = "Hay un ensayo en marcha: ya se está registrando"; }
   else $("#bDlIni").title = "";
-  const sinFuente = f.estado !== "conectada";
-  $("#bEnsIni").disabled = activo || sinFuente || !!f.registro || (dlE.en_marcha && $("#ensOsc").checked);
-  const motivo = sinFuente ? "Conecta la fuente: el ensayo la registra siempre."
-    : f.registro ? "Ya se está registrando la fuente (Registrar): páralo antes." :
+  // 9-nov: basta un equipo que mida (fuente EA, Siglent, cDAQ, temperaturas u osciloscopio); el plan, de momento, la EA
+  const eqE = equiposEns(), sp = E.siglent || {};
+  const nada = !(eqE.fuente || eqE.siglent || eqE.cdaq || $("#ensTemp").checked || $("#ensOsc").checked);   // cdaq = alguno de sus dos módulos
+  const rp = planOk && planOk.resumen;      // fase 4: lo que mueve el plan
+  const planSinEA = modoEns() === "plan" && !!rp && rp.usa_ea && !eqE.fuente;
+  const planSinSpd = modoEns() === "plan" && !!rp && rp.usa_spd && !eqE.siglent;
+  const regEA = eqE.fuente && !!f.registro, regSpd = eqE.siglent && !!sp.registro;
+  $("#bEnsIni").disabled = activo || nada || planSinEA || planSinSpd || regEA || regSpd || (dlE.en_marcha && $("#ensOsc").checked);
+  const motivo = nada ? "Marca (y conecta) al menos un equipo que medir."
+    : planSinEA ? "El plan mueve la fuente EA: conéctala y márcala en «Qué grabar»."
+    : planSinSpd ? "El plan mueve la Siglent: conéctala y márcala en «Qué grabar»."
+    : regEA ? "Ya se está registrando la fuente (Registrar): páralo antes."
+    : regSpd ? "Ya se está registrando la Siglent: páralo antes." :
     dlE.en_marcha && $("#ensOsc").checked ? "Hay un registro del osciloscopio en marcha." : "";
   $("#ensBloqueo").textContent = motivo; $("#ensBloqueo").classList.toggle("oculto", !motivo || activo);
 }
@@ -2294,17 +2555,45 @@ function pintarEnsTemp(E) {
       (usa ? " · TC-08 midiendo" : " · el panel tomará el TC-08 al iniciar (PicoLog tiene que estar cerrado)");
   } else txt = "sin TC-08";
   $("#ensTempTxt").textContent = txt;
+  pintarEnsEquipos(E);
+}
+// Equipos del ensayo (9-nov): marcados por defecto los que están conectados; uno sin conectar queda desmarcado y
+// gris. Si la persona desmarca uno conectado, se respeta (puede estar usándolo para otra cosa)
+const ensEqTocado = {};
+$$(".ensEqChk").forEach(c => c.addEventListener("change", () => { ensEqTocado[c.id] = true; destinos.ens.pintarRuta(); }));
+function equiposEns() {
+  const v = id => !$(id).disabled && $(id).checked;
+  return { fuente: v("#ensFte"), siglent: v("#ensSpd"), cdaq: v("#ensDaqT") || v("#ensDaqV"),
+           cdaq_termopares: v("#ensDaqT"), cdaq_tensiones: v("#ensDaqV") };
+}
+const cdaqMod = (E, m) => (E.cdaq || {}).estado === "midiendo" && ((E.cdaq || {}).canales || []).some(c => c.modulo === m);
+function pintarEnsEquipos(E) {
+  const est = [["#ensFte", (E.fuente || {}).estado === "conectada", "no conectada"],
+               ["#ensSpd", (E.siglent || {}).estado === "conectada", (E.siglent || {}).estado ? "no conectada" : "sin Siglent"],
+               ["#ensDaqT", cdaqMod(E, "termopares"), "el cDAQ no mide termopares (sin canales activos en el 9213)"],
+               ["#ensDaqV", cdaqMod(E, "tensiones"), "el cDAQ no mide tensiones (sin canales activos en el 9201)"]];
+  let cambia = false;
+  for (const [id, hay, no] of est) {
+    const c = $(id), l = c.closest("label");
+    if (c.disabled === hay) cambia = true;
+    c.disabled = !hay;
+    if (!hay) c.checked = false; else if (!ensEqTocado[c.id]) c.checked = true;
+    l.style.opacity = hay ? "" : ".55";
+    l.title = hay ? "" : no + " (no entra en el ensayo)";
+  }
+  if (cambia) destinos.ens.pintarRuta();
 }
 function pintarPicoLog(pl, quien = "PicoLog") {
   if (!pl) return;
-  const v = pl.canales.map(c => `${c.nombre} ${c.ultimo == null ? "—" : String(c.ultimo.toFixed(1)).replace(".", ",")} °C`).join(" · ");
+  const v = pl.canales.map(c => `${c.nombre} ${c.ultimo == null ? "—" : String(c.ultimo.toFixed(/^°[CF]$/.test(c.unidad || "°C") ? 1 : 3)).replace(".", ",")} ${c.unidad || "°C"}`).join(" · ");
   $("#pPl").className = "pill " + (pl.estado === "capturando" ? "ok" : "");
   const alarma = (pl.alarmas || []).length > 0;
   $("#pPl").className = "pill " + (alarma ? "mal" : pl.estado === "capturando" ? "ok" : "");
   // texto corto (2026-11-04): los valores van en la tarjeta de termopares; aquí, en el texto emergente
   $("#pPl").textContent = pl.estado === "capturando" ? `${quien} · ${pl.canales.length} canal${pl.canales.length === 1 ? "" : "es"}${alarma ? " · ⚠ LÍMITE" : ""}`
-    : pl.estado === "parado" ? "PicoLog · parada" : pl.estado === "cerrado" ? "Temperaturas · sin medir" : "PicoLog · sin captura";
-  if (pl.estado === "cerrado") $("#pPl").innerHTML = '<span class="nl">Temperaturas</span><span class="nc">Temp.</span> · sin medir';
+    : pl.estado === "parado" ? "PicoLog · parada" : pl.estado === "cerrado" ? "PicoLog · cerrado" : "PicoLog · sin captura";
+  // 9-nov (pedido del usuario): el nombre del EQUIPO (PicoLog o TC-08), no «Temperaturas»: el cDAQ también mide temperatura
+  if (pl.estado === "cerrado") $("#pPl").innerHTML = '<span class="nl">PicoLog</span><span class="nc">PicoLog</span> · cerrado';
   $("#pPl").title = (v ? v + "\n" : "") + "Sin medir = ni el TC-08 en el panel ni una captura de PicoLog. Clic: ventana de temperaturas";
 }
 $("#bFDes").onclick = () => api("/api/fuente/desconectar", {}).catch(e => toast(e.message, true));
@@ -2555,8 +2844,11 @@ async function refrescar() {
   pintarEnsayo(E.ensayo, f, dl);
   // temperaturas: el TC-08 si lo tiene el panel; si no, lo que capture PicoLog
   pintarEnsTemp(E);
-  if (E.temperaturas && E.temperaturas.fuente === "tc08") pintarPicoLog({ ...E.tc08, estado: "capturando" }, "TC-08");
-  else pintarPicoLog(E.picolog, "PicoLog");
+  { const ta = tempActiva(E);
+    if (ta.quien !== "PicoLog") pintarPicoLog({ ...ta.src, estado: ta.midiendo ? "capturando" : "parado" }, ta.quien);
+    else pintarPicoLog(E.picolog, "PicoLog"); }
+  pintarCdaq(E.cdaq);
+  pintarSiglent(E.siglent);
   pintarTermopares(E);
   pintarBarraEstado(E);
   if (E.preparado && !E.ensayo) abrirPreparado(E.preparado);
@@ -2711,11 +3003,101 @@ setInterval(() => {
 }, 1000);
 cargarPuertos(); setInterval(cargarPuertos, 10000);
 
+// ============================================================ Siglent SPD3303X (9-nov-2026)
+// Segunda fuente, en el apartado de fuentes (debajo de la EA). Lo que admite es lo validado con el equipo
+// (siglent_modelo.py): CH1/CH2 0-32 V 0-3,2 A, CH3 solo ON/OFF, modo independiente/serie/paralelo.
+const spdEditado = {};          // casillas tocadas y sin Fijar: el refresco no las pisa
+let spdUltimo = null;
+function spdCanalHtml(c) {
+  return `<div class="spd-ch" data-ch="${c}">
+    <div class="spd-cab"><b>${c}</b> <span class="salida-off" data-sal>—</span> <span class="modo-fte" data-reg></span>
+      <span class="suave" data-manda></span><span class="espacio"></span>
+      <button data-spd-on="${c}" class="exito">Encender</button><button data-spd-off="${c}" class="peligro">Apagar</button></div>
+    <div class="digitos spd-dig">
+      <div class="medida"><span>V</span><span><span class="v" data-m="V">—</span> <span class="u">V</span></span></div>
+      <div class="medida"><span>I</span><span><span class="v" data-m="I">—</span> <span class="u">A</span></span></div></div>
+    <div class="spd-cons">
+      <label class="campo">V (V)<input type="number" step="0.001" min="0" data-k="V"></label>
+      <label class="campo">I (A)<input type="number" step="0.001" min="0" data-k="I"></label>
+      <button class="primario" data-fijar="${c}">Fijar</button></div></div>`;
+}
+$("#spdCanales").innerHTML = ["CH1", "CH2"].map(spdCanalHtml).join("");
+$$("#spdCanales input").forEach(i => i.addEventListener("input", () => { spdEditado[i.closest("[data-ch]").dataset.ch + i.dataset.k] = true; }));
+function pintarSiglent(s) {
+  const pill = $("#pSpd"), hay = !!s && s.estado !== "desactivado";
+  pill.hidden = !hay; $("#usaSpd").closest("label").hidden = !hay;
+  if ($("#cajaSpd").hidden !== !hay) { $("#cajaSpd").hidden = !hay; pintarFuentesCaja(); }
+  if (!hay) return;
+  spdUltimo = s;
+  const con = s.estado === "conectada";
+  pill.className = "pill " + (s.estado === "sin_comunicacion" ? "mal" : con ? (s.encendida ? "ok" : "") : "");
+  const txt = { sin_comunicacion: "sin conexión", desconectada: "desconectada", conectando: "conectando…", error: "error" }[s.estado];
+  pill.innerHTML = `Siglent${txt ? `<span class="est"> · ${txt}</span>` : ""}${s.registro ? " ●" : ""}`;
+  pill.title = "Siglent SPD3303X (segunda fuente): " + (con ? (s.encendida ? "salida encendida" : "salidas apagadas") : s.estado) + (s.mensaje ? " · " + s.mensaje : "");
+  $("#spdEstado").className = "pill " + ({ conectada: "ok", sin_comunicacion: "mal", error: "mal" }[s.estado] || "");
+  $("#spdEstado").textContent = s.estado + (s.simulado ? " · SIMULADA" : "");
+  $("#spdMsg").textContent = s.mensaje || "";
+  $("#spdCon").classList.toggle("oculto", con); $("#spdDes").classList.toggle("oculto", !con);
+  $("#spdApagar").disabled = !con;
+  if (document.activeElement !== $("#spdModo")) $("#spdModo").value = s.modo || "independiente";
+  $("#spdModo").disabled = !con || s.encendida;
+  $("#spdModo").title = s.encendida ? "Apaga las salidas para cambiar el modo" : $("#spdModo").title.replace(/^Apaga.*modo$/, "");
+  for (const c of ["CH1", "CH2"]) {
+    const q = (s.canales || {})[c] || {}, el = $(`#spdCanales [data-ch="${c}"]`);
+    const manda = s.modo !== "independiente" && c === "CH2";
+    el.querySelector("[data-sal]").textContent = !con ? "—" : q.salida ? "ON" : "OFF";
+    el.querySelector("[data-sal]").className = q.salida && con ? "salida-on" : "salida-off";
+    el.querySelector("[data-reg]").textContent = con && q.salida ? q.regula || "" : "";
+    el.querySelector("[data-manda]").textContent = manda ? `(en ${s.modo} manda CH1)` : "";
+    el.querySelector('[data-m="V"]').textContent = con && q.V != null ? fmtC(q.V, 3) : "—";
+    el.querySelector('[data-m="I"]').textContent = con && q.I != null ? fmtC(q.I, 3) : "—";
+    for (const k of ["V", "I"]) {
+      const i = el.querySelector(`[data-k="${k}"]`);
+      i.disabled = !con || manda;
+      if (!spdEditado[c + k] && document.activeElement !== i) i.value = q[k + "_cons"] ?? "";
+      i.max = k === "V" ? (s.modo === "serie" ? 30 : s.topes.V) : s.topes.I;
+    }
+    el.querySelector("[data-fijar]").disabled = !con || manda;
+    el.querySelector("[data-spd-on]").disabled = !con || !!q.salida;
+    el.querySelector("[data-spd-off]").disabled = !con || !q.salida;
+  }
+  const c3 = (s.ch3 || {}).salida;
+  $("#spdCh3").textContent = !con ? "—" : c3 ? "ON" : "OFF"; $("#spdCh3").className = c3 && con ? "salida-on" : "salida-off";
+  $('[data-spd-on="CH3"]').disabled = !con || !!c3; $('[data-spd-off="CH3"]').disabled = !con || !c3;
+  if (!$("#spdDetalle").contains(document.activeElement)) {
+    $("#spdTopeV").value = s.topes.V; $("#spdTopeI").value = s.topes.I; $("#spdPeriodo").value = String(s.periodo_s);
+  }
+}
+const spdApi = (ruta, cuerpo) => api("/api/siglent/" + ruta, cuerpo || {}).then(r => { if (r && r.canales) pintarSiglent(r); return r; })
+  .catch(e => { toast(e.message, true); throw e; });
+$("#spdCon").onclick = () => { toast("Conectando con la Siglent…"); spdApi("conectar").then(() => toast("Siglent conectada")).catch(() => {}); };
+$("#spdDes").onclick = () => spdApi("desconectar").then(() => toast("Siglent: salidas apagadas y desconectada")).catch(() => {});
+$("#spdApagar").onclick = () => spdApi("apagar").then(() => toast("Siglent: CH1, CH2 y CH3 apagadas")).catch(() => {});
+$("#spdModo").onchange = e => spdApi("modo", { modo: e.target.value }).then(() => toast("Siglent en modo " + e.target.value))
+  .catch(() => { if (spdUltimo) e.target.value = spdUltimo.modo; });
+$("#cajaSpd").addEventListener("click", async ev => {
+  const b = ev.target.closest("button"); if (!b || b.disabled) return;
+  if (b.dataset.fijar) {
+    const c = b.dataset.fijar, el = $(`#spdCanales [data-ch="${c}"]`), v = k => el.querySelector(`[data-k="${k}"]`).value;
+    try { await spdApi("fijar", { canal: c, V: v("V"), I: v("I") }); delete spdEditado[c + "V"]; delete spdEditado[c + "I"];
+      toast(`Siglent ${c}: consignas fijadas (leídas de vuelta)`); } catch (e) { }
+  } else if (b.dataset.spdOn) {
+    const c = b.dataset.spdOn, q = (spdUltimo.canales || {})[c] || {};
+    const txt = c === "CH3" ? "CH3 (2,5 / 3,3 / 5 V según el conmutador del frontal)"
+      : `${c}${spdUltimo.modo !== "independiente" ? " (modo " + spdUltimo.modo + ")" : ""}\n\nV: ${fmt(q.V_cons, 3)} V\nI: ${fmt(q.I_cons, 3)} A`;
+    if (!confirm(`¿Encender la salida de la Siglent?\n\n${txt}`)) return;
+    spdApi("salida", { canal: c, encender: true, confirmado: true }).catch(() => {});
+  } else if (b.dataset.spdOff) spdApi("salida", { canal: b.dataset.spdOff, encender: false }).catch(() => {});
+});
+$("#spdTopes").onclick = () => spdApi("opciones", { topes: { V: +$("#spdTopeV").value, I: +$("#spdTopeI").value } })
+  .then(() => { $("#spdTopesTxt").textContent = "guardados"; document.activeElement.blur(); }).catch(() => {});
+$("#spdPeriodo").onchange = e => spdApi("opciones", { periodo_s: +e.target.value }).then(() => e.target.blur()).catch(() => {});
+
 // ============================================================ Fase A del rediseño (2026-11-04)
 // Equipos en uso: lo que no usas no ocupa sitio. Zona principal (columna izquierda): la pantalla del osciloscopio o la
 // gráfica En vivo (la propia página vivo.html dentro de un marco); la gráfica se puede sacar a una ventana emergente y
 // volver a traer, y el panel se reorganiza. Por defecto según la combinación; lo elegido se recuerda por combinación.
-const USO_DEF = { osc: true, fte: true, temp: true };
+const USO_DEF = { osc: true, fte: true, temp: true, spd: true, daq: true };
 let uso = { ...USO_DEF };
 try { const g = JSON.parse(localStorage.getItem("enUso") || "null"); if (g && typeof g === "object") uso = { ...USO_DEF, ...g }; } catch (e) { }
 let vivoFuera = false, vivoVentana = null, vigiaVentana = null;
@@ -2733,6 +3115,7 @@ function mostrarPrincipal() {
   // la gráfica en la zona grande: si se eligió y está dentro (sin osciloscopio, también estando fuera: ahí va el aviso)
   const grafica = !rs && !solo && p === "grafica" && (!vivoFuera || !uso.osc);
   document.body.classList.toggle("principal-grafica", grafica);
+  leerAnchoIzq();
   $("#cajaVivo").hidden = !grafica;
   $("#vivoIfr").hidden = vivoFuera; $("#vivoFuera").hidden = !vivoFuera;
   const quiere = grafica && !vivoFuera, url = "/static/vivo.html?incrustado=1&usa=" + usaTexto();   // la gráfica sigue los equipos en uso
@@ -2742,13 +3125,25 @@ function mostrarPrincipal() {
   // marca lo que ocupa la zona grande ahora (con la gráfica fuera, la pantalla)
   $$("#selPrincipal button").forEach(b => b.classList.toggle("activo", b.dataset.p === (grafica ? "grafica" : "pantalla")));
   $("#bSacarVivo").textContent = vivoFuera ? "⇲ Traer la gráfica" : "⧉ Sacar la gráfica";
-  if (!rs) colocarFuente(grafica);   // con la gráfica en el centro, la fuente sube a la columna derecha
+  // con la gráfica en el centro o la ventana ancha, la fuente va arriba de la columna derecha (9-nov: ancha siempre)
+  const ancha = innerWidth > 1150 && !rs && !solo;
+  if (!rs) colocarFuente(grafica || ancha);
+  // 9-nov (v4): con la gráfica en grande y el osciloscopio en uso, su pantalla pequeña arriba a la derecha
+  colocarVista(grafica && uso.osc && ancha);
   ajustarVista();
 }
+const USO_IDS = [["osc", "usaOsc"], ["fte", "usaFte"], ["temp", "usaTemp"], ["spd", "usaSpd"], ["daq", "usaDaq"]];
+function pintarFuentesCaja() {
+  const spd = uso.spd && !$("#cajaSpd").hidden, ea = uso.fte;
+  $("#cajaFuentes").classList.toggle("vacia", !ea && !spd);
+  $("#cajaFuentes").classList.toggle("con-spd", spd);
+  $("#fuentesTxt").textContent = ea && spd ? "· EA y Siglent" : "";
+}
 function aplicarUso() {
-  for (const [k, id] of [["osc", "usaOsc"], ["fte", "usaFte"], ["temp", "usaTemp"]]) {
+  for (const [k, id] of USO_IDS) {
     $("#" + id).checked = uso[k]; document.body.classList.toggle("sin-" + k, !uso[k]);
   }
+  pintarFuentesCaja();
   mostrarPrincipal();
 }
 $$("label.uso input").forEach(i => i.onchange = () => {
@@ -2782,6 +3177,10 @@ function verVivo() {
   else if (!document.body.classList.contains("principal-grafica")) sacarVivo();
 }
 $("#bSacarVivo").onclick = () => vivoFuera ? traerVivo() : sacarVivo();
+// pantalla pequeña: un clic la pone en grande (la gráfica vuelve a la zona grande con «Gráfica»)
+$("#tapa").addEventListener("click", () => {
+  if (document.body.classList.contains("vista-mini")) $("#selPrincipal button[data-p='pantalla']").click();
+});
 $("#bTraerVivo").onclick = traerVivo;
 addEventListener("message", ev => {
   if (ev.origin !== location.origin || !ev.data || !ev.data.vivo) return;
@@ -2807,33 +3206,273 @@ function ajustarVivo() {
 { const original = ajustarVista; ajustarVista = function () { original(); ajustarVivo(); }; }
 addEventListener("resize", ajustarVivo);
 { const original = modoVista; modoVista = async function (m) { await original(m); mostrarPrincipal(); }; }
+// ============================================================ cDAQ-9178 (9-nov-2026)
+// Las opciones son las del modelo validado con el hardware (cdaq_modelo.py): cada una se traduce 1:1 a NI-DAQmx.
+// El máximo de muestreo se calcula aquí con la MISMA regla validada (el 9213 no avisa si te pasas: repetiría
+// muestras) y el servidor lo vuelve a comprobar al aplicar. Bajo cada módulo: lo que tiene programado el driver.
+const CD = {
+  modo_adc: [["alta_resolucion", "Alta resolución"], ["alta_velocidad", "Alta velocidad"], ["automatico", "Automático"]],
+  autozero: [["cada_muestra", "En cada muestra"], ["una_vez", "Una vez"], ["no", "No"]],
+  cjc: [["interna", "Interna"], ["constante", "Valor fijo"]], escala: [["polinomio", "Polinomio"], ["tabla", "Tabla"]],
+  unidades: [["C", "°C"], ["F", "°F"]], muestreo: [["bajo_demanda", "Bajo demanda"], ["continuo", "Continuo"], ["finito", "Finito"]],
+  reloj: [["interno", "Interno"], ["PFI0", "Externo PFI0"], ["PFI1", "Externo PFI1"]],
+  disparo: [["ninguno", "Ninguno"], ["inicio", "Inicio"], ["referencia", "Referencia (pre-disparo)"], ["pausa", "Pausa"]],
+  disparo_fuente: [["PFI0", "PFI0"], ["PFI1", "PFI1"]], disparo_flanco: [["subida", "Subida"], ["bajada", "Bajada"]],
+  pausa_cuando: [["alto", "Mide con nivel alto"], ["bajo", "Mide con nivel bajo"]], tdms: [["auto", "Auto (> 1 kS/s)"], ["si", "Sí"], ["no", "No"]],
+  tipos: ["J", "K", "N", "R", "S", "T", "B", "E", "A", "C"],
+  // rango completo de cada tipo (lo que admite el driver; no se elige: 9-nov). Con escala «tabla», el B desde 0 °C
+  rango: { J: [-210, 1200], K: [-200, 1372], N: [-200, 1300], R: [-50, 1768], S: [-50, 1768], T: [-200, 400],
+           B: [250, 1820], E: [-200, 1000], A: [100, 2480], C: [0, 2315] },
+};
+const CD_UNI = [["1", "S/s"], ["1000", "kS/s"], ["1000000", "MS/s"]];
+function cdaqTasaCampo(rol, fs) {    // número + unidad; se guarda en S/s
+  const f = !fs ? 1 : fs >= 1e6 ? 1e6 : fs >= 1e3 ? 1e3 : 1;
+  return `<label>Tasa<span style="display:flex;gap:4px"><input type="number" step="any" min="0" data-tasa="${rol}" value="${fs ? +(fs / f).toPrecision(6) : ""}" placeholder="auto" title="Vacía = automática: termopares, la máxima de la regla × 0,98; tensión, 1 kS/s">` +
+    `<select data-tasau="${rol}">` + CD_UNI.map(([v, t]) => `<option value="${v}"${+v === f ? " selected" : ""}>${t}</option>`).join("") +
+    `</select></span></label><span class="suave cdaq-cada" data-cada="${rol}"></span>`;
+}
+const CD_TCONV = { alta_resolucion: 0.055, alta_velocidad: 0.00074, automatico: 0.055 };
+let cdaqEditando = false, cdaqUltimo = null;
+const cdaqTodos = new Set();         // módulos con todos los canales a la vista
+function cdaqMax(rol, n, modo, az) {
+  if (!n) return null;
+  if (rol === "termopares") return Math.min(100, 1 / (CD_TCONV[modo] * (n + (az === "cada_muestra" ? 2 : 1))));
+  return n === 1 ? 800000 : 500000 / n;
+}
+const cdaqTasa = f => f >= 1000 ? (f / 1000).toLocaleString("es-ES", { maximumFractionDigits: 1 }) + " k"
+  : f.toLocaleString("es-ES", { maximumFractionDigits: 2 });
+const cdaqPer = s => s >= 1 ? s.toLocaleString("es-ES", { maximumFractionDigits: 3 }) + " s"
+  : s >= 1e-3 ? (s * 1e3).toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " ms"
+  : (s * 1e6).toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " µs";
+function cdaqSel(rol, k, lista, v) {
+  return `<select data-rol="${rol}" data-k="${k}">` + lista.map(([a, t]) => `<option value="${a}"${a === v ? " selected" : ""}>${t}</option>`).join("") + "</select>";
+}
+function cdaqNum(rol, k, v, paso, extra) {
+  return `<input type="number" step="${paso || "any"}" data-rol="${rol}" data-k="${k}" value="${v == null ? "" : v}" ${extra || ""}>`;
+}
+const cdaqN = x => x.n != null ? x.n : +String(x.canal).slice(2);
+function cdaqValor(x) {
+  if (x.aviso === "abierto") return '<span class="abierto">abierto</span>';
+  if (x.ultimo == null) return "—";
+  return String(x.ultimo.toFixed(/^°[CF]$/.test(x.unidad) ? 2 : 4)).replace(".", ",") + " " + esc(x.unidad);
+}
+function cdaqModulo(c, rol) {
+  const m = c.config[rol], eq = (c.equipos || []).find(e => e.rol === rol) || {};
+  const mod = (c.modulos || {})[rol] || {}, d = mod.driver || {};
+  const tc = rol === "termopares";
+  const ahora = {};
+  for (const x of c.canales || []) if (x.modulo === rol) ahora[cdaqN(x)] = x;
+  let h = `<div class="cdaq-mod${cdaqTodos.has(rol) ? " todos" : ""}" data-mod="${rol}"><div class="t"><span class="cdaq-chip ${tc ? "tc" : "v"}">NI ${tc ? "9213" : "9201"}</span>` +
+    `<b>${tc ? "Termopares" : "Tensiones"}</b><span class="suave">${eq.nombre ? esc(eq.nombre) + (eq.ranura ? " · ranura " + eq.ranura : "") : ""}</span>` +
+    `<span class="suave">${mod.situacion ? "· " + esc(mod.situacion) + (mod.muestreo !== "bajo_demanda" ? ` · ${mod.leidas} muestras` : "") : ""}</span>` +
+    `<button class="fantasma cdaq-todos" data-todos="${rol}" title="Ver también los canales sin usar (para activarlos)">${cdaqTodos.has(rol) ? "Solo los activos" : `Todos los canales (${Object.keys(m.canales).length})`}</button></div>`;
+  if (tc) h += `<div class="cdaq-fila"><label>Modo${cdaqSel(rol, "modo_adc", CD.modo_adc, m.modo_adc)}</label>` +
+    `<label>Autocero${cdaqSel(rol, "autozero", CD.autozero, m.autozero)}</label>` +
+    `<label>Unión fría${cdaqSel(rol, "cjc", CD.cjc, m.cjc)}</label>` +
+    `<label>Valor fijo (°C)${cdaqNum(rol, "cjc_valor_C", m.cjc_valor_C, "0.1")}</label>` +
+    `<label>Escala${cdaqSel(rol, "escala", CD.escala, m.escala)}</label><label>Unidades${cdaqSel(rol, "unidades", CD.unidades, m.unidades)}</label></div>`;
+  else h += `<div class="suave" style="font-size:11.5px">Entrada RSE (masa en COM, borne 9), ±10 V fijo, 12 bits. La escala de cada canal (p. ej. una sonda ×10) la aplica el driver.</div>`;
+  h += `<div class="cdaq-fila"><label>Muestreo${cdaqSel(rol, "muestreo", CD.muestreo, m.muestreo)}</label>` +
+    cdaqTasaCampo(rol, m.tasa_S_s) +
+    `<label>Muestras${cdaqNum(rol, "muestras", m.muestras, "1", 'min="2"')}</label>` +
+    `<span class="cdaq-max" data-max="${rol}"></span></div>`;
+  h += `<details class="cdaq-av"><summary class="suave" style="font-size:12px">Avanzado: reloj, disparo, búfer${tc ? "" : ", conversión y TDMS"}</summary>` +
+    `<div class="cdaq-fila" style="margin-top:6px">` +
+    `<label>Reloj${cdaqSel(rol, "reloj", CD.reloj, m.reloj)}</label><label>Disparo${cdaqSel(rol, "disparo", CD.disparo, m.disparo)}</label>` +
+    `<label>Entrada${cdaqSel(rol, "disparo_fuente", CD.disparo_fuente, m.disparo_fuente)}</label>` +
+    `<label>Flanco${cdaqSel(rol, "disparo_flanco", CD.disparo_flanco, m.disparo_flanco)}</label>` +
+    `<label>Pausa${cdaqSel(rol, "pausa_cuando", CD.pausa_cuando, m.pausa_cuando)}</label>` +
+    `<label>Muestras previas${cdaqNum(rol, "pre_muestras", m.pre_muestras, "1", 'min="2"')}</label>` +
+    `<label>Búfer (muestras)${cdaqNum(rol, "bufer_muestras", m.bufer_muestras, "1", 'placeholder="auto"')}</label>` +
+    (tc ? "" : `<label>Conversión (Hz)${cdaqNum(rol, "conversion_Hz", m.conversion_Hz, "1", 'placeholder="driver"')}</label>` +
+      `<label>Registro TDMS del driver${cdaqSel(rol, "tdms", CD.tdms, m.tdms)}</label>`) + `</div></details>`;
+  h += `<table class="cdaq-tabla"><thead><tr><th></th><th>Canal</th><th>Nombre</th>` +
+    (tc ? `<th>Tipo</th><th title="El del tipo de termopar (lo que admite el driver): no se elige">Rango del tipo</th>` : `<th>Escala ×</th><th>+ desplaz.</th><th>Unidad</th>`) +
+    `<th>Límite</th><th style="text-align:right">Ahora</th></tr></thead><tbody>`;
+  const ch = (k, kk, inp) => inp.replace("<input", `<input data-ch="${k}" data-ck="${kk}"`).replace("<select", `<select data-ch="${k}" data-ck="${kk}"`);
+  for (const [k, q] of Object.entries(m.canales).sort((a, b) => a[0] - b[0])) {
+    const x = ahora[+k];
+    h += `<tr class="${q.activo ? "" : "off inactivo"}"><td>${ch(k, "activo", `<input type="checkbox"${q.activo ? " checked" : ""}>`)}</td>` +
+      `<td>${tc ? "TC" : "AI"}${k}</td><td>${ch(k, "nombre", `<input type="text" value="${esc(q.nombre)}">`)}</td>`;
+    if (tc) h += `<td>${ch(k, "tipo", "<select>" + CD.tipos.map(t => `<option${t === q.tipo ? " selected" : ""}>${t}</option>`).join("") + "</select>")}</td>` +
+      `<td class="suave" data-rango="${k}">${cdaqRango(q.tipo, m.escala)}</td>`;
+    else h += `<td>${ch(k, "ganancia", `<input type="number" step="any" value="${q.ganancia}">`)}</td>` +
+      `<td>${ch(k, "desplazamiento", `<input type="number" step="any" value="${q.desplazamiento}">`)}</td>` +
+      `<td>${ch(k, "unidad", `<input type="text" value="${esc(q.unidad || "V")}" style="width:44px">`)}</td>`;
+    const lim = tc ? q.limite_C : q.limite;
+    h += `<td>${ch(k, tc ? "limite_C" : "limite", `<input type="number" step="any" value="${lim == null ? "" : lim}">`)}</td>` +
+      `<td class="ahora">${q.activo && x ? cdaqValor(x) : ""}</td></tr>`;
+  }
+  h += `</tbody></table>`;
+  let drv = "";
+  if (d.error) drv = "error al leerlo: " + d.error;
+  else if (Object.keys(d).length) drv = [d.modo_adc, d.autocero, d.cjc, d.escala, d.unidades, d.terminal,
+    d.rango_V && `${d.rango_V[0]}..${d.rango_V[1]} V`,
+    d.temporizacion === "SAMPLE_CLOCK" ? `${d.modo} ${cdaqTasa(d.tasa_S_s)} S/s ${d.fuente_reloj || ""}` : d.temporizacion,
+    d.disparo_inicio && d.disparo_inicio !== "NONE" && "inicio " + d.disparo_inicio,
+    d.disparo_referencia && d.disparo_referencia !== "NONE" && "referencia " + d.disparo_referencia,
+    d.pausa && d.pausa !== "NONE" && "pausa " + d.pausa,
+    d.registro_tdms && d.registro_tdms !== "OFF" && "TDMS " + d.registro_tdms + (mod.tdms && mod.tdms !== "preparado" ? " (grabando)" : "")]
+    .filter(Boolean).join(" · ");
+  if (drv) h += `<div class="cdaq-drv" title="Leído de vuelta de la tarea de NI-DAQmx: lo que de verdad tiene programado el módulo">Driver: ${esc(drv)}</div>`;
+  return h + "</div>";
+}
+function cdaqRango(tipo, escala) {
+  const r = escala === "tabla" && tipo === "B" ? [0, 1820] : CD.rango[tipo] || ["?", "?"];
+  return `${r[0]} .. ${r[1]} °C`;
+}
+function cdaqRecalcular() {
+  for (const rol of ["termopares", "tensiones"]) {
+    const el = $(`#cdaqMods [data-max="${rol}"]`);
+    if (!el) continue;
+    const q = k => { const i = $(`#cdaqMods [data-rol="${rol}"][data-k="${k}"]`); return i ? i.value : null; };
+    const n = $$(`#cdaqMods [data-mod="${rol}"] [data-ck="activo"]`).filter(i => i.checked).length;
+    const mx = cdaqMax(rol, n, q("modo_adc") || "alta_resolucion", q("autozero") || "cada_muestra");
+    const ti = $(`#cdaqMods [data-tasa="${rol}"]`), tu = $(`#cdaqMods [data-tasau="${rol}"]`);
+    const auto = mx == null ? 0 : rol === "termopares" ? mx * 0.98 : Math.min(1000, mx);   // tasa vacía = automática
+    const vacia = !ti || ti.value === "";
+    const fs = vacia ? auto : +ti.value * +tu.value, con = q("muestreo") !== "bajo_demanda";
+    const cada = $(`#cdaqMods [data-cada="${rol}"]`);
+    if (cada) { cada.textContent = fs > 0 ? `= ${vacia ? "auto " + cdaqTasa(fs) + " S/s, " : ""}cada ${cdaqPer(1 / fs)}` : "";
+      cada.classList.toggle("oculto", !con); }
+    if (rol === "termopares") $$('#cdaqMods [data-mod="termopares"] [data-rango]').forEach(td => {
+      const t = $(`#cdaqMods [data-mod="termopares"] [data-ch="${td.dataset.rango}"][data-ck="tipo"]`);
+      td.textContent = cdaqRango(t ? t.value : "K", q("escala")); });
+    el.textContent = mx == null ? "sin canales" : `máx ${cdaqTasa(mx)} S/s · cada ${cdaqPer(1 / mx)} con ${n} canal${n === 1 ? "" : "es"}`;
+    el.classList.toggle("mal", con && fs > mx * 1.0001);
+    el.title = rol === "termopares" ? "1 / (conversión × (canales + internos)), tope 100 S/s. Por encima, el 9213 repetiría muestras sin avisar"
+      : "1 canal: 800 kS/s; varios: 500 kS/s repartidos";
+    const vis = (k, si) => { const i = $(`#cdaqMods [data-rol="${rol}"][data-k="${k}"]`); if (i) i.closest("label").classList.toggle("oculto", !si); };
+    if (ti) ti.closest("label").classList.toggle("oculto", !con);
+    vis("muestras", q("muestreo") === "finito"); vis("cjc_valor_C", q("cjc") === "constante");
+  }
+}
+function pintarCdaq(c) {
+  const pc = $("#pCdaq");
+  pc.hidden = !c || c.estado === "desactivado";
+  if (!pc.hidden) {
+    const al = (c.alarmas || []).length;
+    pc.className = "pill " + (al || ["error", "desconectado", "no_disponible"].includes(c.estado) ? "mal" : c.estado === "midiendo" ? "ok" : "");
+    // corta como las demás: por debajo de 1640 px solo «cDAQ» (el estado lo dice el color y el texto emergente)
+    // 9-nov: el estado en palabras cuando no mide (antes solo el color: no se veía que se había desenchufado)
+    const txt = { no_disponible: "sin USB", desconectado: "sin USB", error: "error", ocupado: "ocupado", conectando: "conectando…",
+                  libre: "suelto" }[c.estado];
+    pc.innerHTML = `cDAQ${txt ? `<span class="est"> · ${txt}</span>` : ""}${c.registro ? " ●" : ""}${al ? " ⚠" : ""}`;
+    pc.title = "cDAQ-9178 (NI 9213 termopares + NI 9201 tensión): " + c.estado + " · " + (c.lectura || c.mensaje || "");
+  }
+  const caja = $("#cajaCdaq");
+  caja.hidden = !c || c.estado === "desactivado";
+  if (caja.hidden) return;
+  cdaqUltimo = c;
+  const pill = { midiendo: "ok", ocupado: "aviso", error: "mal", desconectado: "mal", no_disponible: "mal" }[c.estado] || "";
+  $("#cdaqEstado").className = "pill " + pill;
+  $("#cdaqEstado").textContent = c.estado + (c.simulado ? " · SIMULADO" : "");
+  $("#cdaqMsg").textContent = c.mensaje || "";
+  $("#cdaqTomar").classList.toggle("oculto", ["midiendo", "conectando"].includes(c.estado));
+  $("#cdaqSoltar").classList.toggle("oculto", !["midiendo", "conectando", "ocupado", "error", "desconectado"].includes(c.estado));
+  if (cdaqEditando) {        // mientras editas, solo se actualizan los valores medidos
+    for (const x of c.canales || []) {
+      const i = $(`#cdaqMods [data-mod="${x.modulo}"] [data-ch="${cdaqN(x)}"][data-ck="activo"]`);
+      const td = i && i.closest("tr").querySelector(".ahora");
+      if (td) td.innerHTML = cdaqValor(x);
+    }
+    return;
+  }
+  const html = ["termopares", "tensiones"].map(r => cdaqModulo(c, r)).join("");
+  const abiertos = $$("#cdaqMods details[open]").map(dd => dd.closest("[data-mod]").dataset.mod);
+  if ($("#cdaqMods").dataset.html !== html) {
+    $("#cdaqMods").innerHTML = html; $("#cdaqMods").dataset.html = html;
+    for (const r of abiertos) { const dd = $(`#cdaqMods [data-mod="${r}"] details`); if (dd) dd.open = true; }
+  }
+  if (document.activeElement !== $("#cdaqPeriodo")) $("#cdaqPeriodo").value = c.config.periodo_s;
+  cdaqRecalcular();
+}
+function cdaqRecoger() {
+  const p = { periodo_s: +$("#cdaqPeriodo").value, termopares: { canales: {} }, tensiones: { canales: {} } };
+  const valor = i => i.type === "checkbox" ? i.checked : i.type === "number" ? (i.value === "" ? null : +i.value) : i.value;
+  $$("#cdaqMods [data-rol][data-k]").forEach(i => { p[i.dataset.rol][i.dataset.k] = valor(i); });
+  $$("#cdaqMods [data-tasa]").forEach(i => {      // número × unidad -> S/s
+    const u = $(`#cdaqMods [data-tasau="${i.dataset.tasa}"]`);
+    p[i.dataset.tasa].tasa_S_s = i.value === "" ? null : +i.value * +u.value; });
+  $$("#cdaqMods [data-ch]").forEach(i => {
+    const rol = i.closest("[data-mod]").dataset.mod;
+    const c = p[rol].canales[i.dataset.ch] || (p[rol].canales[i.dataset.ch] = {});
+    c[i.dataset.ck] = valor(i);
+  });
+  for (const r of ["termopares", "tensiones"]) {   // vacíos = sin valor
+    for (const k of ["cjc_valor_C", "muestras", "pre_muestras"]) if (p[r][k] == null) delete p[r][k];
+  }
+  return p;
+}
+function cdaqEditado(ev) {
+  if (!ev.target.closest("#cdaqMods") && ev.target.id !== "cdaqPeriodo") return;
+  cdaqEditando = true; $("#cdaqAplicar").disabled = false; $("#cdaqDescartar").classList.remove("oculto");
+  $("#cdaqAviso").textContent = "cambios sin aplicar";
+  if (ev.target.dataset.ck === "activo") { const tr = ev.target.closest("tr"); tr.classList.toggle("off", !ev.target.checked); tr.classList.remove("inactivo"); }
+  cdaqRecalcular();
+}
+$("#cajaCdaq").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-todos]"); if (!b) return;
+  const r = b.dataset.todos, m = b.closest("[data-mod]");
+  if (cdaqTodos.has(r)) cdaqTodos.delete(r); else cdaqTodos.add(r);
+  m.classList.toggle("todos", cdaqTodos.has(r));
+  b.textContent = cdaqTodos.has(r) ? "Solo los activos" : `Todos los canales (${m.querySelectorAll("tbody tr").length})`;
+});
+$("#cajaCdaq").addEventListener("input", cdaqEditado);
+$("#cajaCdaq").addEventListener("change", cdaqEditado);
+$("#cdaqAplicar").onclick = async () => {
+  try {
+    await api("/api/cdaq/configurar", cdaqRecoger());
+    cdaqEditando = false; $("#cdaqAplicar").disabled = true; $("#cdaqDescartar").classList.add("oculto");
+    $("#cdaqAviso").textContent = "aplicado: el driver se reconfigura"; toast("Configuración del cDAQ aplicada");
+    $("#cdaqMods").dataset.html = ""; refrescar();
+  } catch (e) { $("#cdaqAviso").textContent = ""; toast(e.message, true); }
+};
+$("#cdaqDescartar").onclick = () => {
+  cdaqEditando = false; $("#cdaqAplicar").disabled = true; $("#cdaqDescartar").classList.add("oculto");
+  $("#cdaqAviso").textContent = ""; $("#cdaqMods").dataset.html = ""; if (cdaqUltimo) pintarCdaq(cdaqUltimo);
+};
+$("#cdaqTomar").onclick = () => api("/api/cdaq/tomar", {}).then(refrescar).catch(e => toast(e.message, true));
+$("#cdaqSoltar").onclick = () => api("/api/cdaq/soltar", {}).then(refrescar).catch(e => toast(e.message, true));
+// De dónde salen ahora las temperaturas: TC-08 o PicoLog (el cDAQ va aparte: tarjeta propia y su sitio en En vivo)
+function tempActiva(e) {
+  const f = (e.temperaturas || {}).fuente;
+  if (f === "tc08") return { quien: "TC-08", src: e.tc08, midiendo: true, que: `· TC-08 cada ${e.tc08.intervalo_ms} ms` };
+  const pl = e.picolog || {};
+  return { quien: "PicoLog", src: pl, midiendo: pl.estado === "capturando", que: pl.estado === "capturando" ? "· PicoLog" : "" };
+}
 // termopares en la columna derecha
 function pintarTermopares(e) {
-  const usaTc = e.temperaturas && e.temperaturas.fuente === "tc08", src = usaTc ? e.tc08 : e.picolog;
-  const midiendo = usaTc || (e.picolog || {}).estado === "capturando";   // «tc08» = el panel tiene el TC-08 midiendo
-  const cs = midiendo && src && src.canales ? src.canales : [];
-  $("#tempOrigen").textContent = usaTc ? `· TC-08 cada ${e.tc08.intervalo_ms} ms` : (e.picolog || {}).estado === "capturando" ? "· PicoLog" : "";
-  $("#tempNada").hidden = cs.length > 0; $("#tablaTemp").hidden = !cs.length;
-  const alarmas = new Set(src && src.alarmas || []);
-  $("#tablaTemp").innerHTML = cs.map(c => {
-    const al = alarmas.has(c.nombre) ? " al" : "";
-    return `<span class="${al}">${esc(c.nombre)}</span><span class="suave">${c.limite_C != null ? "límite " + String(c.limite_C).replace(".", ",") + " °C" : ""}</span>` +
-      `<span class="v${al}">${c.ultimo == null ? "—" : String(c.ultimo.toFixed(1)).replace(".", ",") + " °C"}</span>`;
-  }).join("");
+  // 9-nov (pedido del usuario): cada equipo con su nombre. Esta tarjeta es la de PicoLog (o el TC-08 si lo maneja el
+  // panel); el cDAQ, que también mide temperatura, tiene la suya. Coexisten y se sabe cuál es cuál.
+  const ta = tempActiva(e), src = ta.src;
+  const grupos = [];
+  if (ta.midiendo && src && src.canales && src.canales.length)
+    grupos.push({ quien: ta.quien === "TC-08" ? `TC-08 (cada ${e.tc08.intervalo_ms} ms)` : "PicoLog", cs: src.canales, al: new Set(src.alarmas || []) });
+  $("#tempTitulo").textContent = ta.quien === "TC-08" ? "TC-08" : "PicoLog";
+  $("#tempOrigen").textContent = ta.quien === "TC-08" ? ` · cada ${e.tc08.intervalo_ms} ms` : "";
+  $("#tempNada").hidden = grupos.length > 0; $("#tablaTemp").hidden = !grupos.length;
+  $("#tablaTemp").innerHTML = grupos.map(g => (grupos.length > 1 ? `<span class="temp-eq">${esc(g.quien)}</span>` : "") + g.cs.map(c => {
+    const al = g.al.has(c.nombre) ? " al" : "";
+    const u = c.unidad || "°C";
+    return `<span class="${al}">${esc(c.nombre)}</span><span class="suave">${c.limite_C != null ? "límite " + String(c.limite_C).replace(".", ",") + " " + esc(u) : ""}</span>` +
+      `<span class="v${al}">${c.ultimo == null ? (c.aviso === "abierto" ? "abierto" : "—") : String(c.ultimo.toFixed(1)).replace(".", ",") + " " + esc(u)}</span>`;
+  }).join("")).join("");
 }
 $("#bTempTomar").onclick = () => api("/api/tc08/tomar", {}).then(refrescar).catch(e => toast(e.message, true));
 // fichas del osciloscopio: el resumen de cada canal, del horizontal y del disparo; al tocar una se abre su sección
 function pintarFichas(est) {
   if (!est || !est.canales) return;
-  let html = "";
+  let html = `<div class="fichas-can">`;   // 9-nov: los canales en su fila; el horizontal y el disparo en la de abajo
   for (const c of [1, 2, 3, 4]) {
     const ch = est.canales[c], on = ch.activo === "1", u = (ch.unidad || "V").toUpperCase().startsWith("A") ? "A" : "V";
     html += `<button class="ficha${on ? "" : " off"}" data-sec="secCan" data-c="${c}" style="--color:var(--c${c})">C${c}` +
       ` <span>${on ? ing(ch.escala_V_div, 3) + u + "/div" + (ch.etiqueta ? " · " + esc(ch.etiqueta) : "") : "apagado"}</span></button>`;
   }
   const h = est.horizontal, d = est.disparo;
+  html += `</div><div class="fichas-otras">`;
   html += `<button class="ficha" data-sec="secHor">⟷ <span>${ing(h.escala_s_div, 3)}s/div · ${ing(h.muestreo_Sa_s, 3)}Sa/s${h.roll_activo === "1" ? " · Roll" : ""}</span></button>`;
-  html += `<button class="ficha" data-sec="secDis">Disparo <span>${esc(d.fuente)} ${{ POS: "↑", NEG: "↓", EITH: "↕" }[d.pendiente.slice(0, 4)] || ""} ${ing(d.nivel_V, 3)}V · ${esc(d.modo)}</span></button>`;
+  html += `<button class="ficha" data-sec="secDis">Disparo <span>${esc(d.fuente)} ${{ POS: "↑", NEG: "↓", EITH: "↕" }[d.pendiente.slice(0, 4)] || ""} ${ing(d.nivel_V, 3)}V · ${esc(d.modo)}</span></button></div>`;
   $("#fichasOsc").innerHTML = html;
   marcarFichas();
 }
@@ -2865,22 +3504,55 @@ for (const id of ["secDis", "secCan", "secHor"]) $("#" + id).addEventListener("t
 // ============================================================ Fase B del rediseño (2026-11-04)
 // Encender / APAGAR en la cabecera: son los de la tarjeta de la fuente (misma confirmación, mismos bloqueos)
 $("#cabOn").onclick = () => $("#bOn").click();
-$("#cabOff").onclick = () => $("#bOff").click();
+$("#cabOff").onclick = () => (E && E.siglent && E.siglent.estado === "conectada")
+  ? api("/api/apagar_todo", {}).then(r => toast("APAGAR TODO: " + Object.entries(r || {}).map(([k, v]) => `${k} ${v}`).join(" · ")))
+    .catch(e => toast(e.message, true))
+  : $("#bOff").click();
 const fmtC = (x, d) => x == null || isNaN(x) ? "—" : Number(x).toFixed(d).replace(".", ",");
 const reloj = s => { s = Math.max(0, Math.floor(s)); const z = n => String(n).padStart(2, "0");
   return `${z(Math.floor(s / 3600))}:${z(Math.floor(s / 60) % 60)}:${z(s % 60)}`; };
 const bytesTxt = b => b == null ? "" : b >= 1e9 ? fmtC(b / 1e9, 1) + " GB" : b >= 1e6 ? fmtC(b / 1e6, 0) + " MB" : fmtC(b / 1e3, 0) + " kB";
+// 9-nov (pedido del usuario): un equipo que se conecta pasa a estar en uso solo; se puede desmarcar si no se usa.
+//   osciloscopio: con comunicación (también en modo manual) · fuente: conectada · temperaturas: midiendo (TC-08 del
+//   panel o captura de PicoLog)
+const TIT_USO = {};
+let CON_ANT = null;   // lo conectado en la lectura anterior (null = aún no se ha leído)
+function usoPorConexion(e) {
+  const o = e.osciloscopio || {}, f = e.fuente || {}, t = e.temperaturas || {}, pl = e.picolog || {};
+  const con = { osc: !!o.modo && !["error", "desconectado"].includes(o.modo), fte: f.estado === "conectada",
+    temp: t.fuente === "tc08" || pl.estado === "capturando",
+    spd: (e.siglent || {}).estado === "conectada", daq: (e.cdaq || {}).estado === "midiendo" };
+  // 9-nov (2ª decisión del usuario): conectado no obliga a usarlo. Al CONECTARSE (o detectarse) se marca solo,
+  // pero se puede desmarcar aunque siga conectado. Al abrir la página manda lo guardado (no se vuelve a marcar).
+  let cambia = false;
+  for (const [k, id] of USO_IDS) {
+    const i = $("#" + id), lab = i.closest("label");
+    if (!(k in TIT_USO)) TIT_USO[k] = lab.title;
+    lab.title = TIT_USO[k] + (con[k] ? " · Conectado" : "");
+    if (CON_ANT && con[k] && !CON_ANT[k] && !uso[k]) { uso[k] = true; cambia = true; }
+  }
+  CON_ANT = con;
+  if (cambia) { try { localStorage.setItem("enUso", JSON.stringify(uso)); } catch (x) { } aplicarUso(); }
+}
 function pintarBarraEstado(e) {
   const o = e.osciloscopio, f = e.fuente, dl = o.datalogger || {}, ens = e.ensayo, m = f.medida || {};
   const conectada = f.estado === "conectada", on = conectada && !!m.salida;
-  // cabecera
-  $("#cabFte").hidden = !uso.fte || !conectada;
+  usoPorConexion(e);
+  // cabecera: Encender/APAGAR siempre que la fuente esté conectada (9-nov; antes se ocultaban al desmarcarla)
+  // 9-nov: con la Siglent, el APAGAR de la cabecera apaga TODAS las fuentes (EA y Siglent); Encender solo es de la EA
+  const sg = e.siglent || {}, spdCon = sg.estado === "conectada";
+  $("#cabFte").hidden = !conectada && !spdCon;
+  $("#cabOn").hidden = !conectada;
   // solo ON / OFF (con los valores la cabecera no cabía en una línea); V e I en el texto emergente y en la tarjeta
-  $("#cabSal").textContent = on ? "ON" : "OFF";
-  $("#cabFte").title = on ? `Salida encendida: ${fmtC(m.V, 2)} V · ${fmtC(m.I, 3)} A · ${fmtC(m.P, 1)} W` : "Salida apagada";
-  $("#cabSal").className = on ? "salida-on" : "salida-off";
+  const algoOn = on || (spdCon && sg.encendida);
+  $("#cabSal").textContent = algoOn ? "ON" : "OFF";
+  $("#cabFte").title = [conectada && (on ? `Fuente EA encendida: ${fmtC(m.V, 2)} V · ${fmtC(m.I, 3)} A · ${fmtC(m.P, 1)} W` : "Fuente EA apagada"),
+    spdCon && `Siglent ${sg.encendida ? "encendida" : "apagada"}`].filter(Boolean).join(" · ");
+  $("#cabSal").className = algoOn ? "salida-on" : "salida-off";
+  $("#cabOff").textContent = "APAGAR";
+  $("#cabOff").title = spdCon ? "Apaga todas las salidas de todas las fuentes conectadas (EA y Siglent)" : "Apaga la salida de la fuente";
   $("#cabOn").disabled = $("#bOn").disabled; $("#cabOn").title = $("#bOn").title;
-  $("#cabOff").disabled = $("#bOff").disabled;
+  $("#cabOff").disabled = spdCon ? false : $("#bOff").disabled;
   // barra de estado
   const p = [], eb = (c, t, tit) => `<span class="eb ${c}"${tit ? ` title="${esc(tit)}"` : ""}>${t}</span>`;
   const ahora = Date.now() / 1000;
@@ -2895,7 +3567,7 @@ function pintarBarraEstado(e) {
   if (!ens && e.temperaturas && e.temperaturas.grabando) p.push(eb("rec", "● GRABANDO temperaturas", e.temperaturas.grabando));
   if (uso.osc) p.push(o.modo === "error" ? eb("mal", "Osciloscopio sin comunicación") : o.modo === "manual" ? eb("aviso", "Osciloscopio en modo manual")
     : eb("ok", "● Osciloscopio"));
-  if (uso.fte) {
+  if (uso.fte || conectada) {
     p.push(!conectada ? eb(f.estado === "sin_comunicacion" ? "mal" : "", f.estado === "sin_comunicacion" ? "Fuente sin comunicación" : "Fuente desconectada")
       : eb(on ? "ok" : "", `● Fuente ${on ? "ON" : "OFF"}${f.vigilante_s ? " · vigilante " + f.vigilante_s + " s" : ""}`,
         f.vigilante_s ? `Si el panel deja de hablar con la fuente ${f.vigilante_s} s, la fuente apaga la salida sola` : ""));
@@ -2904,8 +3576,25 @@ function pintarBarraEstado(e) {
     if (f.bloqueo && ens && ens.plan)   // solo importa con un plan en marcha
       p.push(eb("aviso", "Encendido bloqueado", f.bloqueo + ": un plan no puede volver a encender; Encender (confirmando) lo quita"));
   }
+  // Siglent (9-nov): segunda fuente
+  if (sg.estado && sg.estado !== "desactivado" && (uso.spd || spdCon)) {
+    const chs = spdCon ? ["CH1", "CH2"].filter(c => (sg.canales[c] || {}).salida).concat((sg.ch3 || {}).salida ? ["CH3"] : []) : [];
+    p.push(sg.estado === "sin_comunicacion" ? eb("mal", "Siglent sin comunicación", sg.mensaje || "")
+      : !spdCon ? eb("", "Siglent " + esc(sg.estado), sg.mensaje || "")
+      : eb(chs.length ? "ok" : "", `● Siglent ${chs.length ? "ON " + chs.join("+") : "OFF"}${sg.registro ? " · ● GRABANDO" : ""}`,
+        "Vigilancia del panel: la apaga si se pierde la comunicación más de 3 s o al cerrar el panel"));
+  }
+  // cDAQ (9-nov): equipo aparte de las temperaturas (puede medir a la vez que PicoLog)
+  const cq = e.cdaq || {};
+  if (cq.estado && cq.estado !== "desactivado") {
+    const g = cq.registro ? " · ● GRABANDO" : "", al = (cq.alarmas || []).length;
+    p.push(cq.estado === "midiendo" ? eb(al ? "mal" : "ok", `● cDAQ${g}${al ? " · ⚠ " + cq.alarmas.map(esc).join(", ") : ""}`, cq.lectura || "")
+      : ["error", "desconectado", "no_disponible", "ocupado"].includes(cq.estado)
+        ? eb("mal", "cDAQ " + ({ no_disponible: "sin USB · reintentando", desconectado: "sin USB · reintentando" }[cq.estado] || esc(cq.estado)), cq.mensaje || "")
+      : eb("", "cDAQ " + esc(cq.estado), cq.mensaje || ""));
+  }
   if (uso.temp) {
-    const src = e.temperaturas && e.temperaturas.fuente === "tc08" ? e.tc08 : e.picolog;
+    const src = tempActiva(e).src;
     const al = src && src.alarmas || [];
     if (al.length) p.push(eb("mal", "⚠ " + al.map(esc).join(", ") + " por encima del límite"));
   }

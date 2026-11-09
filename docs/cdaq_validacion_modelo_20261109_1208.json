@@ -1,0 +1,11 @@
+{
+ "resultados": [
+  [
+   "OK",
+   "4 a la vez",
+   "9213 2 termopares a 100 S/s + 9201 1 canal a 800 kS/s, en dos tareas",
+   "9213: 571 muestras, 0 repetidas · 9201: 4832741 muestras en 6.1 s"
+  ]
+ ],
+ "velocidad_9213": null
+}

@@ -31,9 +31,13 @@ import urllib.request
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 REGISTRO = os.path.join(AQUI, "pendientes.json")
-NOMBRE = {"osc": "osciloscopio", "fuente": "fuente", "temp": "temperaturas (TC-08 / PicoLog)"}
+NOMBRE = {"osc": "osciloscopio", "fuente": "fuente", "temp": "temperaturas (TC-08 / PicoLog)",
+          "cdaq": "cDAQ-9178 (NI 9213 + NI 9201)",   # 9-nov: el cDAQ es un equipo aparte
+          "siglent": "Siglent SPD3303X (segunda fuente)"}
 ALIAS = {"osc": "osc", "osciloscopio": "osc", "mxo": "osc", "fuente": "fuente", "fte": "fuente", "ea": "fuente",
-         "temp": "temp", "temperaturas": "temp", "picolog": "temp", "tc08": "temp", "tc-08": "temp", "termopares": "temp"}
+         "temp": "temp", "temperaturas": "temp", "picolog": "temp", "tc08": "temp", "tc-08": "temp", "termopares": "temp",
+         "cdaq": "cdaq", "ni": "cdaq", "9213": "cdaq", "9201": "cdaq",
+         "siglent": "siglent", "spd": "siglent", "spd3303x": "siglent"}
 LINEA = re.compile(r"^\s*\[?(OK|FALLO|AVISO|OMITIDA)\s*\]?\s+(.*)$")   # «OK    x» y «  [OK   ] x»
 
 
@@ -55,10 +59,17 @@ def ve_el_panel(E):
         "fuente": (f.get("estado") == "conectada", f"estado {f.get('estado')}" + (f" · {f.get('origen')}" if f.get("origen") else "")),
         "temp": (t.get("fuente") == "tc08" or pl.get("estado") == "capturando",
                  f"TC-08 {tc.get('estado')} · PicoLog {pl.get('estado')}"),
+        "cdaq": ((E.get("cdaq") or {}).get("estado") in ("libre", "midiendo", "conectando"),
+                 f"estado {(E.get('cdaq') or {}).get('estado')}"),
+        # la Siglent: basta con que el panel la tenga configurada (sus pruebas la conectan ellas mismas)
+        "siglent": ((E.get("siglent") or {}).get("estado") in ("conectada", "desconectada"),
+                    f"estado {(E.get('siglent') or {}).get('estado')}"),
     }
     if "BANCO" in str(o.get("idn", "")):
         ve["osc"] = (True, "banco sin equipos")
-    if str(f.get("origen", "")).lower().startswith("sim") or "SIMUL" in json.dumps(f).upper():
+    # 9-nov: antes buscaba «SIMUL» en todo el JSON y saltaba con "simulada": false
+    if str(f.get("origen", "")).lower().startswith("sim") or f.get("simulada") is True \
+            or "SIMUL" in str(f.get("idn", "")).upper():
         ve["fuente"] = (ve["fuente"][0], ve["fuente"][1] + " · ¡SIMULADA!")
     return ve
 
@@ -96,7 +107,7 @@ def main():
     for s in a.sin:
         for x in s.replace(",", " ").split():
             if x.lower() not in ALIAS:
-                sys.exit(f"--sin {x}: no sé qué equipo es (osc, fuente, temp/picolog/tc08)")
+                sys.exit(f"--sin {x}: no sé qué equipo es (osc, fuente, temp/picolog/tc08, cdaq)")
             sin.add(ALIAS[x.lower()])
     dice = {k: k not in sin for k in NOMBRE}
 

@@ -8,3 +8,4 @@ h5py==3.16.0
 numpy==2.5.3
 # cDAQ-9178 (NI 9213 + NI 9201). Requiere el driver NI-DAQmx instalado en el PC (26.8.0).
 nidaqmx==1.7.0
+nptdms==1.14.0

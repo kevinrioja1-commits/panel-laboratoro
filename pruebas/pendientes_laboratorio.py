@@ -10,7 +10,7 @@ Todo va por la API del panel (autor «claude"): el panel sigue siendo el único 
     opciones: --proyecto PR00737-ECOCOOK   --solo osc|fuente
 
 Parte A · osciloscopio
-  A1  muestreos bajos del registro (50, 20, 10, 5, 2 y 1 kSa/s, 1 canal, 10 s cada uno): que el MXO respete el
+  A1  muestreos bajos del registro (50, 20, 10 y 5 kSa/s, 1 canal, 10 s cada uno; 2 y 1 kSa/s deben RECHAZARSE, 9-nov): que el MXO respete el
       muestreo pedido en Roll (srate = srate_pedido), sin huecos ni empalmes ambiguos y con las muestras esperadas.
       Resultado: el muestreo MÍNIMO real (para dejar en el desplegable solo los que valen).
   A2  vista en vivo sin registro (C1 a 100 kSa/s): arranca, llegan datos a En vivo; un ✂ Tramo a mitad queda
@@ -99,7 +99,13 @@ def parte_a(proyecto):
     print("Configuración del osciloscopio antes:", json.dumps(antes, ensure_ascii=False), flush=True)
     # A1 muestreos bajos
     minimo = None
-    for sr in (50e3, 20e3, 10e3, 5e3, 2e3, 1e3):
+    # 9-nov: 2 y 1 kSa/s colgaban el datalogger (mínimo real en Roll = 5 kSa/s): ahora el panel los RECHAZA
+    for sr in (2e3, 1e3):
+        c, d = api("/api/osc/datalogger/iniciar", {"canales": [1], "sr": sr, "duracion": 10, "proyecto": proyecto,
+                                                   "carpeta": CARPETA, "nombre": f"sr_{int(sr)}"}, error=True)
+        ok("A1", f"{sr / 1e3:g} kSa/s: rechazado al momento (bajo el mínimo en Roll)",
+           c != 200 and "mínimo" in str(d) and not dl().get("en_marcha"), d)
+    for sr in (50e3, 20e3, 10e3, 5e3):
         nombre = f"sr_{int(sr)}"
         c, d = api("/api/osc/datalogger/iniciar", {"canales": [1], "sr": sr, "duracion": 10, "proyecto": proyecto,
                                                    "carpeta": CARPETA, "nombre": nombre,
@@ -149,11 +155,22 @@ def parte_a(proyecto):
             ruta = os.path.join(BASE, r["ruta"])
             hecho = esperar(lambda: os.path.exists(os.path.join(ruta, "osc.h5")), 60, 1)
             muestras = None
+            esperado = 3e5
             if hecho:
                 with h5py.File(os.path.join(ruta, "osc.h5"), "r") as f:
                     muestras = f["C1"].shape[0]
-            ok("A2", "el tramo se recorta al parar (≈ 3 s a 100 kSa/s)", hecho and muestras and 0.95 * 3e5 <= muestras <= 1.05 * 3e5,
-               f"{muestras} muestras")
+                # 9-nov: la vista empieza a GRABAR después de llenar la ventana Roll (En vivo ya tiene datos antes):
+                # lo esperado es la parte del tramo que cubre el fichero de la vista, no siempre los 3 s enteros
+                try:
+                    with h5py.File(fich, "r") as f:
+                        T0, sr = float(f.attrs["inicio_unix"]), float(f.attrs["srate"])
+                        Tf = T0 + f["C1"].shape[0] / sr
+                    esperado = (min(t1, Tf) - max(t0, T0)) * sr
+                except Exception:
+                    pass
+            ok("A2", "el tramo se recorta al parar (lo que la vista cubre de los 3 s, a 100 kSa/s)",
+               hecho and muestras and esperado > 1e5 and abs(muestras - esperado) <= max(200, 0.01 * esperado),
+               f"{muestras} muestras, esperadas {esperado:.0f}")
         det = None
         for _ in range(60):
             det = api(f"/api/osc/vivo/detalle?t0={t0 + 1}&t1={t0 + 1.001}&puntos=500")[1]

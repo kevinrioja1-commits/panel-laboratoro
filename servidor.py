@@ -25,6 +25,7 @@ from osciloscopio import Osciloscopio
 from picolog import PicoLog
 from tc08 import TC08, config_por_defecto
 from cdaq import CDAQ, config_por_defecto as cdaq_config_por_defecto
+from siglent import Siglent, config_por_defecto as spd_config_por_defecto
 from registro import Registro
 from detalle_osc import DetalleOsc
 from tramo import Tramos
@@ -59,14 +60,21 @@ def guardar_cfg():
 
 
 tc = TC08(reg, cfg["temperaturas"], guardar_cfg)   # TC-08 manejado por el panel (si lo toma)
-# cDAQ-9178 (NI 9213 + NI 9201), NO PROBADO CON HARDWARE. Con «habilitado»: false no carga nidaqmx ni hace nada
+# cDAQ-9178 (NI 9213 + NI 9201), validado con el hardware el 9-nov-2026. Con «habilitado»: false no carga nidaqmx
 daq = CDAQ(reg, cfg.setdefault("cdaq", cdaq_config_por_defecto()), guardar_cfg)
+# Siglent SPD3303X (9-nov-2026): segunda fuente, equipo aparte (siglent.py; modelo validado en siglent_modelo.py)
+spd = Siglent(reg, cfg.setdefault("siglent", spd_config_por_defecto()), guardar_cfg)
 
 
 class _Temperaturas:
-    """La fuente de temperaturas en uso: el TC-08 si lo tiene el panel; si no, lo que vaya capturando PicoLog."""
+    """La fuente de temperaturas en uso: el TC-08 si lo tiene el panel; si no, lo que vaya capturando PicoLog.
+    El cDAQ NO entra aquí (9-nov, pedido del usuario): puede medir a la vez que PicoLog y es un equipo aparte, con
+    su historia (/api/cdaq/historia), su cdaq.csv en Registro, Ensayo y Tramo, y su sitio propio en En vivo."""
     def activa(self):
         return tc if (tc.estado == "midiendo" or tc.grab) else pl
+
+    def nombre(self):
+        return "tc08" if self.activa() is tc else "picolog"
 
     def __getattr__(self, nombre):
         return getattr(self.activa(), nombre)
@@ -75,8 +83,12 @@ class _Temperaturas:
 temps = _Temperaturas()
 osc.no_borrar = set()              # temporales de la vista con un ✂ Tramo pendiente de recortar
 tramos = Tramos(osc, fte, temps, reg)
+tramos.daq = daq                   # 9-nov: el ✂ Tramo guarda también el cdaq.csv si el cDAQ mide
+tramos.spd = spd                   # 9-nov: y el siglent.csv si la Siglent está conectada
 ensayos.pl = temps
 ensayos.tc = tc
+ensayos.daq = daq                  # 9-nov: el cDAQ, equipo aparte (su cdaq.csv en el ensayo)
+ensayos.spd = spd                  # 9-nov: la Siglent, segunda fuente (su siglent.csv en el ensayo)
 
 app = FastAPI(title="Panel de laboratorio")
 app.mount("/static", StaticFiles(directory=os.path.join(AQUI, "static")), name="static")
@@ -122,8 +134,9 @@ def estado():
     """Todo el estado conocido, sin tocar los equipos (no bloquea el osciloscopio)."""
     return {"osciloscopio": osc.resumen(), "fuente": fte.resumen(), "ensayo": ensayos.resumen(),
             "preparado": ensayos.preparado, "picolog": pl.resumen(), "tc08": tc.resumen(),
-            "temperaturas": {"fuente": "tc08" if temps.activa() is tc else "picolog", "grabando": REG_TEMP["ruta"]},
+            "temperaturas": {"fuente": temps.nombre(), "grabando": REG_TEMP["ruta"]},
             "cdaq": dict(daq.resumen(), grabando=REG_CDAQ["ruta"]),
+            "siglent": dict(spd.resumen(), grabando=REG_SPD["ruta"]),
             "registro": reg.ultimos(60)}
 
 
@@ -550,8 +563,7 @@ REG_TEMP = {"ruta": None}
 
 @app.post("/api/temperaturas/registro/iniciar")
 def temperaturas_registro_iniciar(p: dict = Body(...), x_autor: str = Header(None)):
-    r"""<proyecto>
-egistros\<carpeta>\AAAAMMDD_HHMM_nombre	emperaturas.csv (+ .picolog al parar) y registro.json.
+    r"""<proyecto>\registros\<carpeta>\AAAAMMDD_HHMM_nombre\temperaturas.csv (+ .picolog al parar) y registro.json.
     {proyecto, carpeta, nombre, notas, pre_s}"""
     def hacer():
         if temps.grab:
@@ -602,7 +614,105 @@ def fte_historia(desde: float = 0.0):
     return fte.historia_desde(desde)
 
 
-# ------------------------------------------------------------------- cDAQ-9178 (NO PROBADO CON HARDWARE)
+# ------------------------------------------------------------------- Siglent SPD3303X (9-nov-2026)
+REG_SPD = {"ruta": None}
+
+
+@app.post("/api/siglent/conectar")
+def spd_conectar(x_autor: str = Header(None)):
+    return ejecutar(lambda: spd.conectar(autor_de(x_autor)))
+
+
+@app.post("/api/siglent/desconectar")
+def spd_desconectar(x_autor: str = Header(None)):
+    """Apaga sus salidas y cierra (la Siglent no tiene vigilante propio)."""
+    return ejecutar(lambda: spd.desconectar(autor_de(x_autor)))
+
+
+@app.post("/api/siglent/fijar")
+def spd_fijar(p: dict = Body(...), x_autor: str = Header(None)):
+    """{canal: CH1|CH2, V, I}: comprobado con el modelo (negativos, máximos, topes) y leído de vuelta."""
+    f = lambda k: None if p.get(k) in (None, "") else float(p[k])
+    return ejecutar(lambda: spd.fijar(autor_de(x_autor), p.get("canal", "CH1"), V=f("V"), I=f("I")))
+
+
+@app.post("/api/siglent/salida")
+def spd_salida(p: dict = Body(...), x_autor: str = Header(None)):
+    """{canal: CH1|CH2|CH3, encender, confirmado}: encender pide confirmación; apagar nunca."""
+    return ejecutar(lambda: spd.salida(autor_de(x_autor), p.get("canal", "CH1"), bool(p["encender"]), bool(p.get("confirmado"))))
+
+
+@app.post("/api/siglent/apagar")
+def spd_apagar(x_autor: str = Header(None)):
+    return ejecutar(lambda: spd.apagar_todo(autor_de(x_autor)))
+
+
+@app.post("/api/siglent/modo")
+def spd_modo(p: dict = Body(...), x_autor: str = Header(None)):
+    """{modo: independiente | serie | paralelo} (solo con las salidas apagadas)."""
+    return ejecutar(lambda: spd.poner_modo(autor_de(x_autor), p.get("modo", "independiente")))
+
+
+@app.post("/api/siglent/opciones")
+def spd_opciones(p: dict = Body(...), x_autor: str = Header(None)):
+    """{topes: {V, I}, nombres: {CH1, CH2, CH3}, periodo_s}"""
+    return ejecutar(lambda: spd.opciones(autor_de(x_autor), p.get("topes"), p.get("nombres"), p.get("periodo_s")))
+
+
+@app.get("/api/siglent/historia")
+def spd_historia(desde: float = 0.0):
+    return spd.historia_desde(desde)
+
+
+@app.post("/api/siglent/registro/iniciar")
+def spd_registro_iniciar(p: dict = Body(...), x_autor: str = Header(None)):
+    r"""<proyecto>\registros\<carpeta>\AAAAMMDD_HHMM_nombre\siglent.csv y registro.json. {proyecto, carpeta, nombre, notas, pre_s}"""
+    def hacer():
+        almacen._limpio(p["nombre"])
+        ruta, _, rel = almacen.destino(p.get("proyecto", ""), "registros", p.get("carpeta", ""), p["nombre"], carpeta_propia=True)
+        pre = float(p.get("pre_s") or 0)
+        with open(os.path.join(ruta, "registro.json"), "w", encoding="utf-8") as f:
+            json.dump({"inicio": time.strftime("%Y-%m-%dT%H:%M:%S"), "nombre": p["nombre"], "notas": p.get("notas", ""),
+                       "proyecto": p.get("proyecto", ""), "carpeta": p.get("carpeta", ""), "ruta": rel,
+                       "tipo": "siglent", "pre_registro_s": pre, "siglent": spd.ficha()}, f, ensure_ascii=False, indent=1)
+        spd.iniciar_registro(os.path.join(ruta, "siglent.csv"), autor_de(x_autor), pre, {"notas": p.get("notas", ""), "registro": rel})
+        REG_SPD["ruta"] = rel
+        return {"ruta": rel}
+    return ejecutar(hacer)
+
+
+@app.post("/api/siglent/registro/parar")
+def spd_registro_parar(x_autor: str = Header(None)):
+    def hacer():
+        f = spd.parar_registro(autor_de(x_autor))
+        REG_SPD["ruta"] = None
+        return {"fichero": f}
+    return ejecutar(hacer)
+
+
+@app.post("/api/apagar_todo")
+def apagar_todo(x_autor: str = Header(None)):
+    """APAGAR TODO (9-nov): todas las salidas de todas las fuentes conectadas. Sigue aunque una falle y dice cuál."""
+    autor, res = autor_de(x_autor), {}
+    if fte.estado == "conectada":
+        try:
+            fte.salida(False, True, autor)
+            res["fuente_ea"] = "apagada"
+        except Exception as e:
+            res["fuente_ea"] = f"ERROR: {e}"
+    if spd.estado == "conectada":
+        try:
+            spd.apagar_todo(autor, "APAGAR TODO")
+            res["siglent"] = "apagada"
+        except Exception as e:
+            res["siglent"] = f"ERROR: {e}"
+    reg.anotar(autor, "panel", "APAGAR TODO", res)
+    if any(str(v).startswith("ERROR") for v in res.values()):
+        raise HTTPException(status_code=500, detail=f"APAGAR TODO incompleto: {res}")
+    return res
+
+
+# ------------------------------------------------------------------- cDAQ-9178 (validado con hardware el 9-nov-2026)
 REG_CDAQ = {"ruta": None}
 
 
@@ -686,6 +796,10 @@ def al_cerrar():
     except Exception:
         pass
     try:
+        spd.cerrar()                             # la Siglent no tiene vigilante propio: se apaga al cerrar el panel
+    except Exception:
+        pass
+    try:
         # con la salida encendida se APAGA (antes quedaba encendida y sin vigilante: revisión del 2026-11-04)
         fte.desconectar("panel (cierre)", si_encendida="apagar")
     except Exception as e:
@@ -735,6 +849,13 @@ def plan_guardar(p: dict = Body(...), x_autor: str = Header(None)):
         reg.anotar(autor_de(x_autor), "ensayo", "plan guardado", {"proyecto": p["proyecto"], "plan": n})
         return {"nombre": n}
     return ejecutar(hacer)
+
+
+@app.get("/api/plan/medidas")
+def plan_medidas():
+    """Fase 4 (9-nov): medidas que se pueden usar en «esperar» y en las guardas, con su valor ahora."""
+    import plan as planes
+    return ejecutar(lambda: {"medidas": planes.medidas_disponibles(ensayos)})
 
 
 @app.post("/api/plan/comprobar")
@@ -816,6 +937,16 @@ def _al_cerrar_consola():
 if __name__ == "__main__":
     _al_cerrar_consola()
     puerto = cfg.get("puerto_panel", 8765)
+    # 9-nov: al reiniciar, el panel anterior puede tardar en soltar el puerto (p. ej. esperando a una Siglent
+    # colgada en NI-VISA): se espera hasta 4 min en vez de cerrarse con «puerto ocupado»
+    import socket
+    for _i in range(240):
+        with socket.socket() as _s:
+            if _s.connect_ex(("127.0.0.1", puerto)) != 0:
+                break
+        if _i == 0:
+            print(f"El puerto {puerto} sigue ocupado (el panel anterior se está cerrando): espero...", flush=True)
+        time.sleep(1)
     if cfg.get("abrir_navegador", True):
         threading.Timer(1.5, lambda: webbrowser.open(f"http://127.0.0.1:{puerto}")).start()
     uvicorn.run(app, host="127.0.0.1", port=puerto, log_level="warning")

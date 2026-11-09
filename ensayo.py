@@ -29,6 +29,8 @@ class Ensayos:
         self.osc, self.fte, self.reg = osc, fte, reg
         self.pl = None                         # temperaturas en uso (TC-08 del panel o PicoLog); lo pone el servidor
         self.tc = None                         # el TC-08 (tc08.py), para aplicar la configuracion de una plantilla
+        self.daq = None                        # el cDAQ (cdaq.py): equipo aparte, su cdaq.csv (9-nov); lo pone el servidor
+        self.spd = None                        # la Siglent SPD3303X (siglent.py): segunda fuente, su siglent.csv (9-nov)
         self.actual = None
         self.preparado = None                  # {proyecto, plan, hora}: plan dejado listo para revisar (/api/ensayo/preparar)
         self.lock = threading.Lock()
@@ -45,6 +47,9 @@ class Ensayos:
                 "plan": a["plan"].resumen() if a.get("plan") else None,
                 "fin_previsto": a.get("fin_previsto"), "terminar_al_cumplir": a.get("terminar_al_cumplir"),
                 "temperaturas_registrando": bool(self.pl and self.pl.grab and self.pl.grab["fichero"] == a.get("tcsv")),
+                "cdaq_registrando": bool(self.daq and self.daq.grab and self.daq.grab["fichero"] == a.get("dcsv")),
+                "siglent_registrando": bool(self.spd and self.spd.grab and self.spd.grab["fichero"] == a.get("scsv")),
+                "equipos": a.get("equipos"),
                 "estado": a["estado"], "cierra_en": a.get("cierra_en"), "capturas": n, "encender": a.get("encender"),
                 "fuente_registrando": bool(self.fte.grab and self.fte.grab["fichero"] == a["csv"]),
                 "osc_registrando": bool(a["osc"] and self.osc.dl.get("fichero") == a["h5"]
@@ -74,13 +79,25 @@ class Ensayos:
             if plan_resumen["enciende"] and not p.get("confirmado"):
                 raise ValueError("El plan enciende la salida: hace falta confirmarlo")
             encender = False
+            eqp = p.get("equipos") or {}
+            if plan_resumen["usa_ea"] and eqp.get("fuente", True) is False:
+                raise ValueError("El plan mueve la fuente EA: márcala en los equipos del ensayo")
+            if plan_resumen["usa_spd"] and eqp.get("siglent", True) is False:
+                raise ValueError("El plan mueve la Siglent: márcala en los equipos del ensayo")
+        # 9-nov (propuesta aprobada): el ensayo usa los equipos CONECTADOS que se marquen (por defecto todos); basta
+        # con uno que mida. Antes exigía siempre la fuente EA.
+        eq = p.get("equipos") or {}
+        con_fte = self.fte.estado == "conectada" and eq.get("fuente", True) is not False
+        con_spd = bool(self.spd and self.spd.estado == "conectada" and eq.get("siglent", True) is not False)
+        if encender and not con_fte:
+            raise ValueError("«Al iniciar, encender la salida» es de la fuente EA: no está conectada o no participa")
         with self.lock:
             if self.actual:
                 raise RuntimeError(f"Ya hay un ensayo en marcha: {self.actual['nombre']}")
-            if self.fte.estado != "conectada":
-                raise RuntimeError("Conecta la fuente: el ensayo registra siempre la fuente")
-            if self.fte.grab:
+            if con_fte and self.fte.grab:
                 raise RuntimeError("Ya se está registrando la fuente (Registrar): páralo antes de empezar el ensayo")
+            if con_spd and self.spd.grab:
+                raise RuntimeError("Ya se está registrando la Siglent: páralo antes de empezar el ensayo")
             if oscp and (self.osc.modo == "datalogger" or self.osc._datalogger_vivo()):
                 raise RuntimeError("Hay un registro del osciloscopio en marcha: páralo antes")
             nombre = p.get("nombre", "").strip()
@@ -110,36 +127,82 @@ class Ensayos:
             # intervalo) y temperaturas.csv en la carpeta del ensayo, con el mismo reloj que fuente.csv
             # «Temperaturas» en Qué registrar: True = grabarlas (si el TC-08 no lo tiene nadie, lo toma el panel);
             # un dict = ademas configurar los termopares (plantillas); False = no grabarlas
-            quiere_t = p.get("temperaturas", True)
+            quiere_t = p.get("temperaturas", True) and eq.get("temperaturas", True) is not False
             if quiere_t and self.tc is not None:
                 if isinstance(quiere_t, dict):
                     self.tc.configurar(quiere_t, autor)
                 usa_picolog = getattr(self.pl, "activa", lambda: None)() is not self.tc and self.pl.estado == "capturando"
                 if self.tc.estado != "midiendo" and not usa_picolog:
-                    self.tc.tomar(autor)       # error claro si PicoLog esta abierto o no hay TC-08
-                    time.sleep(0.6)            # que lleguen las primeras medidas
+                    # 9-nov: sin TC-08 (desenchufado) ni captura de PicoLog, el ensayo sigue sin temperaturas y lo
+                    # anota (antes no empezaba: «No se encuentra el TC-08»)
+                    try:
+                        self.tc.tomar(autor)
+                        time.sleep(0.6)        # que lleguen las primeras medidas
+                    except Exception as e:
+                        self.reg.anotar("panel (automático)", "ensayo", "sin PicoLog / TC-08 en el ensayo", str(e))
             con_pl = bool(quiere_t and self.pl and self.pl.estado in ("capturando", "midiendo") and self.pl.canales)
             ficha["picolog"] = self.pl.ficha() if con_pl else {
                 "no_registrado": (self.pl.mensaje or f"PicoLog: {self.pl.estado}") if self.pl else "sin PicoLog"}
+            # cDAQ (9-nov): si el panel lo tiene midiendo, su cdaq.csv (y su TDMS si toca) en la carpeta del ensayo.
+            # Puede ir a la vez que PicoLog o el TC-08: cada uno en su fichero
+            # 9-nov (pedido del usuario): termopares del 9213 y tensiones del 9201 se eligen por separado
+            daq_mods = []
+            if p.get("cdaq", True) and eq.get("cdaq", True) is not False and self.daq and self.daq.estado == "midiendo":
+                hay = {c["modulo"] for c in self.daq.canales}
+                daq_mods = [m for m in ("termopares", "tensiones") if m in hay and eq.get("cdaq_" + m, True) is not False]
+            con_daq = bool(daq_mods)
+            if con_daq:
+                ficha["cdaq"] = dict(self.daq.ficha(), modulos_en_ensayo=daq_mods)
+            if con_spd:
+                ficha["siglent"] = self.spd.ficha()
+            con_t = con_pl
+            if not (con_fte or con_spd or con_daq or con_t or oscp):
+                for d in ("fotos", "picolog", "capturas", ""):     # no deja la carpeta vacía (9-nov)
+                    try:
+                        os.rmdir(os.path.join(ruta, d))
+                    except OSError:
+                        pass
+                raise RuntimeError("No hay ningún equipo que medir: conecta (o marca) al menos uno")
+            equipos = [n for n, si in (("fuente EA", con_fte), ("Siglent", con_spd),
+                                       ("cDAQ termopares", "termopares" in daq_mods), ("cDAQ tensiones", "tensiones" in daq_mods),
+                                       ("PicoLog / TC-08", con_t), ("osciloscopio", bool(oscp))) if si]
+            ficha["equipos"] = equipos
             ruta_json = os.path.join(ruta, "ensayo.json")
             with open(ruta_json, "w", encoding="utf-8") as fh:
                 json.dump(ficha, fh, ensure_ascii=False, indent=1)
             csv, h5 = os.path.join(ruta, "fuente.csv"), os.path.join(ruta, "osc.h5")
             tcsv = os.path.join(ruta, "temperaturas.csv")
-            self.fte.iniciar_registro(csv, autor, pre, None, None, {"ensayo": rel})   # el apagado lo lleva el ensayo
+            dcsv = os.path.join(ruta, "cdaq_SIMULADO.csv" if con_daq and self.daq.simulado else "cdaq.csv")
+            scsv = os.path.join(ruta, "siglent.csv")
+            if con_fte:
+                self.fte.iniciar_registro(csv, autor, pre, None, None, {"ensayo": rel})   # el apagado lo lleva el ensayo
+            if con_spd:
+                try:
+                    self.spd.iniciar_registro(scsv, autor, pre, {"ensayo": rel})
+                except Exception as e:
+                    self.reg.anotar("panel (automático)", "siglent", "Siglent NO registrada", str(e))
             if con_pl:
                 try:
                     self.pl.iniciar_registro(tcsv, autor, pre, {"ensayo": rel})
                 except Exception as e:
                     self.reg.anotar("panel (automático)", "picolog", "temperaturas NO registradas", str(e))
+            if con_daq:
+                try:
+                    self.daq.iniciar_registro(dcsv, autor, pre, {"ensayo": rel}, modulos=daq_mods)
+                except Exception as e:
+                    self.reg.anotar("panel (automático)", "cdaq", "cDAQ NO registrado", str(e))
             if oscp:
                 try:
                     self.osc.iniciar_datalogger(oscp["canales"], float(oscp["sr"]), 0, proyecto, autor, ruta_h5=h5)
                 except Exception:
-                    self.fte.parar_registro(autor, "no arrancó el osciloscopio", inmediato=True)
+                    if con_fte:
+                        self.fte.parar_registro(autor, "no arrancó el osciloscopio", inmediato=True)
+                    if con_spd and self.spd.grab:
+                        self.spd.parar_registro(autor, "no arrancó el osciloscopio")
                     raise
             self.actual = {"nombre": nombre, "proyecto": proyecto, "carpeta": carpeta, "dir": os.path.basename(ruta),
-                           "ruta": ruta, "rel": rel, "json": ruta_json, "csv": csv, "h5": h5, "osc": oscp, "tcsv": tcsv,
+                           "ruta": ruta, "rel": rel, "json": ruta_json, "csv": csv, "h5": h5, "osc": oscp, "tcsv": tcsv, "dcsv": dcsv, "scsv": scsv,
+                           "equipos": equipos, "con_fte": con_fte, "con_spd": con_spd,
                            "inicio": time.time(), "estado": "en marcha", "apagar": apagar, "cola": cola,
                            "encender": "pendiente" if encender else None, "plan": None,
                            # consignas que vio la persona al confirmar el encendido (o las de ahora)
@@ -152,7 +215,7 @@ class Ensayos:
                 threading.Thread(target=self._vigilar_duracion, args=(self.actual,), daemon=True).start()
             if plan:
                 self.actual["plan"] = planes.Ejecucion(self, self.actual, plan, autor)
-        if plan and plan_resumen["enciende"]:
+        if plan and plan_resumen.get("enciende_ea"):
             # iniciar un plan que enciende ya lo ha confirmado la persona (con sus etapas): quita un bloqueo anterior
             # (si no, tras un APAGAR de antes el plan se pausaba nada más empezar; visto en Chrome el 2026-11-04)
             self.fte.desbloquear(autor)
@@ -167,11 +230,14 @@ class Ensayos:
         return self.resumen()
 
     def comprobar_plan(self, plan, con_osc):
-        """(plan normalizado, resumen) o ValueError con todos los problemas (ver plan.comprobar)."""
+        """(plan normalizado, resumen) o ValueError con todos los problemas (ver plan.comprobar).
+        9-nov (fase 4): la EA solo hace falta si el plan la mueve; la Siglent, si la mueve; las condiciones, con las
+        medidas que hay ahora."""
         f = self.fte.resumen()
-        if f["estado"] != "conectada":
-            raise ValueError("Conecta la fuente para comprobar el plan (se compara con sus límites)")
-        return planes.comprobar(plan, f["limites"], f.get("equipo") or {}, f.get("consignas") or {}, con_osc)
+        con = f["estado"] == "conectada"
+        spd = self.spd.resumen() if self.spd else None
+        return planes.comprobar(plan, f.get("limites") or {}, f.get("equipo") or {}, f.get("consignas") or {}, con_osc,
+                                spd=spd, medidas=set(planes.medidas_disponibles(self)), ea_conectada=con)
 
     def _esperar_registro(self, a):
         """Hasta que se graba todo (el osciloscopio tarda unos segundos en configurarse y llenar su ventana; sin el,
@@ -233,7 +299,7 @@ class Ensayos:
         if a["apagar"] or forzar_apagar:
             # la consigna de salida es la de la ultima orden; la medida puede ir 0,1 s por detras (y se apagaba dos veces)
             encendida = self.fte.consignas.get("salida", self.fte.medida.get("salida"))
-            if self.fte.estado == "conectada" and encendida:
+            if a.get("con_fte", True) and self.fte.estado == "conectada" and encendida:
                 try:
                     self.fte.salida(False, True, "panel (automático)")
                     cola = a["cola"]
@@ -242,6 +308,15 @@ class Ensayos:
                                     f"{e}: apagar a mano")
             else:
                 cola = a["cola"]          # ya apagada: igualmente se graba lo pedido despues de Terminar
+            # la Siglent (9-nov): también se apaga (no tiene vigilante propio)
+            # (solo si participa: si no, puede estar alimentando otra cosa a la vez)
+            if a.get("con_spd") and self.spd and self.spd.estado == "conectada" and self.spd.encendida():
+                try:
+                    self.spd.apagar_todo("panel (automático)", "fin del ensayo")
+                    cola = a["cola"]
+                except Exception as e:
+                    self.reg.anotar("panel (automático)", "siglent", "NO SE PUDO APAGAR al terminar el ensayo",
+                                    f"{e}: apagar a mano")
         a["cierra_en"] = time.time() + cola
         self.reg.anotar(autor, "ensayo", "terminar ensayo", f"se sigue grabando {cola:g} s" if cola else None)
         threading.Thread(target=self._cerrar_tras, args=(cola, autor), daemon=True).start()
@@ -258,12 +333,19 @@ class Ensayos:
             return
         self.reg.anotar("panel (automático)", "ensayo", "duración cumplida",
                         "se termina el ensayo" if a["terminar_al_cumplir"] else "orientativa: el ensayo sigue")
-        self.fte.marca("duración cumplida" + ("" if a["terminar_al_cumplir"] else " (orientativa)"))
+        self._marca(a, "duración cumplida" + ("" if a["terminar_al_cumplir"] else " (orientativa)"))
         if a["terminar_al_cumplir"]:
             try:
                 self.terminar("panel (duración cumplida)")
             except Exception as e:
                 self.reg.anotar("panel (automático)", "ensayo", "no se pudo terminar al cumplirse la duración", str(e))
+
+    def _marca(self, a, texto):
+        """Una marca en los ficheros de las fuentes que registran el ensayo."""
+        if a.get("con_fte") and self.fte.estado == "conectada":
+            self.fte.marca(texto)
+        if a.get("con_spd") and self.spd:
+            self.spd.marca(texto)
 
     def plan_mando(self, accion, autor, confirmado=False):
         """Pausar / continuar / siguiente / parar del plan en curso (PARAR apaga y termina el ensayo)."""
@@ -327,8 +409,12 @@ class Ensayos:
             dl_fin = self.osc.dl.get("fin")
         if self.pl and self.pl.grab and self.pl.grab["fichero"] == a.get("tcsv"):
             self.pl.parar_registro(autor, f"fin del ensayo ({motivo})")
+        if self.daq and self.daq.grab and self.daq.grab["fichero"] == a.get("dcsv"):
+            self.daq.parar_registro(autor, f"fin del ensayo ({motivo})")
         if self.fte.grab and self.fte.grab["fichero"] == a["csv"]:
             self.fte.parar_registro(autor, f"fin del ensayo ({motivo})", inmediato=True)
+        if self.spd and self.spd.grab and self.spd.grab["fichero"] == a.get("scsv"):
+            self.spd.parar_registro(autor, f"fin del ensayo ({motivo})")
         try:
             with open(a["json"], encoding="utf-8") as fh:
                 ficha = json.load(fh)

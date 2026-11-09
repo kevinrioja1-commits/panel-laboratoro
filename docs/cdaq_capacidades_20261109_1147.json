@@ -1,0 +1,456 @@
+{
+ "fecha": "2026-11-09T11:46:24",
+ "equipos": {
+  "chasis": "cDAQ1",
+  "9213": "cDAQ1Mod5",
+  "9201": "cDAQ1Mod6",
+  "driver": "DriverVersion(major_version=26, minor_version=8, update_version=0)"
+ },
+ "9213": {
+  "por_defecto": {
+   "ai_adc_timing_mode": "HIGH_RESOLUTION",
+   "ai_auto_zero_mode": "EVERY_SAMPLE",
+   "ai_rng_high": 0.078125,
+   "ai_rng_low": -0.078125,
+   "ai_min": -245.72975487981765,
+   "ai_max": 1372.0,
+   "ai_thrmcpl_cjc_src": "BUILT_IN",
+   "ai_open_thrmcpl_detect_enable": "ERROR [-200452] Specified property is not supported by the device or is not applicable to the task. Property: DAQmx_AI_OpenThrmcplDetectEnable",
+   "ai_lowpass_enable": false,
+   "ai_resolution": 24.0,
+   "lectura_ai0_C": 23.808657821689142
+  },
+  "tipos": {
+   "J": {
+    "rango_admitido_C": [
+     -210.0,
+     1199.8
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 24.143976021309523,
+    "crear_y_leer": "OK"
+   },
+   "K": {
+    "rango_admitido_C": [
+     -200.0,
+     1371.8
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 23.841130325661588,
+    "crear_y_leer": "OK"
+   },
+   "N": {
+    "rango_admitido_C": [
+     -200.0,
+     1299.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 23.100142887748415,
+    "crear_y_leer": "OK"
+   },
+   "R": {
+    "rango_admitido_C": [
+     -50.0,
+     1767.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 14.501576693014055,
+    "crear_y_leer": "OK"
+   },
+   "S": {
+    "rango_admitido_C": [
+     -50.0,
+     1767.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 14.47041444585825,
+    "crear_y_leer": "OK"
+   },
+   "T": {
+    "rango_admitido_C": [
+     -200.0,
+     399.8
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 23.878357649911298,
+    "crear_y_leer": "OK"
+   },
+   "B": {
+    "rango_admitido_C": [
+     250.0,
+     1819.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 46.59029123490598,
+    "crear_y_leer": "OK"
+   },
+   "E": {
+    "rango_admitido_C": [
+     -200.0,
+     999.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 24.381936504747177,
+    "crear_y_leer": "OK"
+   },
+   "A": {
+    "rango_admitido_C": [
+     100.0,
+     2479.8
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 20.391959596566537,
+    "crear_y_leer": "OK"
+   },
+   "C": {
+    "rango_admitido_C": [
+     0.0,
+     2314.9
+    ],
+    "rango_completo_a_la_vez": true,
+    "lectura_ai0": 20.5276095921122,
+    "crear_y_leer": "OK"
+   }
+  },
+  "cjc": {
+   "interna": {
+    "lectura_ai0_C": 23.778263529396337
+   },
+   "constante_25C": {
+    "lectura_ai0_C": 23.299483327335338
+   }
+  },
+  "abiertos": {
+   "lecturas_ai0_ai3": [
+    23.791862392592588,
+    2294.62519364209,
+    2294.62519364209,
+    2294.62519364209
+   ],
+   "existen": true,
+   "canales": [
+    "cDAQ1Mod5/ai1",
+    "cDAQ1Mod5/ai2",
+    "cDAQ1Mod5/ai3"
+   ]
+  },
+  "velocidad": [
+   {
+    "canales": 16,
+    "modo": "HIGH_RESOLUTION",
+    "max_multi_entre_n": 84.45945945945945,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 1.008803098300612,
+    "hw": "[-50352] The requested memory could not be allocated. Selected Buffer Size: 120000000"
+   },
+   {
+    "canales": 16,
+    "modo": "HIGH_SPEED",
+    "max_multi_entre_n": 84.45945945945945,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 63.231829385292095,
+    "hw": "[-50352] The requested memory could not be allocated. Selected Buffer Size: 120000000"
+   },
+   {
+    "canales": 8,
+    "modo": "HIGH_RESOLUTION",
+    "max_multi_entre_n": 168.9189189189189,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 1.8156858114029037,
+    "hw": "[-50352] The requested memory could not be allocated. Selected Buffer Size: 120000000"
+   },
+   {
+    "canales": 8,
+    "modo": "HIGH_SPEED",
+    "max_multi_entre_n": 168.9189189189189,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 83.01529252383465,
+    "hw": "[-50352] The requested memory could not be allocated. Selected Buffer Size: 120000000"
+   },
+   {
+    "canales": 1,
+    "modo": "HIGH_RESOLUTION",
+    "max_multi_entre_n": 1351.3513513513512,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 6.052096690392782,
+    "hw": "[-50352] The requested memory could not be allocated. Task Name: _unnamedTask<14A>"
+   },
+   {
+    "canales": 1,
+    "modo": "HIGH_SPEED",
+    "max_multi_entre_n": 1351.3513513513512,
+    "samp_clk_max_rate": 4000000.0,
+    "bajo_demanda_lecturas_s": 86.3479315067035,
+    "hw": "[-50352] The requested memory could not be allocated. Task Name: _unnamedTask<14D>"
+   }
+  ],
+  "autocero_max_rate_16ch": {
+   "EVERY_SAMPLE": 4000000.0,
+   "ONCE": 4000000.0,
+   "NONE": 4000000.0
+  }
+ },
+ "9201": {
+  "dispositivo": {
+   "ai_max_single_chan_rate": 800000.0,
+   "ai_max_multi_chan_rate": 500000.0,
+   "ai_min_rate": 2.3283064370807974e-05,
+   "ai_voltage_rngs": [
+    -10.0,
+    10.0
+   ]
+  },
+  "terminal": {
+   "RSE": "OK",
+   "NRSE": "[-200077] Requested value is not a supported value for this property. The property value may be invalid because it conflicts with another property. Property: DAQmx_AI_TermCfg",
+   "DIFF": "[-200077] Requested value is not a supported value for this property. The property value may be invalid because it conflicts with another property. Property: DAQmx_AI_TermCfg",
+   "PSEUDO_DIFF": "[-200077] Requested value is not a supported value for this property. The property value may be invalid because it conflicts with another property. Property: DAQmx_AI_TermCfg",
+   "DEFAULT": "OK"
+  },
+  "rangos": {
+   "-10..10": {
+    "rng_real": [
+     -10.0,
+     10.0
+    ]
+   },
+   "-1..1": {
+    "rng_real": [
+     -10.0,
+     10.0
+    ]
+   },
+   "0..5": {
+    "rng_real": [
+     -10.0,
+     10.0
+    ]
+   },
+   "-10.5..10.5": "[-200077] Requested value is not a supported value for this property. The property value may be invalid because it conflicts with another property. Property: DAQmx_AI_Min",
+   "-20..20": "[-200077] Requested value is not a supported value for this property. The property value may be invalid because it conflicts with another property. Property: DAQmx_AI_Min"
+  },
+  "por_defecto": {
+   "ai_term_cfg": "RSE",
+   "ai_rng_low": -10.0,
+   "ai_rng_high": 10.0,
+   "ai_resolution": 12.0,
+   "ai_coupling": "DC",
+   "ai_lowpass_enable": false
+  },
+  "velocidad": [
+   {
+    "canales": 1,
+    "samp_clk_max_rate": 799999.9999999999,
+    "conv_rate_por_defecto": 88888.88888888889,
+    "conv_max_rate": 799999.9999999999,
+    "finita_0_5s": {
+     "muestras_por_canal": 399999,
+     "pedidas": 399999,
+     "tiempo_s": 0.588
+    },
+    "bajo_demanda_lecturas_s": 809.587458521166,
+    "pedir_1_5x_max": "[-200332] Specified sample rate is higher than the fastest rate supported by the device. Property: DAQmx_SampClk_Rate"
+   },
+   {
+    "canales": 2,
+    "samp_clk_max_rate": 250000.0,
+    "conv_rate_por_defecto": 83333.33333333333,
+    "conv_max_rate": 500000.0,
+    "finita_0_5s": {
+     "muestras_por_canal": 125000,
+     "pedidas": 125000,
+     "tiempo_s": 0.604
+    },
+    "bajo_demanda_lecturas_s": 812.2668540275492,
+    "pedir_1_5x_max": "[-200332] Specified sample rate is higher than the fastest rate supported by the device. Property: DAQmx_SampClk_Rate"
+   },
+   {
+    "canales": 4,
+    "samp_clk_max_rate": 125000.0,
+    "conv_rate_por_defecto": 83333.33333333333,
+    "conv_max_rate": 500000.0,
+    "finita_0_5s": {
+     "muestras_por_canal": 62500,
+     "pedidas": 62500,
+     "tiempo_s": 0.607
+    },
+    "bajo_demanda_lecturas_s": 744.0406990243694,
+    "pedir_1_5x_max": "[-200332] Specified sample rate is higher than the fastest rate supported by the device. Property: DAQmx_SampClk_Rate"
+   },
+   {
+    "canales": 8,
+    "samp_clk_max_rate": 62500.0,
+    "conv_rate_por_defecto": 83333.33333333333,
+    "conv_max_rate": 500000.0,
+    "finita_0_5s": {
+     "muestras_por_canal": 31250,
+     "pedidas": 31250,
+     "tiempo_s": 0.597
+    },
+    "bajo_demanda_lecturas_s": 625.8012211266711,
+    "pedir_1_5x_max": "[-200332] Specified sample rate is higher than the fastest rate supported by the device. Property: DAQmx_SampClk_Rate"
+   }
+  ],
+  "entradas_al_aire": {
+   "ai0": {
+    "media_V": 0.00439,
+    "std_V": 0.00384,
+    "min_V": -0.01083,
+    "max_V": 0.02003
+   },
+   "ai1": {
+    "media_V": 0.00408,
+    "std_V": 0.00368,
+    "min_V": -0.00581,
+    "max_V": 0.01992
+   },
+   "ai2": {
+    "media_V": 0.00421,
+    "std_V": 0.00376,
+    "min_V": -0.01085,
+    "max_V": 0.02002
+   },
+   "ai3": {
+    "media_V": 0.00392,
+    "std_V": 0.00361,
+    "min_V": -0.01111,
+    "max_V": 0.01975
+   },
+   "ai4": {
+    "media_V": 0.00395,
+    "std_V": 0.00362,
+    "min_V": -0.01111,
+    "max_V": 0.01976
+   },
+   "ai5": {
+    "media_V": 0.00422,
+    "std_V": 0.00354,
+    "min_V": -0.0108,
+    "max_V": 0.01492
+   },
+   "ai6": {
+    "media_V": 0.00393,
+    "std_V": 0.00365,
+    "min_V": -0.01116,
+    "max_V": 0.01971
+   },
+   "ai7": {
+    "media_V": 0.00434,
+    "std_V": 0.0036,
+    "min_V": -0.01071,
+    "max_V": 0.02016
+   },
+   "cada_canal_solo": {
+    "ai0": {
+     "media_V": 0.00423,
+     "std_V": 0.00388
+    },
+    "ai7": {
+     "media_V": 0.00438,
+     "std_V": 0.00362
+    }
+   }
+  }
+ },
+ "chasis": {
+  "dos_tareas_simultaneas": {
+   "segundos": 3,
+   "9213_a_10_S_s": 26,
+   "9201_a_1000_S_s": 2506
+  },
+  "dos_tareas_mismo_modulo": "[-50103] The specified resource is reserved. The operation could not be completed as specified. Task Name: _unnamedTask<172>",
+  "una_tarea_dos_modulos": {
+   "samp_clk_max_rate": 799999.9999999999,
+   "lectura_bajo_demanda": [
+    23.801655879120535,
+    0.004599632
+   ]
+  },
+  "disparo_PFI0": "se puede configurar",
+  "chasis": {
+   "product_type": "cDAQ-9178",
+   "terminals": [
+    "/cDAQ1/PFI0",
+    "/cDAQ1/PFI1",
+    "/cDAQ1/20MHzTimebase",
+    "/cDAQ1/80MHzTimebase",
+    "/cDAQ1/ai/ReferenceTrigger",
+    "/cDAQ1/ai/SampleClock",
+    "/cDAQ1/ai/StartTrigger",
+    "/cDAQ1/ao/SampleClock",
+    "/cDAQ1/ao/StartTrigger",
+    "/cDAQ1/di/SampleClock",
+    "/cDAQ1/di/StartTrigger",
+    "/cDAQ1/di/ReferenceTrigger",
+    "/cDAQ1/do/SampleClock",
+    "/cDAQ1/do/StartTrigger",
+    "/cDAQ1/te0/ReferenceTrigger",
+    "/cDAQ1/te0/SampleClock",
+    "/cDAQ1/te0/StartTrigger",
+    "/cDAQ1/te1/ReferenceTrigger",
+    "/cDAQ1/te1/SampleClock",
+    "/cDAQ1/te1/StartTrigger",
+    "/cDAQ1/ChangeDetectionEvent",
+    "/cDAQ1/AnalogComparisonEvent",
+    "/cDAQ1/ai/PauseTrigger",
+    "/cDAQ1/ai/SampleClockTimebase",
+    "/cDAQ1/ao/PauseTrigger",
+    "/cDAQ1/ao/SampleClockTimebase",
+    "/cDAQ1/di/SampleClockTimebase",
+    "/cDAQ1/di/PauseTrigger",
+    "/cDAQ1/do/PauseTrigger",
+    "/cDAQ1/do/SampleClockTimebase",
+    "/cDAQ1/te0/PauseTrigger",
+    "/cDAQ1/te0/SampleClockTimebase",
+    "/cDAQ1/te1/PauseTrigger",
+    "/cDAQ1/te1/SampleClockTimebase",
+    "/cDAQ1/100kHzTimebase",
+    "/cDAQ1/SyncPulse0",
+    "/cDAQ1/SyncPulse1",
+    "/cDAQ1/Ctr0Source",
+    "/cDAQ1/Ctr1Source",
+    "/cDAQ1/Ctr2Source",
+    "/cDAQ1/Ctr3Source",
+    "/cDAQ1/Ctr0Gate",
+    "/cDAQ1/Ctr1Gate",
+    "/cDAQ1/Ctr2Gate",
+    "/cDAQ1/Ctr3Gate",
+    "/cDAQ1/Ctr0Aux",
+    "/cDAQ1/Ctr1Aux",
+    "/cDAQ1/Ctr2Aux",
+    "/cDAQ1/Ctr3Aux",
+    "/cDAQ1/Ctr0SampleClock",
+    "/cDAQ1/Ctr1SampleClock",
+    "/cDAQ1/Ctr2SampleClock",
+    "/cDAQ1/Ctr3SampleClock",
+    "/cDAQ1/Ctr0ArmStartTrigger",
+    "/cDAQ1/Ctr1ArmStartTrigger",
+    "/cDAQ1/Ctr2ArmStartTrigger",
+    "/cDAQ1/Ctr3ArmStartTrigger",
+    "/cDAQ1/Ctr0InternalOutput",
+    "/cDAQ1/Ctr1InternalOutput",
+    "/cDAQ1/Ctr2InternalOutput",
+    "/cDAQ1/Ctr3InternalOutput",
+    "/cDAQ1/Ctr0A",
+    "/cDAQ1/Ctr1A",
+    "/cDAQ1/Ctr2A",
+    "/cDAQ1/Ctr3A",
+    "/cDAQ1/Ctr0B",
+    "/cDAQ1/Ctr1B",
+    "/cDAQ1/Ctr2B",
+    "/cDAQ1/Ctr3B",
+    "/cDAQ1/Ctr0Z",
+    "/cDAQ1/Ctr1Z",
+    "/cDAQ1/Ctr2Z",
+    "/cDAQ1/Ctr3Z",
+    "/cDAQ1/PairedCtrInternalOutput",
+    "/cDAQ1/PairedCtrOutputPulse",
+    "/cDAQ1/FrequencyOutput"
+   ],
+   "ci_physical_chans": "<nidaqmx.system._collections.physical_channel_collection.CIPhysicalChannelCollection object at 0x0000020C8675E750>",
+   "co_physical_chans": "<nidaqmx.system._collections.physical_channel_collection.COPhysicalChannelCollection object at 0x0000020C8675E510>",
+   "di_lines": "<nidaqmx.system._collections.physical_channel_collection.DILinesCollection object at 0x0000020C8675E0F0>",
+   "do_lines": "<nidaqmx.system._collections.physical_channel_collection.DOLinesCollection object at 0x0000020C8675E150>"
+  }
+ }
+}

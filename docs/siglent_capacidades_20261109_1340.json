@@ -1,0 +1,342 @@
+{
+ "pruebas": [
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 0.000",
+   "ok": true,
+   "detalle": "lee 0.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 1.234",
+   "ok": true,
+   "detalle": "lee 1.234 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 12.345",
+   "ok": true,
+   "detalle": "lee 12.345 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 32.000",
+   "ok": true,
+   "detalle": "lee 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 32.001 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT 33 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 VOLT -1 (fuera de rango)",
+   "ok": false,
+   "detalle": "queda -1.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 CURR 0.001",
+   "ok": true,
+   "detalle": "lee 0.001 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 CURR 1.234",
+   "ok": true,
+   "detalle": "lee 1.234 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 CURR 3.200",
+   "ok": true,
+   "detalle": "lee 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 CURR 3.201 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH1 CURR 4 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 0.000",
+   "ok": true,
+   "detalle": "lee 0.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 1.234",
+   "ok": true,
+   "detalle": "lee 1.234 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 12.345",
+   "ok": true,
+   "detalle": "lee 12.345 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 32.000",
+   "ok": true,
+   "detalle": "lee 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 32.001 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT 33 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 32.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 VOLT -1 (fuera de rango)",
+   "ok": false,
+   "detalle": "queda -1.000 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 CURR 0.001",
+   "ok": true,
+   "detalle": "lee 0.001 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 CURR 1.234",
+   "ok": true,
+   "detalle": "lee 1.234 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 CURR 3.200",
+   "ok": true,
+   "detalle": "lee 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 CURR 3.201 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "CH2 CURR 4 (fuera de rango)",
+   "ok": true,
+   "detalle": "queda 3.200 · 0  No Error"
+  },
+  {
+   "grupo": "A consignas",
+   "que": "INSTrument CH2 (canal activo del frontal)",
+   "ok": true,
+   "detalle": "CH2"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH1 ON a 1,000 V / 0,1 A sin carga",
+   "ok": true,
+   "detalle": "mide 1.0 V 0.0 A 0.0 W · estado {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': True, 'CH2_salida': False, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH1 cambia a 5,000 V con la salida encendida",
+   "ok": true,
+   "detalle": "mide 5.001 V"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH1 OFF: estado y tensión medida",
+   "ok": true,
+   "detalle": "mide 0.0 V · {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': False, 'CH2_salida': False, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH2 ON a 1,000 V / 0,1 A sin carga",
+   "ok": true,
+   "detalle": "mide 1.007 V 0.0 A 0.0 W · estado {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': False, 'CH2_salida': True, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH2 cambia a 5,000 V con la salida encendida",
+   "ok": true,
+   "detalle": "mide 5.006 V"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH2 OFF: estado y tensión medida",
+   "ok": true,
+   "detalle": "mide 0.0 V · {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': False, 'CH2_salida': False, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "B salida",
+   "que": "CH3 ON/OFF por SCPI (tensión fija por conmutador; no se mide por SCPI)",
+   "ok": true,
+   "detalle": "0  No Error"
+  },
+  {
+   "grupo": "C apagado seguido",
+   "que": "CH1 OFF y CH2 OFF con 50 ms entre medias: apagadas DE VERDAD",
+   "ok": true,
+   "detalle": "miden 0.0 V y 0.0 V · estado {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': False, 'CH2_salida': False, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "C apagado seguido",
+   "que": "CH1 OFF y CH2 OFF con 300 ms entre medias: apagadas DE VERDAD",
+   "ok": true,
+   "detalle": "miden 0.0 V y 0.0 V · estado {'CH1': 'CV', 'CH2': 'CV', 'modo': 'independiente', 'CH1_salida': False, 'CH2_salida': False, 'TIMER1': False, 'TIMER2': False, 'CH1_onda': False, 'CH2_onda': False}"
+  },
+  {
+   "grupo": "D modo",
+   "que": "OUTPut:TRACk 1 → serie",
+   "ok": true,
+   "detalle": "serie · 0  No Error"
+  },
+  {
+   "grupo": "D modo",
+   "que": "OUTPut:TRACk 2 → paralelo",
+   "ok": true,
+   "detalle": "paralelo · 0  No Error"
+  },
+  {
+   "grupo": "D modo",
+   "que": "OUTPut:TRACk 0 → independiente",
+   "ok": true,
+   "detalle": "independiente · 0  No Error"
+  },
+  {
+   "grupo": "E temporizador",
+   "que": "programar 2 pasos (1 V 3 s, 2 V 3 s) y leerlos",
+   "ok": true,
+   "detalle": "1.000,0.100,3 | 2.000,0.100,3 | 0  No Error"
+  },
+  {
+   "grupo": "E temporizador",
+   "que": "medidas vacías mientras corre el temporizador",
+   "ok": null,
+   "detalle": "4 de 4"
+  },
+  {
+   "grupo": "E temporizador",
+   "que": "el temporizador ejecuta los pasos en la fuente (1 V y luego 2 V)",
+   "ok": false,
+   "detalle": "[(0.0, None), (1.9, None), (3.8, None), (5.7, None)] · TIMER1 False"
+  },
+  {
+   "grupo": "F onda en pantalla",
+   "que": "OUTPut:WAVE CH1,ON/OFF (gráfica en el frontal)",
+   "ok": true,
+   "detalle": {
+    "CH1": "CV",
+    "CH2": "CV",
+    "modo": "independiente",
+    "CH1_salida": false,
+    "CH2_salida": false,
+    "TIMER1": false,
+    "TIMER2": false,
+    "CH1_onda": true,
+    "CH2_onda": false
+   }
+  },
+  {
+   "grupo": "G ritmo",
+   "que": "10 consignas con 50 ms entre órdenes",
+   "ok": true,
+   "detalle": "0 fallos"
+  },
+  {
+   "grupo": "G ritmo",
+   "que": "10 consignas con 100 ms entre órdenes",
+   "ok": true,
+   "detalle": "0 fallos"
+  },
+  {
+   "grupo": "G ritmo",
+   "que": "10 consignas con 200 ms entre órdenes",
+   "ok": true,
+   "detalle": "0 fallos"
+  },
+  {
+   "grupo": "G ritmo",
+   "que": "lecturas de medida por segundo (con la pausa de 300 ms)",
+   "ok": null,
+   "detalle": "0.52 por s"
+  }
+ ],
+ "previo": {
+  "CH1": [
+   "4.000",
+   "0.500"
+  ],
+  "CH2": [
+   "4.000",
+   "1.200"
+  ],
+  "estado": {
+   "CH1": "CV",
+   "CH2": "CV",
+   "modo": "independiente",
+   "CH1_salida": false,
+   "CH2_salida": false,
+   "TIMER1": false,
+   "TIMER2": false,
+   "CH1_onda": false,
+   "CH2_onda": false
+  },
+  "timer": {
+   "CH1,1": "20.000,0.600,1",
+   "CH1,2": "20.000,2.000,60",
+   "CH1,3": "0.000,0.000,0",
+   "CH1,4": "0.000,0.000,0",
+   "CH1,5": "0.000,0.000,0",
+   "CH2,1": "0.000,0.000,0",
+   "CH2,2": "0.000,0.000,0",
+   "CH2,3": "0.000,0.000,0",
+   "CH2,4": "0.000,0.000,0",
+   "CH2,5": "0.000,0.000,0"
+  }
+ },
+ "final": {
+  "CH1": [
+   "4.000",
+   "0.500"
+  ],
+  "CH2": [
+   "4.000",
+   "1.200"
+  ],
+  "estado": {
+   "CH1": "CV",
+   "CH2": "CV",
+   "modo": "independiente",
+   "CH1_salida": false,
+   "CH2_salida": false,
+   "TIMER1": false,
+   "TIMER2": false,
+   "CH1_onda": false,
+   "CH2_onda": false
+  },
+  "miden_V": [
+   0.0,
+   0.0
+  ]
+ }
+}

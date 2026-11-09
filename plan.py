@@ -16,6 +16,17 @@ Plan (JSON, reutilizable en <proyecto>\\ensayos\\_planes\\<nombre>.json):
      {"tipo": "marca", "texto": "..."},
      {"tipo": "apagar"}]}
 
+Fase 4 (9-nov-2026, propuesta de coherencia aprobada): varias fuentes y condiciones.
+  - Cada etapa de consignas, rampa o apagar dice a qué salida va con «fuente»: "ea" (por defecto, la de siempre),
+    "spd.CH1", "spd.CH2" o "spd.CH3" (Siglent SPD3303X; CH3 solo on/off). {"tipo": "apagar", "fuente": "todo"}
+    apaga todas las salidas de todas las fuentes.
+  - "maximos_spd": {"V": 5, "I": 0.5}: techos del plan para la Siglent (obligatorio si la usa).
+  - {"tipo": "esperar", "condicion": "cdaq.T0 >= 60", "max_s": 600, "si_no": "parar" | "seguir"}: espera a que una
+    medida cumpla la condición (sin max_s: sin límite).
+  - "guardas": ["cdaq.T0 >= 80", "ea.I > 2"]: si alguna se cumple en cualquier momento, se APAGA TODO y se para.
+  Medidas: ea.V, ea.I, ea.P · spd.CH1.V, spd.CH1.I, spd.CH2.V, spd.CH2.I · cdaq.<canal> (p. ej. cdaq.T0, cdaq.V0) ·
+  tc.<canal> (PicoLog / TC-08, p. ej. tc.TC1). Operadores: >=, <=, >, <.
+
 Seguridad: el plan se comprueba entero antes de empezar (consignas frente a los maximos del plan, los maximos frente a
 los topes del panel y la zona de trabajo de la fuente). Mientras corre, cada 0,2 s: sin comunicacion con la fuente ->
 apaga y para; consignas o salida distintas de las del plan (cambio a mano, proteccion, vigilante) -> pausa con aviso
@@ -28,10 +39,16 @@ import re
 import threading
 import time
 
+import operator
+
 import almacen
+import siglent_modelo as SM
 from fuente import ControlPerdido, EncendidoBloqueado
 
-TIPOS = ("pausa", "consignas", "rampa", "mantener", "captura", "marca", "apagar")
+TIPOS = ("pausa", "consignas", "rampa", "mantener", "captura", "marca", "apagar", "esperar")
+FUENTES = ("ea", "spd.CH1", "spd.CH2", "spd.CH3")
+OPS = {">=": operator.ge, "<=": operator.le, ">": operator.gt, "<": operator.lt}
+_COND = re.compile(r"^\s*([A-Za-z][\w.\-]*)\s*(>=|<=|>|<)\s*(-?\d+(?:[.,]\d+)?)\s*$")
 MAGNITUDES = {"V": "V_lim_V", "I": "I_A", "P": "P_W"}     # nombre en el plan -> clave de fuente.consignas
 MAX_PASOS_RAMPA = 1000
 CADA_S = 0.2                 # vigilancia del plan mientras espera
@@ -48,9 +65,41 @@ def _num(v, que):
     return x
 
 
+def condicion(txt):
+    """«cdaq.T0 >= 60» -> (medida, op, valor); ValueError si no se entiende."""
+    m = _COND.match(str(txt or ""))
+    if not m:
+        raise ValueError(f"condición «{txt}» no válida (p. ej. «cdaq.T0 >= 60»: medida, >= <= > <, número)")
+    return m.group(1), m.group(2), float(m.group(3).replace(",", "."))
+
+
+def _fuente(e):
+    return e.get("fuente") or "ea"
+
+
+def _nombre_fuente(f):
+    return {"ea": "", "todo": "todas las fuentes: "}.get(f, f"Siglent {f[4:]}: ")
+
+
 def describir(e):
     """Texto corto de una etapa (eventos de fuente.csv, resumen y pagina)."""
     t = e.get("tipo")
+    f = _fuente(e)
+    if t == "esperar":
+        lim = f" (máx. {_hms(e['max_s'])}; si no, {'sigue' if e.get('si_no') == 'seguir' else 'PARA'})" if e.get("max_s") else ""
+        return f"esperar hasta {e['condicion']}{lim}"
+    if f != "ea" and t in ("consignas", "rampa", "apagar"):
+        if t == "apagar":
+            return "apagar " + ("TODAS las salidas" if f == "todo" else f"Siglent {f[4:]}")
+        pre = _nombre_fuente(f)
+        if t == "consignas":
+            partes = [f"{m} {e[m]:g} {u}" for m, u in (("V", "V"), ("I", "A")) if e.get(m) is not None]
+            if e.get("salida") in ("on", "off"):
+                partes.append(f"salida {e['salida'].upper()}")
+            return pre + "consignas: " + ", ".join(partes)
+        u = {"V": "V", "I": "A"}[e["magnitud"]]
+        return (pre + f"rampa {e['magnitud']} hasta {e['hasta']:g} {u} en pasos de {e['paso']:g} {u}"
+                f" durante {_hms(e['duracion_s'])}")
     if t == "pausa":
         return f"pausa: {e.get('mensaje') or 'pulsa Continuar'}"
     if t == "consignas":
@@ -76,7 +125,7 @@ def _hms(s):
     return f"{s // 3600} h {s % 3600 // 60:02d} min" if s >= 3600 else (f"{s // 60} min {s % 60:02d} s" if s >= 60 else f"{s} s")
 
 
-def comprobar(plan, topes, equipo, consignas_actuales, con_osc_registrando=False):
+def _comprobar_ea(plan, topes, equipo, consignas_actuales, con_osc_registrando=False):
     """Valida y normaliza el plan. Devuelve (plan_normalizado, resumen) o lanza ValueError con TODOS los problemas.
 
     topes: limites del panel {vmax_V, imax_A, pmax_W}; equipo: nominales de la fuente {v_nom, i_nom, p_nom};
@@ -208,6 +257,257 @@ def comprobar(plan, topes, equipo, consignas_actuales, con_osc_registrando=False
                "texto": texto, "etapas": [describir(e) for e in norm]}
 
 
+
+def usos(plan):
+    """Qué fuentes mueve el plan: {"ea": bool, "spd": bool}."""
+    ea = spd = False
+    for e in plan.get("etapas") or []:
+        if not isinstance(e, dict) or e.get("tipo") not in ("consignas", "rampa", "apagar"):
+            continue
+        f = _fuente(e)
+        if f == "ea":
+            ea = True
+        elif f.startswith("spd."):
+            spd = True
+    return {"ea": ea, "spd": spd}
+
+
+def comprobar(plan, topes, equipo, consignas_actuales, con_osc_registrando=False, spd=None, medidas=None,
+              ea_conectada=True):
+    """Valida y normaliza el plan (fase 4: varias fuentes y condiciones). Devuelve (plan, resumen) o ValueError con
+    TODOS los problemas. spd: resumen de la Siglent (None = no conectada); medidas: nombres que se pueden usar en las
+    condiciones (None = no se comprueban); ea_conectada: si la fuente EA está conectada."""
+    if not isinstance(plan, dict):
+        raise ValueError("El plan no es válido")
+    p = copy.deepcopy(plan)
+    errores = []
+    etapas = p.get("etapas") or []
+    for n, e in enumerate(etapas, 1):
+        if isinstance(e, dict) and _fuente(e) not in FUENTES + ("todo",):
+            errores.append(f"Etapa {n}: fuente «{e.get('fuente')}» no válida ({', '.join(FUENTES)} o todo)")
+        if isinstance(e, dict) and _fuente(e) == "todo" and e.get("tipo") != "apagar":
+            errores.append(f"Etapa {n}: «todo» solo vale para apagar")
+    u = usos(p)
+    # --- condiciones (esperar y guardas)
+    def cond_ok(txt, donde):
+        try:
+            m, op, v = condicion(txt)
+        except ValueError as x:
+            errores.append(f"{donde}: {x}")
+            return None
+        if medidas is not None and m not in medidas:
+            errores.append(f"{donde}: la medida «{m}» no existe ahora ({', '.join(sorted(medidas)) or 'ninguna'})")
+        return f"{m} {op} {v:g}"
+    guardas = []
+    for k, g in enumerate(p.get("guardas") or [], 1):
+        c = cond_ok(g, f"Guarda {k}")
+        if c:
+            guardas.append(c)
+    p["guardas"] = guardas
+    # --- EA: la comprobación de siempre, con las etapas que no son de la Siglent
+    etapas_ea = [e for e in etapas if not (isinstance(e, dict) and (_fuente(e).startswith("spd.") or _fuente(e) == "todo"
+                                                                     or e.get("tipo") == "esperar"))]
+    res_ea = None
+    if u["ea"]:
+        if not ea_conectada:
+            errores.append("El plan mueve la fuente EA y no está conectada")
+        else:
+            try:
+                pe, res_ea = _comprobar_ea(dict(p, etapas=etapas_ea), topes, equipo, consignas_actuales, con_osc_registrando)
+                p["maximos"] = pe["maximos"]
+            except ValueError as x:
+                errores.extend(l[2:] for l in str(x).split("\n")[1:])
+    # --- Siglent: consignas y rampas frente a sus máximos del plan, los topes del panel y el equipo
+    mx_spd = {}
+    alc_spd = {"V": 0.0, "I": 0.0}
+    enciende_spd = False
+    if u["spd"]:
+        if not spd or spd.get("estado") != "conectada":
+            errores.append("El plan mueve la Siglent y no está conectada")
+        elif spd.get("modo") != "independiente":
+            errores.append(f"El plan usa la Siglent con sus canales independientes (ahora está en modo {spd.get('modo')})")
+        mx = p.get("maximos_spd") or {}
+        for m, un in (("V", "V"), ("I", "A")):
+            try:
+                mx_spd[m] = _num(mx.get(m), f"Máximo de {m} de la Siglent")
+            except ValueError as x:
+                errores.append(str(x) if mx.get(m) not in (None, "") else f"Falta el máximo de {m} de la Siglent (maximos_spd)")
+                continue
+            tope = (spd or {}).get("topes", {}).get(m, SM.V_MAX if m == "V" else SM.I_MAX)
+            if mx_spd[m] > tope + 1e-9:
+                errores.append(f"El máximo de {m} de la Siglent ({mx_spd[m]:g} {un}) pasa su tope del panel ({tope:g} {un})")
+        p["maximos_spd"] = mx_spd
+    k_spd = {c: {"V": ((spd or {}).get("canales") or {}).get(c, {}).get("V_cons"),
+                 "I": ((spd or {}).get("canales") or {}).get(c, {}).get("I_cons")} for c in SM.CANALES}
+    duracion, abierta = 0.0, False
+    norm = []
+    j_ea = 0
+    for n, e in enumerate(etapas, 1):
+        donde = f"Etapa {n}"
+        if not isinstance(e, dict) or e.get("tipo") not in TIPOS:
+            if not errores or not any(x.startswith(donde) for x in errores):
+                errores.append(f"{donde}: tipo de etapa no válido ({e.get('tipo') if isinstance(e, dict) else e})")
+            continue
+        f, t = _fuente(e), e["tipo"]
+        es_spd = f.startswith("spd.") and t in ("consignas", "rampa", "apagar")
+        if not es_spd and not (f == "todo") and t != "esperar":
+            # etapa de la EA o común: la normalizada por _comprobar_ea (mismo orden)
+            if res_ea is not None and j_ea < len(pe["etapas"]):
+                norm.append(pe["etapas"][j_ea])
+                if t in ("rampa", "mantener"):
+                    duracion += (pe["etapas"][j_ea].get("duracion_s") or 0)
+                    abierta = abierta or (t == "mantener" and not pe["etapas"][j_ea].get("duracion_s"))
+                if t == "pausa":
+                    abierta = True
+            else:
+                ee = {kk: v for kk, v in e.items() if v not in (None, "")}
+                if t == "captura":
+                    ee["nombre"] = almacen._limpio(ee.get("nombre") or "captura")
+                    if con_osc_registrando:
+                        errores.append(f"{donde}: no se puede capturar mientras el osciloscopio registra en el ensayo")
+                elif t == "marca" and not str(ee.get("texto") or "").strip():
+                    errores.append(f"{donde}: la marca no tiene texto")
+                elif t == "mantener" and "duracion_s" in ee:
+                    try:
+                        ee["duracion_s"] = _num(ee["duracion_s"], f"{donde}, duración")
+                    except ValueError as x:
+                        errores.append(str(x))
+                elif t == "pausa":
+                    ee["mensaje"] = str(ee.get("mensaje") or "Pulsa Continuar")
+                norm.append(ee)
+                e = ee
+                if t == "pausa" or (t == "mantener" and not e.get("duracion_s")):
+                    abierta = True
+                elif t == "mantener":
+                    duracion += float(e.get("duracion_s") or 0)
+            j_ea += 1
+            continue
+        e = {kk: v for kk, v in e.items() if v not in (None, "")}
+        try:
+            if t == "esperar":
+                c = cond_ok(e.get("condicion"), donde)
+                if c is None:
+                    continue
+                e["condicion"] = c
+                if "max_s" in e:
+                    e["max_s"] = _num(e["max_s"], f"{donde}, tiempo máximo")
+                    duracion += e["max_s"]
+                else:
+                    abierta = True
+                e["si_no"] = e.get("si_no") or "parar"
+                if e["si_no"] not in ("parar", "seguir"):
+                    raise ValueError(f"{donde}: «si no se cumple» tiene que ser parar o seguir")
+            elif f == "todo":
+                pass
+            elif t == "apagar":
+                pass
+            else:
+                c = f[4:]
+                if c == SM.CH3:
+                    if t == "rampa" or any(m in e for m in ("V", "I")):
+                        raise ValueError(f"{donde}: CH3 de la Siglent solo se enciende y apaga (su tensión va por el conmutador)")
+                    if e.get("salida") == "on":
+                        enciende_spd = True
+                elif t == "consignas":
+                    for m in ("V", "I"):
+                        if m in e:
+                            e[m] = _num(e[m], f"{donde}, {m}")
+                            k_spd[c][m] = e[m]
+                    if "P" in e:
+                        raise ValueError(f"{donde}: la Siglent no tiene consigna de potencia")
+                    if e.get("salida") not in (None, "on", "off"):
+                        raise ValueError(f"{donde}: salida tiene que ser on, off o nada")
+                    if not any(m in e for m in ("V", "I")) and "salida" not in e:
+                        raise ValueError(f"{donde}: no fija nada")
+                    if e.get("salida") == "on":
+                        enciende_spd = True
+                else:   # rampa
+                    if e.get("magnitud") not in ("V", "I"):
+                        raise ValueError(f"{donde}: la rampa de la Siglent tiene que ser de V o I")
+                    m = e["magnitud"]
+                    e["hasta"] = _num(e.get("hasta"), f"{donde}, hasta")
+                    e["paso"] = _num(e.get("paso"), f"{donde}, paso")
+                    e["duracion_s"] = _num(e.get("duracion_s"), f"{donde}, duración")
+                    if e["paso"] <= 0:
+                        raise ValueError(f"{donde}: el paso tiene que ser mayor que 0")
+                    if k_spd[c][m] is None:
+                        raise ValueError(f"{donde}: no se sabe desde dónde empieza la rampa (fija antes {m})")
+                    pasos = int(abs(e["hasta"] - k_spd[c][m]) / e["paso"] + 0.999999)
+                    if pasos > MAX_PASOS_RAMPA:
+                        raise ValueError(f"{donde}: {pasos} pasos son demasiados (máximo {MAX_PASOS_RAMPA}): sube el paso")
+                    if pasos == 0:
+                        raise ValueError(f"{donde}: la rampa no se mueve (ya está en {e['hasta']:g})")
+                    e["desde"] = k_spd[c][m]
+                    k_spd[c][m] = e["hasta"]
+                    duracion += e["duracion_s"]
+                if c != SM.CH3:
+                    for m, un in (("V", "V"), ("I", "A")):
+                        v = k_spd[c][m]
+                        if v is None:
+                            continue
+                        err = SM.comprobar({c: {m: v}}, topes=(spd or {}).get("topes"))
+                        if err:
+                            errores.append(f"{donde}: {err[0]}")
+                        if m in mx_spd and v > mx_spd[m] + 1e-9:
+                            errores.append(f"{donde}: Siglent {c} {m} = {v:g} {un} pasa el máximo del plan ({mx_spd[m]:g} {un})")
+                        alc_spd[m] = max(alc_spd[m], v)
+        except ValueError as x:
+            errores.append(str(x))
+            continue
+        norm.append(e)
+    if not etapas:
+        errores.append("El plan no tiene etapas")
+    if not u["ea"] and not u["spd"] and not any(isinstance(e, dict) and e.get("tipo") == "apagar" for e in etapas):
+        pass                             # un plan de solo esperas, marcas y capturas también vale
+    if errores:
+        raise ValueError("El plan no se puede usar:\n- " + "\n- ".join(dict.fromkeys(errores)))
+    p["etapas"] = norm
+    enciende_ea = bool(res_ea and res_ea["enciende"])
+    partes = [f"{len(norm)} etapas; duración {'al menos ' if abierta else ''}{_hms(duracion)}"
+              + (" (hay pausas o esperas sin límite)" if abierta else "")]
+    if res_ea:
+        a = res_ea["alcanzado"]
+        partes.append(f"EA llega a {a['V']:g} V, {a['I']:g} A, {a['P']:g} W (máx. del plan {p['maximos']['V']:g} V, "
+                      f"{p['maximos']['I']:g} A, {p['maximos']['P']:g} W){' · ENCIENDE la EA' if enciende_ea else ''}")
+    if u["spd"]:
+        partes.append(f"Siglent llega a {alc_spd['V']:g} V, {alc_spd['I']:g} A (máx. del plan {mx_spd.get('V', 0):g} V, "
+                      f"{mx_spd.get('I', 0):g} A){' · ENCIENDE la Siglent' if enciende_spd else ''}")
+    if guardas:
+        partes.append("guardas: " + ", ".join(guardas) + " → apagar todo")
+    alcanzado = res_ea["alcanzado"] if res_ea else {"V": 0.0, "I": 0.0, "P": 0.0}
+    return p, {"duracion_s": duracion, "abierta": abierta, "alcanzado": alcanzado, "alcanzado_spd": alc_spd,
+               "enciende": enciende_ea or enciende_spd, "enciende_ea": enciende_ea, "enciende_spd": enciende_spd,
+               "usa_ea": u["ea"], "usa_spd": u["spd"], "guardas": guardas,
+               "texto": "; ".join(partes), "etapas": [describir(x) for x in norm]}
+
+
+def medidas_disponibles(ens):
+    """Nombres de medida que se pueden usar en las condiciones, con su valor actual (None = sin dato)."""
+    return {k: v for k, v in _medidas(ens).items()}
+
+
+def _medidas(ens):
+    m = {}
+    f = ens.fte
+    if f and f.estado == "conectada":
+        md = f.medida or {}
+        m.update({"ea.V": md.get("V"), "ea.I": md.get("I"), "ea.P": md.get("P")})
+    sp = getattr(ens, "spd", None)
+    if sp and sp.estado == "conectada":
+        for c in SM.CANALES:
+            q = sp.canales.get(c) or {}
+            m[f"spd.{c}.V"], m[f"spd.{c}.I"] = q.get("V"), q.get("I")
+    d = getattr(ens, "daq", None)
+    if d and d.estado == "midiendo":
+        for c in d.canales:
+            m[f"cdaq.{c['nombre']}"] = c.get("ultimo")
+    pl = getattr(ens, "pl", None)
+    if pl and pl.estado in ("capturando", "midiendo"):
+        for c in pl.canales or []:
+            m[f"tc.{c['nombre']}"] = c.get("ultimo")
+    return m
+
+
 # ------------------------------------------------------------------- planes guardados
 def _dir_planes(proyecto):
     return os.path.join(almacen._dir_tipo(proyecto, "ensayos"), "_planes")
@@ -249,6 +549,11 @@ class Ejecucion:
 
     def __init__(self, ensayos, a, plan, autor):
         self.ens, self.fte, self.osc, self.reg = ensayos, ensayos.fte, ensayos.osc, ensayos.reg
+        self.spd = getattr(ensayos, "spd", None)
+        u = usos(plan)
+        self.usa_ea, self.usa_spd = u["ea"], u["spd"]
+        self.guardas = [condicion(g) for g in plan.get("guardas") or []]
+        self.esperado_spd = {}               # {CH1: {"V", "I", "salida"}} lo que el plan dio a la Siglent
         self.a, self.plan, self.autor = a, plan, autor
         self.etapas = plan["etapas"]
         self.i = -1                          # etapa en curso (indice)
@@ -278,7 +583,7 @@ class Ejecucion:
     def continuar(self, autor, confirmado=False):
         # tras APAGAR, una proteccion, el vigilante o un OFF en el frontal, Continuar volveria a ENCENDER: solo si la
         # persona lo confirma (revisión del 2026-11-04: antes el plan volvía a encender solo)
-        if self.fte.bloqueo and self.esperado and self.esperado.get("salida"):
+        if self.usa_ea and self.fte.bloqueo and self.esperado and self.esperado.get("salida"):
             if not confirmado:
                 raise ValueError(f"CONFIRMAR: Continuar volverá a ENCENDER la salida de la fuente "
                                  f"(se apagó por: {self.fte.bloqueo}). ¿Seguro?")
@@ -321,7 +626,7 @@ class Ejecucion:
     # -------------------------------------------------- ayudas
     def _anotar(self, autor, texto, detalle=None):
         self.reg.anotar(autor, "ensayo", texto, detalle)
-        self.fte.marca(texto)
+        self.ens._marca(self.a, texto)        # en los ficheros de las fuentes que registran el ensayo (9-nov)
 
     def _aplicar(self, V=None, I=None, P=None, salida=None, reponer=False):
         """Ordenes a la fuente (por el mismo camino que la pagina: topes, confirmacion de encendido...).
@@ -375,7 +680,19 @@ class Ejecucion:
             self._anotar("panel (automático)", f"plan en pausa: {motivo}")
 
     def _desviacion(self):
-        """Motivo si la fuente no esta como la dejo el plan (None si esta bien)."""
+        """Motivo si las fuentes no estan como las dejo el plan (None si esta bien)."""
+        if self.usa_spd:
+            if not self.spd or self.spd.estado != "conectada":
+                return "PERDIDA_SPD"
+            if time.time() - self._t_accion >= GRACIA_S:
+                for c, q in self.esperado_spd.items():
+                    if c == SM.CH3:
+                        continue
+                    on = (self.spd.canales.get(c) or {}).get("salida")
+                    if q.get("salida") is not None and on is not None and bool(on) != q["salida"]:
+                        return f"la salida {c} de la Siglent se ha {'apagado' if q['salida'] else 'encendido'} fuera del plan"
+        if not self.usa_ea:
+            return None
         if self.fte.estado != "conectada":
             return "PERDIDA"
         if self.esperado is None:
@@ -413,9 +730,13 @@ class Ejecucion:
         while True:
             if self._parar.is_set():
                 return "parar"
+            g = self._guarda()
+            if g:
+                self._por_guarda(g)
+                return "parar"
             d = self._desviacion()
-            if d == "PERDIDA":
-                self._fallo("sin comunicación con la fuente")
+            if d in ("PERDIDA", "PERDIDA_SPD"):
+                self._fallo("sin comunicación con la " + ("fuente EA" if d == "PERDIDA" else "Siglent"))
                 return "parar"
             if d and not self._pausa.is_set():
                 self._pausar(d)
@@ -426,8 +747,15 @@ class Ejecucion:
                 if marcar:
                     self.fin_etapa = None
                 while self._pausa.is_set() and not self._parar.is_set():
-                    if self.fte.estado != "conectada":
+                    if self.usa_ea and self.fte.estado != "conectada":
                         self._fallo("sin comunicación con la fuente")
+                        return "parar"
+                    if self.usa_spd and (not self.spd or self.spd.estado != "conectada"):
+                        self._fallo("sin comunicación con la Siglent")
+                        return "parar"
+                    g = self._guarda()             # las guardas también vigilan en pausa
+                    if g:
+                        self._por_guarda(g)
                         return "parar"
                     if self._siguiente.is_set():
                         break
@@ -443,10 +771,12 @@ class Ejecucion:
                 if self._siguiente.is_set():
                     self._siguiente.clear()
                     return "siguiente"
-                try:                       # Continuar: se vuelve a dejar la fuente como dice el plan
-                    if self.esperado:
+                try:                       # Continuar: se vuelven a dejar las fuentes como dice el plan
+                    if self.esperado and self.usa_ea:
                         e = self.esperado
                         self._aplicar(V=e["V"], I=e["I"], P=e["P"], salida=e["salida"], reponer=True)
+                    for c, q in list(self.esperado_spd.items()):
+                        self._aplicar_spd(c, V=q.get("V"), I=q.get("I"), salida=q.get("salida"), reponer=True)
                 except Exception as err:
                     self._fallo(f"no se pudo volver a aplicar el plan: {err}")
                     return "parar"
@@ -458,6 +788,82 @@ class Ejecucion:
                 return "fin"
             # sin pasarse del fin: con 0,2 s fijos cada nivel de una rampa duraba hasta 0,2 s de mas
             time.sleep(CADA_S if fin is None else min(CADA_S, max(0.005, fin - time.time())))
+
+    # -------------------------------------------------- fase 4: Siglent, condiciones y guardas
+    def _valor(self, medida):
+        return _medidas(self.ens).get(medida)
+
+    def _guarda(self):
+        """Primera guarda que se cumple (texto con el valor) o None."""
+        for m, op, v in self.guardas:
+            x = self._valor(m)
+            if x is not None and OPS[op](x, v):
+                return f"{m} {op} {v:g} (vale {x:.4g})"
+        return None
+
+    def _por_guarda(self, g):
+        """Una guarda se ha cumplido: APAGAR TODO (todas las fuentes conectadas) y parar el plan."""
+        apagado = []
+        try:
+            if self.fte.estado == "conectada":
+                self.fte.salida(False, True, "plan (guarda)")
+                apagado.append("EA")
+        except Exception as x:
+            apagado.append(f"EA NO ({x})")
+        try:
+            if self.spd and self.spd.estado == "conectada":
+                self.spd.apagar_todo("plan (guarda)", f"guarda {g}")
+                apagado.append("Siglent")
+        except Exception as x:
+            apagado.append(f"Siglent NO ({x})")
+        self.estado, self.mensaje = "error", f"GUARDA: {g} → todo apagado ({', '.join(apagado) or 'nada encendido'})"
+        self._anotar("panel (automático)", f"GUARDA cumplida: {g}: todo apagado", {"apagado": apagado})
+        self._parar.set()
+
+    def _aplicar_spd(self, canal, V=None, I=None, salida=None, reponer=False):
+        """Órdenes a la Siglent por el mismo camino que la página (modelo validado: negativos, máximos, topes)."""
+        if not reponer:
+            r = self._esperar(0, marcar=False)
+            if r == "parar":
+                raise _Parado()
+            if r == "siguiente":
+                raise _Saltar()
+        q = self.esperado_spd.setdefault(canal, {"V": None, "I": None, "salida": None})
+        if canal != SM.CH3 and (V is not None or I is not None):
+            self.spd.fijar("plan", canal, V=V, I=I)
+            if V is not None:
+                q["V"] = V
+            if I is not None:
+                q["I"] = I
+        if salida is not None:
+            self.spd.salida("plan", canal, bool(salida), confirmado=True)
+            q["salida"] = bool(salida)
+        self._t_accion = time.time()
+
+    def _esperar_condicion(self, e):
+        m, op, v = condicion(e["condicion"])
+        t0 = time.time()
+        fin = t0 + e["max_s"] if e.get("max_s") else None
+        self.fin_etapa = fin
+        self.mensaje = f"Esperando a que {e['condicion']}"
+        while True:
+            x = self._valor(m)
+            if x is not None and OPS[op](x, v):
+                self.mensaje = ""
+                self._anotar("plan", f"cumplido: {e['condicion']} (vale {x:.4g} a los {time.time() - t0:.0f} s)")
+                return "fin"
+            if fin is not None and time.time() >= fin:
+                self.mensaje = ""
+                txt = f"no se ha cumplido {e['condicion']} en {_hms(e['max_s'])} (vale {x if x is None else round(x, 4)})"
+                if e.get("si_no") == "seguir":
+                    self._anotar("plan", txt + ": se sigue")
+                    return "fin"
+                self._fallo(txt)
+                return "parar"
+            r = self._esperar(CADA_S if fin is None else min(CADA_S, max(0.01, fin - time.time())), marcar=False)
+            if r != "fin":
+                self.mensaje = ""
+                return r
 
     def _fallo(self, motivo):
         self.estado, self.mensaje = "error", f"PLAN PARADO: {motivo}"
@@ -506,6 +912,38 @@ class Ejecucion:
 
     def _etapa(self, e):
         t = e["tipo"]
+        f = _fuente(e)
+        if t == "esperar":
+            return self._esperar_condicion(e)
+        if f == "todo":                         # apagar todas las salidas de todas las fuentes
+            if self.usa_ea or self.fte.estado == "conectada":
+                self._aplicar(salida=False)
+            if self.spd and self.spd.estado == "conectada":
+                for c in (*SM.CANALES, SM.CH3):
+                    self._aplicar_spd(c, salida=False)
+            return "fin"
+        if f.startswith("spd."):
+            c = f[4:]
+            if t == "consignas":
+                sal = {"on": True, "off": False}.get(e.get("salida"))
+                self._aplicar_spd(c, V=e.get("V"), I=e.get("I"), salida=sal)
+                return "fin"
+            if t == "apagar":
+                self._aplicar_spd(c, salida=False)
+                return "fin"
+            m = e["magnitud"]                   # rampa de la Siglent: igual que la de la EA
+            desde = (self.spd.canales.get(c) or {}).get(f"{m}_cons")
+            if desde is None:
+                raise RuntimeError(f"no se puede leer la consigna de {m} de la Siglent {c}")
+            n = max(1, int(abs(e["hasta"] - desde) / e["paso"] + 0.999999))
+            espera = e["duracion_s"] / n
+            signo = 1 if e["hasta"] >= desde else -1
+            for k in range(1, n + 1):
+                r = self._esperar(espera)
+                if r != "fin":
+                    return r
+                self._aplicar_spd(c, **{m: e["hasta"] if k == n else round(desde + signo * k * e["paso"], 6)})
+            return "fin"
         if t == "consignas":
             sal = {"on": True, "off": False}.get(e.get("salida"))
             self._aplicar(V=e.get("V"), I=e.get("I"), P=e.get("P"), salida=sal)
